@@ -34,10 +34,10 @@ export const WaveLoadingScreen: React.FC = () => {
           <motion.div
             className="absolute left-0 top-0 bottom-0 w-[51%] bg-primary flex justify-end"
             initial={{ x: 0 }}
-            exit={{ x: "-100%" }}
+            exit={{ x: "-150%" }}
             transition={splitTransition}
           >
-             <svg
+            <svg
               viewBox="0 0 100 600"
               preserveAspectRatio="none"
               className="h-full w-[15vw] translate-x-[99%] fill-primary"
@@ -50,7 +50,7 @@ export const WaveLoadingScreen: React.FC = () => {
           <motion.div
             className="absolute right-0 top-0 bottom-0 w-[51%] bg-primary flex justify-start"
             initial={{ x: 0 }}
-            exit={{ x: "100%" }}
+            exit={{ x: "150%" }}
             transition={splitTransition}
           >
             <svg
