@@ -40,8 +40,13 @@ if (!existsSync(join(openNextDir, "worker.js"))) {
 }
 
 rmSync(distDir, { recursive: true, force: true });
-cpSync(openNextDir, distDir, { recursive: true });
 mkdirSync(join(distDir, "server"), { recursive: true });
+cpSync(openNextDir, join(distDir, "server"), { recursive: true });
+if (existsSync(join(openNextDir, "assets"))) {
+  cpSync(join(openNextDir, "assets"), join(distDir, "client"), {
+    recursive: true,
+  });
+}
 mkdirSync(join(distDir, ".openai"), { recursive: true });
 cpSync(
   join(projectRoot, ".openai", "hosting.json"),
@@ -49,6 +54,6 @@ cpSync(
 );
 writeFileSync(
   join(distDir, "server", "index.js"),
-  'export { default } from "../worker.js";\n',
+  'export { default } from "./worker.js";\n',
   "utf8",
 );
