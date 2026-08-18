@@ -16,7 +16,7 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
         <div className="relative z-10">
           <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/70 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary shadow-sm backdrop-blur">
             <Sparkles size={15} className="text-cta" />
-            Kabinet Arus Karya · 2024/2025
+            Kabinet Amerta Abhinaya · 2024/2025
           </div>
           <h1 className="max-w-4xl text-4xl font-black leading-[1.06] tracking-[-0.045em] text-primary sm:text-5xl xl:text-7xl">
             {content.title}
