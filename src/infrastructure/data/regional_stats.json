@@ -1,0 +1,140 @@
+{
+  "Indonesia": [
+    {
+      "category": "Ketersediaan Air Tanah",
+      "value": "85.4",
+      "unit": "Miliar m3/tahun",
+      "year": "2023",
+      "description": "Total potensi air tanah yang dapat diperbarui di wilayah Indonesia"
+    },
+    {
+      "category": "Indeks Kualitas Air",
+      "value": "54.2",
+      "unit": "Poin",
+      "year": "2023",
+      "description": "Parameter gabungan kualitas air sungai dan danau."
+    },
+    {
+      "category": "Cakupan Layanan Irigasi",
+      "value": "72.1",
+      "unit": "%",
+      "year": "2023",
+      "description": "Persentase lahan pertanian yang teraliri sistem irigasi teknis."
+    }
+  ],
+  "Jawa Barat": [
+    {
+      "category": "Ketersediaan Air Tanah",
+      "value": "85.4",
+      "unit": "Miliar m3/tahun",
+      "year": "2023",
+      "description": "Total potensi air tanah yang dapat diperbarui di wilayah Jawa Barat"
+    },
+    {
+      "category": "Indeks Kualitas Air",
+      "value": "54.2",
+      "unit": "Poin",
+      "year": "2023",
+      "description": "Parameter gabungan kualitas air sungai dan danau."
+    },
+    {
+      "category": "Cakupan Layanan Irigasi",
+      "value": "72.1",
+      "unit": "%",
+      "year": "2023",
+      "description": "Persentase lahan pertanian yang teraliri sistem irigasi teknis."
+    }
+  ],
+  "Jawa Timur": [
+    {
+      "category": "Ketersediaan Air Tanah",
+      "value": "85.4",
+      "unit": "Miliar m3/tahun",
+      "year": "2023",
+      "description": "Total potensi air tanah yang dapat diperbarui di wilayah Jawa Timur"
+    },
+    {
+      "category": "Indeks Kualitas Air",
+      "value": "54.2",
+      "unit": "Poin",
+      "year": "2023",
+      "description": "Parameter gabungan kualitas air sungai dan danau."
+    },
+    {
+      "category": "Cakupan Layanan Irigasi",
+      "value": "72.1",
+      "unit": "%",
+      "year": "2023",
+      "description": "Persentase lahan pertanian yang teraliri sistem irigasi teknis."
+    }
+  ],
+  "Jawa Tengah": [
+    {
+      "category": "Ketersediaan Air Tanah",
+      "value": "85.4",
+      "unit": "Miliar m3/tahun",
+      "year": "2023",
+      "description": "Total potensi air tanah yang dapat diperbarui di wilayah Jawa Tengah"
+    },
+    {
+      "category": "Indeks Kualitas Air",
+      "value": "54.2",
+      "unit": "Poin",
+      "year": "2023",
+      "description": "Parameter gabungan kualitas air sungai dan danau."
+    },
+    {
+      "category": "Cakupan Layanan Irigasi",
+      "value": "72.1",
+      "unit": "%",
+      "year": "2023",
+      "description": "Persentase lahan pertanian yang teraliri sistem irigasi teknis."
+    }
+  ],
+  "Sumatera Utara": [
+    {
+      "category": "Ketersediaan Air Tanah",
+      "value": "85.4",
+      "unit": "Miliar m3/tahun",
+      "year": "2023",
+      "description": "Total potensi air tanah yang dapat diperbarui di wilayah Sumatera Utara"
+    },
+    {
+      "category": "Indeks Kualitas Air",
+      "value": "54.2",
+      "unit": "Poin",
+      "year": "2023",
+      "description": "Parameter gabungan kualitas air sungai dan danau."
+    },
+    {
+      "category": "Cakupan Layanan Irigasi",
+      "value": "72.1",
+      "unit": "%",
+      "year": "2023",
+      "description": "Persentase lahan pertanian yang teraliri sistem irigasi teknis."
+    }
+  ],
+  "Sulawesi Selatan": [
+    {
+      "category": "Ketersediaan Air Tanah",
+      "value": "85.4",
+      "unit": "Miliar m3/tahun",
+      "year": "2023",
+      "description": "Total potensi air tanah yang dapat diperbarui di wilayah Sulawesi Selatan"
+    },
+    {
+      "category": "Indeks Kualitas Air",
+      "value": "54.2",
+      "unit": "Poin",
+      "year": "2023",
+      "description": "Parameter gabungan kualitas air sungai dan danau."
+    },
+    {
+      "category": "Cakupan Layanan Irigasi",
+      "value": "72.1",
+      "unit": "%",
+      "year": "2023",
+      "description": "Persentase lahan pertanian yang teraliri sistem irigasi teknis."
+    }
+  ]
+}

@@ -1,0 +1,534 @@
+{
+  "hero": {
+    "title": "Konstruksi Masa Depan, Ketahanan Air untuk Negeri",
+    "subtitle": "Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air - Mengalir Kokoh Menuju Inovasi.",
+    "ctaText": "Jelajahi Program Kami"
+  },
+  "visionMission": {
+    "vision": "Menjadi wadah pengembangan mahasiswa Teknik Konstruksi Bangunan Air yang unggul, berintegritas, dan inovatif dalam pengelolaan sumber daya air.",
+    "mission": [
+      "Meningkatkan kualitas akademik dan soft skill mahasiswa.",
+      "Membangun sinergi antar elemen dalam program studi.",
+      "Berkontribusi nyata dalam pengabdian masyarakat di bidang keairan."
+    ]
+  },
+  "documents": [
+    {
+      "id": "1",
+      "title": "Standar Irigasi KP-01",
+      "category": "Regulasi",
+      "downloadUrl": "#"
+    },
+    {
+      "id": "2",
+      "title": "Modul Hidrolika Terapan",
+      "category": "Akademik",
+      "downloadUrl": "#"
+    },
+    {
+      "id": "1783322649835",
+      "title": "hahhaha",
+      "category": "SOP",
+      "downloadUrl": "/uploads/1783322647492_mendeteksi_portal.docx"
+    }
+  ],
+  "members": [
+    {
+      "id": "01",
+      "name": "Achsanul Chuluqy",
+      "role": "Ketua Umum",
+      "division": "BPH (Badan Pengurus Harian)",
+      "period": "2024/2025"
+    },
+    {
+      "id": "02",
+      "name": "Gardaneko Rachmadesyura",
+      "role": "Wakil Ketua Umum",
+      "division": "BPH (Badan Pengurus Harian)",
+      "period": "2024/2025"
+    },
+    {
+      "id": "03",
+      "name": "Rahma Fauziah",
+      "role": "Sekretaris Umum",
+      "division": "BPH (Badan Pengurus Harian)",
+      "period": "2024/2025"
+    },
+    {
+      "id": "04",
+      "name": "Trisna Anindya",
+      "role": "Bendahara Umum",
+      "division": "BPH (Badan Pengurus Harian)",
+      "period": "2024/2025"
+    },
+    {
+      "id": "05",
+      "name": "Keila Raesya",
+      "role": "Kepala Divisi Sekretariat Kabinet",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "06",
+      "name": "Arkananta ayu",
+      "role": "Anggota Sekretariat Kabinet 01",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "07",
+      "name": "Naila Putri",
+      "role": "Anggota Sekretariat Kabinet 02",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "08",
+      "name": "Risydin Mufardis",
+      "role": "Anggota Sekretariat Kabinet 03",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "09",
+      "name": "Dimas Ilham",
+      "role": "Anggota Sekretariat Kabinet 04",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "10",
+      "name": "Indra Dwi",
+      "role": "Anggota Sekretariat Kabinet 05",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "11",
+      "name": "Dian Ivana",
+      "role": "Anggota Sekretariat Kabinet 06",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "12",
+      "name": "Adinda Embun",
+      "role": "Anggota Sekretariat Kabinet 07",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "13",
+      "name": "Nabila Defina",
+      "role": "Anggota Sekretariat Kabinet 08",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "14",
+      "name": "Dida Binsar",
+      "role": "Anggota Sekretariat Kabinet 09",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "15",
+      "name": "Raykhan Tanaka",
+      "role": "Anggota Sekretariat Kabinet 10",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "16",
+      "name": "Nabila Az-Zhahirah",
+      "role": "Anggota Sekretariat Kabinet 11",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "17",
+      "name": "Herniani Dwi",
+      "role": "Anggota Sekretariat Kabinet 12",
+      "division": "Sekretariat Kabinet",
+      "period": "2024/2025"
+    },
+    {
+      "id": "18",
+      "name": "Aqsha Rizad",
+      "role": "Kepala Divisi Akademik Mahasiswa",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "19",
+      "name": "Bintang Ali Yafi",
+      "role": "Anggota Akademik Mahasiswa 01",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "20",
+      "name": "Ibrahim Yahya",
+      "role": "Anggota Akademik Mahasiswa 02",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "21",
+      "name": "Defa Rifqi",
+      "role": "Anggota Akademik Mahasiswa 03",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "22",
+      "name": "Natasya Dhefaniar",
+      "role": "Anggota Akademik Mahasiswa 04",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "23",
+      "name": "Putri Sabrina",
+      "role": "Anggota Akademik Mahasiswa 05",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "24",
+      "name": "Aura Ramadhani",
+      "role": "Anggota Akademik Mahasiswa 06",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "25",
+      "name": "Sutra Virzi",
+      "role": "Anggota Akademik Mahasiswa 07",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "26",
+      "name": "Panggih Tri",
+      "role": "Anggota Akademik Mahasiswa 08",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "27",
+      "name": "Raffi Arkha",
+      "role": "Anggota Akademik Mahasiswa 09",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "28",
+      "name": "Ahmad Zakaria",
+      "role": "Anggota Akademik Mahasiswa 10",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "29",
+      "name": "Nabila Purnamasari",
+      "role": "Anggota Akademik Mahasiswa 11",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "30",
+      "name": "Jasmin Tsarwah",
+      "role": "Anggota Akademik Mahasiswa 12",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "31",
+      "name": "Siti Nurhafizha",
+      "role": "Anggota Akademik Mahasiswa 13",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "32",
+      "name": "Tanisah Naura",
+      "role": "Anggota Akademik Mahasiswa 14",
+      "division": "Akademik Mahasiswa",
+      "period": "2024/2025"
+    },
+    {
+      "id": "33",
+      "name": "Rizky Anugerah",
+      "role": "Kepala Divisi Minat dan Bakat",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "34",
+      "name": "Betrik Rosinta",
+      "role": "Anggota Minat dan Bakat 01",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "35",
+      "name": "Aisya Aulia",
+      "role": "Anggota Minat dan Bakat 02",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "36",
+      "name": "Azzahra Qurrota",
+      "role": "Anggota Minat dan Bakat 03",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "37",
+      "name": "Verdinan Krisna",
+      "role": "Anggota Minat dan Bakat 04",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "38",
+      "name": "Adi Guna",
+      "role": "Anggota Minat dan Bakat 05",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "39",
+      "name": "Matthew Steven",
+      "role": "Anggota Minat dan Bakat 06",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "40",
+      "name": "Fatihah Surya",
+      "role": "Anggota Minat dan Bakat 07",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "41",
+      "name": "Raisya Anindya",
+      "role": "Anggota Minat dan Bakat 08",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "42",
+      "name": "Wilgesi Bianglala",
+      "role": "Anggota Minat dan Bakat 09",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "43",
+      "name": "Dewa Tora",
+      "role": "Anggota Minat dan Bakat 10",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "44",
+      "name": "Alfaizi Ramadhani",
+      "role": "Anggota Minat dan Bakat 11",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "45",
+      "name": "Khayla Natasya",
+      "role": "Anggota Minat dan Bakat 12",
+      "division": "Minat dan Bakat",
+      "period": "2024/2025"
+    },
+    {
+      "id": "46",
+      "name": "Stevheen Febryanto",
+      "role": "Kepala Divisi Ekonomi Kreatif",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "47",
+      "name": "Dimitry Rizky",
+      "role": "Anggota Ekonomi Kreatif 01",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "48",
+      "name": "Alysia Fadhilah",
+      "role": "Anggota Ekonomi Kreatif 02",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "49",
+      "name": "Bunga Asya",
+      "role": "Anggota Ekonomi Kreatif 03",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "50",
+      "name": "Gresta Aulia",
+      "role": "Anggota Ekonomi Kreatif 04",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "51",
+      "name": "Putri Ananta",
+      "role": "Anggota Ekonomi Kreatif 05",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "52",
+      "name": "Sanie Aditya",
+      "role": "Anggota Ekonomi Kreatif 06",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "53",
+      "name": "Silviana Aura",
+      "role": "Anggota Ekonomi Kreatif 07",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "54",
+      "name": "Mulia Aristawidya",
+      "role": "Anggota Ekonomi Kreatif 08",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "55",
+      "name": "Anita Mirandani",
+      "role": "Anggota Ekonomi Kreatif 09",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "56",
+      "name": "Edric Ayman",
+      "role": "Anggota Ekonomi Kreatif 10",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "57",
+      "name": "Alya Khanza",
+      "role": "Anggota Ekonomi Kreatif 11",
+      "division": "Ekonomi Kreatif",
+      "period": "2024/2025"
+    },
+    {
+      "id": "58",
+      "name": "Fikka Liurensa",
+      "role": "Kepala Divisi Komunikasi dan Publikasi",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "59",
+      "name": "Darus Salam M",
+      "role": "Anggota Komunikasi dan Publikasi 01",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "60",
+      "name": "Zahiya Aqila Putri",
+      "role": "Anggota Komunikasi dan Publikasi 02",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "61",
+      "name": "Nayla Farikha Khansa",
+      "role": "Anggota Komunikasi dan Publikasi 03",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "62",
+      "name": "Dimas Fikhri",
+      "role": "Anggota Komunikasi dan Publikasi 04",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "63",
+      "name": "Muhammad Hafidz",
+      "role": "Anggota Komunikasi dan Publikasi 05",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "64",
+      "name": "Noval Khalid",
+      "role": "Anggota Komunikasi dan Publikasi 06",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "65",
+      "name": "Immanuel Silwanus",
+      "role": "Anggota Komunikasi dan Publikasi 07",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "66",
+      "name": "Nabila Eka Metrike",
+      "role": "Anggota Komunikasi dan Publikasi 08",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "67",
+      "name": "Bayu Rahmad",
+      "role": "Anggota Komunikasi dan Publikasi 09",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "68",
+      "name": "Adeline Charilene",
+      "role": "Anggota Komunikasi dan Publikasi 10",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "69",
+      "name": "Wiji Ginanjar",
+      "role": "Anggota Komunikasi dan Publikasi 11",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "70",
+      "name": "Fahrani Regina",
+      "role": "Anggota Komunikasi dan Publikasi 12",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    },
+    {
+      "id": "71",
+      "name": "Nasywa Adzki",
+      "role": "Anggota Komunikasi dan Publikasi 13",
+      "division": "Komunikasi dan Publikasi",
+      "period": "2024/2025"
+    }
+  ]
+}

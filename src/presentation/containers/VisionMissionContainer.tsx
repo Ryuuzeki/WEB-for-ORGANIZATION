@@ -13,7 +13,7 @@ export const VisionMissionContainer: React.FC<VisionMissionContainerProps> = ({ 
         <Typography variant="h2" className="text-primary mb-6">Visi Kami</Typography>
         <div className="p-8 bg-white rounded-2xl border-l-8 border-cta shadow-sm">
           <Typography variant="p" className="text-secondary italic text-xl">
-            "{data.vision}"
+            &quot;{data.vision}&quot;
           </Typography>
         </div>
       </div>

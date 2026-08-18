@@ -2,6 +2,7 @@ import React from "react";
 import { Document } from "@/domain/entities/Document";
 import { Typography } from "../components/ui/Typography";
 import { FileText, Download } from "lucide-react";
+import Link from "next/link";
 
 interface ServicesContainerProps {
   documents: Document[];
@@ -18,7 +19,7 @@ export const ServicesContainer: React.FC<ServicesContainerProps> = ({ documents 
               Akses cepat ke standar operasional, modul akademik, dan regulasi konstruksi bangunan air terbaru.
             </Typography>
           </div>
-          <button className="text-primary font-bold hover:underline">Lihat Semua Dokumen →</button>
+          <Link href="/dokumen" className="text-primary font-bold hover:underline">Lihat Semua Dokumentasi →</Link>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

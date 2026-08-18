@@ -8,4 +8,12 @@ export interface ILandingRepository {
   getVisionMission(): Promise<VisionMission>;
   getOrganizationStructure(): Promise<Member[]>;
   getLatestDocuments(): Promise<Document[]>;
+
+  // Write operations
+  updateHeroContent(content: HeroContent): Promise<void>;
+  updateVisionMission(visionMission: VisionMission): Promise<void>;
+  saveMember(member: Member): Promise<void>;
+  deleteMember(id: string): Promise<void>;
+  saveDocument(document: Document): Promise<void>;
+  deleteDocument(id: string): Promise<void>;
 }

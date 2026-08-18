@@ -14,7 +14,6 @@ export const WaveLoadingScreen: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Organic wave path for the vertical edge
   const wavePathLeft = "M100 0 C80 100, 120 200, 100 300 C80 400, 120 500, 100 600 V600 H0 V0 Z";
   const wavePathRight = "M0 0 C20 100, -20 200, 0 300 C20 400, -20 500, 0 600 V600 H100 V0 Z";
 
@@ -27,10 +26,9 @@ export const WaveLoadingScreen: React.FC = () => {
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
+          className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
           exit={{ pointerEvents: "none" }}
         >
-          {/* Left Panel */}
           <motion.div
             className="absolute left-0 top-0 bottom-0 w-[51%] bg-primary flex justify-end"
             initial={{ x: 0 }}
@@ -46,7 +44,6 @@ export const WaveLoadingScreen: React.FC = () => {
             </svg>
           </motion.div>
 
-          {/* Right Panel */}
           <motion.div
             className="absolute right-0 top-0 bottom-0 w-[51%] bg-primary flex justify-start"
             initial={{ x: 0 }}
@@ -62,7 +59,6 @@ export const WaveLoadingScreen: React.FC = () => {
             </svg>
           </motion.div>
 
-          {/* Center Logo */}
           <motion.div
             className="relative z-10"
             initial={{ opacity: 0, scale: 0.8 }}

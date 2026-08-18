@@ -1,6 +1,7 @@
-@import "tailwindcss";
+@import "tailwindcss" source("../../");
 
 :root {
+  --sidebar-offset: 272px;
   --background: #fcedd3;
   --foreground: #102a6b;
   --hmtkba-navy: #102a6b;
@@ -20,10 +21,31 @@
   --color-cta: var(--hmtkba-gold);
   --color-cream: var(--hmtkba-cream);
 
-  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui;
+  --font-sans: "Aptos", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+::selection {
+  background: var(--hmtkba-gold);
+  color: var(--hmtkba-navy);
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--hmtkba-sky-blue) 70%, white);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

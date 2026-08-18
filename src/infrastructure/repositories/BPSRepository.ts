@@ -28,4 +28,12 @@ export class BPSRepository implements IRegionalStatRepository {
       }
     ];
   }
+
+  async saveStat(region: string, category: string, stat: RegionalStat): Promise<void> {
+    throw new Error("BPSRepository does not support writes");
+  }
+
+  async deleteStat(region: string, category: string): Promise<void> {
+    throw new Error("BPSRepository does not support writes");
+  }
 }

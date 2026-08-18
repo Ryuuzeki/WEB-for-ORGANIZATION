@@ -1,13 +1,11 @@
 import React from "react";
 import { Typography } from "../components/ui/Typography";
-import { Button } from "../components/ui/Button";
 import {
   Cloud,
   Droplets,
   Thermometer,
   Wind,
   BarChart3,
-  Cpu,
   Calendar,
   Waves
 } from "lucide-react";
@@ -21,7 +19,7 @@ interface DataCenterContainerProps {
 
 export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climate, stats }) => {
   return (
-    <main className="min-h-screen pt-32 pb-20 px-6 max-w-7xl mx-auto">
+    <main className="min-h-screen px-6 pb-20 pt-28 lg:pt-16 max-w-7xl mx-auto">
       <div className="mb-12">
         <Typography variant="h1" className="text-primary mb-4">Data Center HMTKBA</Typography>
         <Typography variant="p" className="text-secondary">
@@ -63,10 +61,6 @@ export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climat
               </div>
             </div>
 
-            <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-              <Cpu size={16} />
-              Analisis dengan AI
-            </Button>
             <Typography variant="p" className="text-[10px] text-slate-400 mt-4 text-center">
               Sumber: BMKG | Update: {new Date(climate.lastUpdated).toLocaleString('id-ID')}
             </Typography>
@@ -98,10 +92,6 @@ export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climat
                 </Typography>
               </div>
 
-              <Button variant="secondary" className="w-full flex items-center justify-center gap-2">
-                <Cpu size={16} />
-                Analisis dengan AI
-              </Button>
             </div>
           ))}
         </div>

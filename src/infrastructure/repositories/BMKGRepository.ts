@@ -3,24 +3,33 @@ import { ClimateData } from "@/domain/entities/ClimateData";
 import { XMLParser } from "fast-xml-parser";
 
 interface BMKGArea {
-  "@_description": string;
-  parameter: Array<{
-    "@_id": string;
-    timerange: Array<{
-      value: Array<{
-        "#text": string;
-      }>;
-    }>;
-  }>;
+  "@_description"?: string;
+  parameter?: BMKGParameter | BMKGParameter[];
 }
 
+interface BMKGParameter {
+  "@_id"?: string;
+  timerange?: BMKGTimerange | BMKGTimerange[];
+}
+
+interface BMKGTimerange {
+  value?: BMKGValue | BMKGValue[];
+}
+
+type BMKGValue =
+  | string
+  | number
+  | {
+      "#text"?: string | number;
+    };
+
 interface BMKGForecast {
-  data: {
-    forecast: {
-      issue: {
-        timestamp: string;
+  data?: {
+    forecast?: {
+      issue?: {
+        timestamp?: string;
       };
-      area: BMKGArea[];
+      area?: BMKGArea | BMKGArea[];
     };
   };
 }
@@ -39,39 +48,88 @@ export class BMKGRepository implements IClimateRepository {
   async getWeatherByRegion(region: string): Promise<ClimateData> {
     try {
       const response = await fetch(this.BMKG_URL, { next: { revalidate: 3600 } });
+
+      if (!response.ok) {
+        return this.getFallbackWeather(region);
+      }
+
       const xmlData = await response.text();
+
+      if (!this.looksLikeForecastXml(xmlData)) {
+        return this.getFallbackWeather(region);
+      }
+
       const jsonObj = this.parser.parse(xmlData) as BMKGForecast;
+      const forecast = jsonObj.data?.forecast;
+      const areas = this.toArray(forecast?.area);
 
-      const areas = jsonObj.data.forecast.area;
-      const area = areas.find((a) => a["@_description"] === region) || areas[0];
+      if (!forecast || areas.length === 0) {
+        return this.getFallbackWeather(region);
+      }
 
-      const tempParam = area.parameter.find((p) => p["@_id"] === "t");
-      const humParam = area.parameter.find((p) => p["@_id"] === "hu");
-      const weatherParam = area.parameter.find((p) => p["@_id"] === "weather");
+      const normalizedRegion = region.toLowerCase();
+      const area = areas.find((item) => {
+        return item["@_description"]?.toLowerCase() === normalizedRegion;
+      }) || areas[0];
+      const parameters = this.toArray(area.parameter);
 
-      if (!tempParam || !humParam || !weatherParam) {
-        throw new Error("Required parameters not found in BMKG data");
+      const tempParam = parameters.find((parameter) => parameter["@_id"] === "t");
+      const humParam = parameters.find((parameter) => parameter["@_id"] === "hu");
+      const weatherParam = parameters.find((parameter) => parameter["@_id"] === "weather");
+      const temperature = this.getFirstParameterValue(tempParam);
+      const humidity = this.getFirstParameterValue(humParam);
+      const weatherCode = this.getFirstParameterValue(weatherParam);
+
+      if (!area["@_description"] || !temperature || !humidity || !weatherCode) {
+        return this.getFallbackWeather(region);
       }
 
       return {
         region: area["@_description"],
-        temperature: `${tempParam.timerange[0].value[0]["#text"]}°C`,
-        humidity: `${humParam.timerange[0].value[0]["#text"]}%`,
-        weatherCondition: this.mapWeatherCode(weatherParam.timerange[0].value[0]["#text"]),
+        temperature: `${temperature}\u00B0C`,
+        humidity: `${humidity}%`,
+        weatherCondition: this.mapWeatherCode(weatherCode),
         windSpeed: "10 km/h",
-        lastUpdated: jsonObj.data.forecast.issue.timestamp,
+        lastUpdated: forecast.issue?.timestamp || new Date().toISOString(),
       };
-    } catch (error) {
-      console.error("BMKG Fetch Error:", error);
-      return {
-        region: region,
-        temperature: "28°C",
-        humidity: "80%",
-        weatherCondition: "Berawan",
-        windSpeed: "5 km/h",
-        lastUpdated: new Date().toISOString(),
-      };
+    } catch {
+      return this.getFallbackWeather(region);
     }
+  }
+
+  private looksLikeForecastXml(xmlData: string): boolean {
+    const trimmedXml = xmlData.trim().toLowerCase();
+    return trimmedXml.startsWith("<?xml") && trimmedXml.includes("<forecast");
+  }
+
+  private toArray<T>(value: T | T[] | undefined): T[] {
+    if (value === undefined) {
+      return [];
+    }
+
+    return Array.isArray(value) ? value : [value];
+  }
+
+  private getFirstParameterValue(parameter?: BMKGParameter): string | undefined {
+    const firstTimerange = this.toArray(parameter?.timerange)[0];
+    const firstValue = this.toArray(firstTimerange?.value)[0];
+
+    if (typeof firstValue === "string" || typeof firstValue === "number") {
+      return String(firstValue);
+    }
+
+    return firstValue?.["#text"]?.toString();
+  }
+
+  private getFallbackWeather(region: string): ClimateData {
+    return {
+      region,
+      temperature: "28\u00B0C",
+      humidity: "80%",
+      weatherCondition: "Berawan",
+      windSpeed: "5 km/h",
+      lastUpdated: new Date().toISOString(),
+    };
   }
 
   private mapWeatherCode(code: string): string {
