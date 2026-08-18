@@ -33,7 +33,7 @@
     "wrangler": "^4.124.0"
   },
   "overrides": {
-    "brace-expansion": "1.1.13",
+    "brace-expansion": "2.0.2",
     "postcss": "8.5.15"
   }
 }
