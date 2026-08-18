@@ -19,6 +19,9 @@
 
 # production
 /build
+/dist
+/.open-next
+/.wrangler
 
 # misc
 .DS_Store

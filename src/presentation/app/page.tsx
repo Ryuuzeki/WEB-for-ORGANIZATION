@@ -9,20 +9,20 @@ const programs = [
   {
     icon: GraduationCap,
     label: "Akademik",
-    title: "Ruang Belajar Terapan",
-    description: "Kelas kolaboratif, bank materi, dan diskusi teknis untuk memperkuat kompetensi konstruksi bangunan air.",
+    title: "Lorem Ipsum Dolor",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
   },
   {
     icon: Building2,
     label: "Keprofesian",
-    title: "Eksplorasi Dunia Industri",
-    description: "Kunjungan lapangan, studi proyek, dan dialog praktisi yang menghubungkan teori dengan tantangan nyata.",
+    title: "Sit Amet Consectetur",
+    description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
   },
   {
     icon: Handshake,
     label: "Pengabdian",
-    title: "Aksi untuk Lingkungan",
-    description: "Program sosial dan konservasi sumber daya air yang memberi manfaat langsung bagi masyarakat.",
+    title: "Adipiscing Elit Sed",
+    description: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam nisi ut aliquid.",
   },
 ];
 
@@ -51,10 +51,10 @@ export default async function Home() {
           <div className="grid gap-8 lg:grid-cols-[.65fr_1.35fr] lg:items-end">
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">Apa yang kami kerjakan</p>
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">Dari kampus, untuk kemajuan sektor air.</h2>
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">Lorem ipsum dolor sit amet consectetur.</h2>
             </div>
             <p className="max-w-2xl text-base leading-8 text-secondary/70 lg:justify-self-end lg:text-lg">
-              HMTKBA menjadi rumah untuk bertukar pengetahuan, membangun pengalaman profesional, dan menghadirkan kontribusi yang relevan bagi lingkungan.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
           </div>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -82,8 +82,8 @@ export default async function Home() {
         <div className="mx-auto grid max-w-[1400px] overflow-hidden rounded-[2.5rem] bg-primary text-white lg:grid-cols-[1fr_.78fr]">
           <div className="p-8 sm:p-12 lg:p-16">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-sky-200">Data & wawasan</p>
-            <h2 className="mt-4 max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">Membaca air lewat data, merancang solusi dengan pengetahuan.</h2>
-            <p className="mt-5 max-w-2xl leading-8 text-white/70">Jelajahi ringkasan klimatologi dan statistik infrastruktur air nasional sebagai bahan belajar dan diskusi mahasiswa.</p>
+            <h2 className="mt-4 max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">Lorem ipsum dolor sit amet, consectetur adipiscing.</h2>
+            <p className="mt-5 max-w-2xl leading-8 text-white/70">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
             <Link href="/data-center" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-cream px-6 text-sm font-bold text-primary transition hover:-translate-y-0.5">
               Buka Data Center <ArrowUpRight size={18} />
             </Link>
@@ -107,7 +107,7 @@ export default async function Home() {
         <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-8 rounded-[2rem] border border-primary/10 bg-cream p-8 sm:p-10 lg:flex-row lg:items-center">
           <div className="flex gap-5">
             <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary text-cream"><BookOpenCheck size={26} /></span>
-            <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-cta">Kenali orang-orang di balik karya</p><h2 className="mt-2 text-2xl font-black text-primary sm:text-3xl">Satu arus, banyak keahlian.</h2><p className="mt-2 text-sm leading-6 text-secondary/65">Temui pengurus dan divisi yang menggerakkan HMTKBA.</p></div>
+            <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-cta">Lorem ipsum dolor</p><h2 className="mt-2 text-2xl font-black text-primary sm:text-3xl">Sit amet, consectetur adipiscing.</h2><p className="mt-2 text-sm leading-6 text-secondary/65">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.</p></div>
           </div>
           <Link href="/struktur-organisasi" className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-2xl bg-primary px-6 text-sm font-bold text-cream">Lihat Struktur <ArrowUpRight size={18} /></Link>
         </div>
@@ -116,11 +116,11 @@ export default async function Home() {
       <footer id="contact" className="bg-[#091d4b] px-5 pb-8 pt-14 text-white sm:px-8 lg:px-10">
         <div className="mx-auto max-w-[1400px]">
           <div className="grid gap-10 border-b border-white/10 pb-12 md:grid-cols-[1.4fr_1fr_1fr]">
-            <div className="max-w-md"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-primary"><Waves size={23} /></span><span className="text-xl font-black">HMTKBA</span></div><p className="mt-5 text-sm leading-7 text-white/60">Wadah pengembangan mahasiswa Teknologi Konstruksi Bangunan Air yang unggul, berintegritas, dan inovatif.</p></div>
+            <div className="max-w-md"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-primary"><Waves size={23} /></span><span className="text-xl font-black">HMTKBA</span></div><p className="mt-5 text-sm leading-7 text-white/60">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p></div>
             <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">Jelajahi</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/#vision" className="hover:text-white">Visi & Misi</Link><Link href="/data-center" className="hover:text-white">Data Center</Link><Link href="/dokumen" className="hover:text-white">Dokumentasi</Link><Link href="/struktur-organisasi" className="hover:text-white">Struktur Organisasi</Link></div></div>
             <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">Akses cepat</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/dokumen" className="hover:text-white">Galeri kegiatan</Link><Link href="/#docs" className="hover:text-white">Pusat dokumen</Link><Link href="/admin/login" className="hover:text-white">Portal pengurus</Link><Link href="/data-center" className="hover:text-white">Wawasan keairan</Link></div></div>
           </div>
-          <div className="flex flex-col gap-2 pt-7 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between"><p>© 2025 Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air.</p><p>Mengalir kokoh, berkarya untuk negeri.</p></div>
+          <div className="flex flex-col gap-2 pt-7 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between"><p>© 2025 Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air.</p><p>Lorem ipsum dolor sit amet.</p></div>
         </div>
       </footer>
     </main>

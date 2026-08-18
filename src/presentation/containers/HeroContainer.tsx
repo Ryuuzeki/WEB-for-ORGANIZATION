@@ -22,7 +22,7 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
             {content.title}
           </h1>
           <p className="mt-6 max-w-2xl text-base font-medium leading-8 text-secondary/80 sm:text-lg">
-            {content.subtitle} Kami menghubungkan pembelajaran, pengalaman lapangan, dan kolaborasi untuk menyiapkan talenta keairan Indonesia.
+            {content.subtitle}
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link href="#program" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-sm font-bold text-cream shadow-xl shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-secondary">
@@ -60,19 +60,19 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
             <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/15 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-8 text-white sm:p-10">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">Ruang tumbuh mahasiswa</p>
-              <p className="mt-3 max-w-lg text-2xl font-bold leading-tight sm:text-3xl">Belajar di kelas. Membuktikan di lapangan. Berdampak bagi negeri.</p>
+              <p className="mt-3 max-w-lg text-2xl font-bold leading-tight sm:text-3xl">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             </div>
           </div>
           <div className="absolute left-0 top-12 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-xl backdrop-blur sm:left-1">
             <div className="flex items-center gap-3">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-sky-100 text-primary"><UsersRound size={20} /></span>
-              <div><p className="text-sm font-extrabold text-primary">Kolaboratif</p><p className="text-xs text-secondary/60">Lintas angkatan & divisi</p></div>
+              <div><p className="text-sm font-extrabold text-primary">Lorem ipsum</p><p className="text-xs text-secondary/60">Dolor sit amet</p></div>
             </div>
           </div>
           <div className="absolute bottom-8 right-0 rounded-2xl border border-white/60 bg-cream/95 p-4 shadow-xl backdrop-blur sm:right-1">
             <div className="flex items-center gap-3">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-cream"><ShieldCheck size={20} /></span>
-              <div><p className="text-sm font-extrabold text-primary">Berintegritas</p><p className="text-xs text-secondary/60">Karya yang bertanggung jawab</p></div>
+              <div><p className="text-sm font-extrabold text-primary">Consectetur</p><p className="text-xs text-secondary/60">Adipiscing elit</p></div>
             </div>
           </div>
           <div className="absolute right-1 top-9 hidden rounded-2xl bg-cta px-4 py-3 text-primary shadow-xl sm:block">
