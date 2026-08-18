@@ -32,13 +32,11 @@ export const metadata: Metadata = {
     siteName: "HMTKBA",
     title: "HMTKBA | Mengalir Kokoh, Berkarya untuk Negeri",
     description: "Ruang informasi, pembelajaran, data keairan, dan kolaborasi mahasiswa Teknologi Konstruksi Bangunan Air.",
-    images: [{ url: "/og.png", width: 1728, height: 909, alt: "HMTKBA—Mengalir Kokoh, Berkarya untuk Negeri" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "HMTKBA | Mengalir Kokoh, Berkarya untuk Negeri",
     description: "Ruang informasi, pembelajaran, data keairan, dan kolaborasi mahasiswa Teknologi Konstruksi Bangunan Air.",
-    images: ["/og.png"],
   },
   robots: {
     index: true,
