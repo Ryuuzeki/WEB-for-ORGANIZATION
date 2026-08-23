@@ -3,6 +3,7 @@ import { HeroContent } from "@/domain/entities/HeroContent";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Sparkles } from "lucide-react";
+import GlareHover from "../components/ui/GlareHover";
 
 interface HeroContainerProps {
   content: HeroContent;
@@ -61,14 +62,24 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
         </div>
 
         <div className="flex min-h-[400px] items-center justify-center lg:min-h-[620px]">
-          <Image
-            src="/LOGO HIMA.png"
-            alt="Logo Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air"
-            width={520}
-            height={520}
-            className="h-auto w-full max-w-[380px] object-contain drop-shadow-[0_28px_45px_rgba(16,42,107,0.22)] sm:max-w-[430px] lg:max-w-[500px]"
-            priority
-          />
+          <GlareHover
+            glareColor="#ffffff"
+            glareOpacity={0.3}
+            glareAngle={-30}
+            glareSize={300}
+            transitionDuration={800}
+            playOnce={false}
+            className="w-full max-w-[380px] drop-shadow-[0_28px_45px_rgba(16,42,107,0.22)] sm:max-w-[430px] lg:max-w-[500px]"
+          >
+            <Image
+              src="/LOGO HIMA.png"
+              alt="Logo Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air"
+              width={520}
+              height={520}
+              className="h-auto w-full object-contain"
+              priority
+            />
+          </GlareHover>
         </div>
       </div>
     </section>

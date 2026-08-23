@@ -1,0 +1,45 @@
+.root {
+  position: relative;
+  display: flex;
+  aspect-ratio: 1;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 9999px;
+  isolation: isolate;
+}
+
+.glare {
+  position: absolute;
+  z-index: 2;
+  top: -55%;
+  left: calc(var(--glare-size) * -1);
+  width: var(--glare-size);
+  height: 210%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--glare-color) 50%,
+    transparent 100%
+  );
+  opacity: var(--glare-opacity);
+  transform: rotate(var(--glare-angle));
+  animation: glare-sweep var(--glare-duration) ease-in-out forwards;
+}
+
+@keyframes glare-sweep {
+  from {
+    left: calc(var(--glare-size) * -1);
+  }
+
+  to {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glare {
+    display: none;
+  }
+}
