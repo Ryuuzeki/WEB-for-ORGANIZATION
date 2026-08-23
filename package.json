@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "node scripts/build.mjs",
     "build:next": "next build",
+    "postinstall": "node scripts/patch-sharp.mjs",
     "preview:worker": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "start": "next start",
     "lint": "eslint"
@@ -18,8 +19,7 @@
     "lucide-react": "^0.575.0",
     "next": "^16.3.2",
     "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "sharp": "file:vendor/sharp-stub"
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.14.7",
