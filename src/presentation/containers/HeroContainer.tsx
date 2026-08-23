@@ -1,6 +1,7 @@
 import React from "react";
 import { HeroContent } from "@/domain/entities/HeroContent";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, BookOpenText, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 
 interface HeroContainerProps {
@@ -63,8 +64,14 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
         <div className="relative min-h-[470px] lg:min-h-[620px]">
           <div className="absolute inset-3 overflow-hidden rounded-[2.5rem] bg-[radial-gradient(circle_at_72%_22%,rgba(89,144,192,.75),transparent_34%),linear-gradient(145deg,#015185_0%,#102a6b_52%,#091d4b_100%)] shadow-2xl shadow-primary/20 sm:inset-6">
             <div className="absolute -right-24 top-10 h-72 w-72 rounded-full border-[42px] border-white/10" aria-hidden="true" />
-            <div className="absolute left-12 top-24 h-44 w-44 rounded-full border border-white/15" aria-hidden="true" />
-            <div className="absolute left-20 top-32 h-28 w-28 rounded-full border border-white/15" aria-hidden="true" />
+            <Image
+              src="/LOGO HIMA.png"
+              alt="Logo Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air"
+              width={176}
+              height={176}
+              className="absolute left-12 top-24 h-44 w-44 object-contain"
+              priority
+            />
             <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-primary via-primary/35 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-8 text-white sm:p-10">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">Ruang tumbuh mahasiswa</p>
