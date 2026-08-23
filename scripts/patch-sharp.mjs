@@ -9,6 +9,14 @@ const fileLoggerPath = resolve(
   nodeModulesRoot,
   "next/dist/server/dev/browser-logs/file-logger.js",
 );
+const consoleDimPath = resolve(
+  nodeModulesRoot,
+  "next/dist/server/node-environment-extensions/console-dim.external.js",
+);
+const fastImmediatePath = resolve(
+  nodeModulesRoot,
+  "next/dist/server/node-environment-extensions/fast-set-immediate.external.js",
+);
 
 if (!sharpDir.startsWith(`${nodeModulesRoot}${sep}`)) {
   throw new Error("Refusing to patch sharp outside node_modules.");
@@ -27,12 +35,28 @@ writeFileSync(
   "utf8",
 );
 
-if (!fileLoggerPath.startsWith(`${nodeModulesRoot}${sep}`)) {
+if (
+  ![fileLoggerPath, consoleDimPath, fastImmediatePath].every((filePath) =>
+    filePath.startsWith(`${nodeModulesRoot}${sep}`),
+  )
+) {
   throw new Error("Refusing to patch Next.js outside node_modules.");
 }
 
 writeFileSync(
   fileLoggerPath,
   `"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nclass FileLogger {\n  initialize() {}\n  isEnabled() { return false; }\n  log() {}\n  logServer() {}\n  logBrowser() {}\n  forceFlush() {}\n  destroy() {}\n}\nlet fileLogger = null;\nfunction getFileLogger() {\n  if (!fileLogger) fileLogger = new FileLogger();\n  return fileLogger;\n}\nfunction test__resetFileLogger() { fileLogger = null; }\nexports.FileLogger = FileLogger;\nexports.getFileLogger = getFileLogger;\nexports.test__resetFileLogger = test__resetFileLogger;\n`,
+  "utf8",
+);
+
+writeFileSync(
+  consoleDimPath,
+  `"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nfunction setAbortedLogsStyle() {}\nexports.setAbortedLogsStyle = setAbortedLogsStyle;\n`,
+  "utf8",
+);
+
+writeFileSync(
+  fastImmediatePath,
+  `"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nfunction DANGEROUSLY_runPendingImmediatesAfterCurrentTask() {}\nfunction expectNoPendingImmediates() {}\nexports.DANGEROUSLY_runPendingImmediatesAfterCurrentTask = DANGEROUSLY_runPendingImmediatesAfterCurrentTask;\nexports.expectNoPendingImmediates = expectNoPendingImmediates;\nexports.unpatchedSetImmediate = globalThis.setImmediate;\n`,
   "utf8",
 );
