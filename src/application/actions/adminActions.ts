@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { di } from "@/lib/di";
@@ -11,16 +12,6 @@ import { Member } from "@/domain/entities/Member";
 import { Document } from "@/domain/entities/Document";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
 import { AdminDivision, AdminDivisionSlug, getAdminDivisionBySlug } from "@/lib/adminDivisions";
-
-const DIVISION_PASSWORDS: Record<AdminDivisionSlug, string | undefined> = {
-  superadmin: process.env.SUPERADMIN_PASSWORD,
-  bph: process.env.ADMIN_PASSWORD_BPH || process.env.ADMIN_PASSWORD,
-  sekretariat: process.env.ADMIN_PASSWORD_SEKRETARIAT,
-  akademik: process.env.ADMIN_PASSWORD_AKADEMIK,
-  "minat-bakat": process.env.ADMIN_PASSWORD_MINAT_BAKAT,
-  "ekonomi-kreatif": process.env.ADMIN_PASSWORD_EKONOMI_KREATIF,
-  "komunikasi-publikasi": process.env.ADMIN_PASSWORD_KOMUNIKASI_PUBLIKASI,
-};
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 8;
 
@@ -47,9 +38,37 @@ function toSession(division: AdminDivision): AdminSession {
   };
 }
 
-function getSessionSecret(): string | null {
-  const secret = process.env.ADMIN_SESSION_SECRET;
+async function getRuntimeSecret(key: string): Promise<string | null> {
+  const processValue = process.env[key];
+  if (processValue) return processValue;
+
+  try {
+    const { env } = await getCloudflareContext({ async: true });
+    const value = (env as unknown as Record<string, unknown>)[key];
+    return typeof value === "string" && value ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+async function getSessionSecret(): Promise<string | null> {
+  const secret = await getRuntimeSecret("ADMIN_SESSION_SECRET");
   return secret && secret.length >= 32 ? secret : null;
+}
+
+async function getDivisionPassword(divisionSlug: AdminDivisionSlug): Promise<string | null> {
+  const keys: Record<AdminDivisionSlug, string> = {
+    superadmin: "SUPERADMIN_PASSWORD",
+    bph: "ADMIN_PASSWORD_BPH",
+    sekretariat: "ADMIN_PASSWORD_SEKRETARIAT",
+    akademik: "ADMIN_PASSWORD_AKADEMIK",
+    "minat-bakat": "ADMIN_PASSWORD_MINAT_BAKAT",
+    "ekonomi-kreatif": "ADMIN_PASSWORD_EKONOMI_KREATIF",
+    "komunikasi-publikasi": "ADMIN_PASSWORD_KOMUNIKASI_PUBLIKASI",
+  };
+  const password = await getRuntimeSecret(keys[divisionSlug]);
+  if (password || divisionSlug !== "bph") return password;
+  return getRuntimeSecret("ADMIN_PASSWORD");
 }
 
 function encodeBase64Url(value: string): string {
@@ -67,7 +86,7 @@ async function importSessionKey(secret: string) {
 }
 
 async function createSignedSession(divisionSlug: AdminDivisionSlug): Promise<string> {
-  const secret = getSessionSecret();
+  const secret = await getSessionSecret();
   if (!secret) throw new Error("Konfigurasi keamanan admin belum lengkap.");
   const payload = encodeBase64Url(JSON.stringify({
     divisionSlug,
@@ -79,7 +98,7 @@ async function createSignedSession(divisionSlug: AdminDivisionSlug): Promise<str
 }
 
 async function parseSession(value: string | undefined): Promise<AdminSession | null> {
-  const secret = getSessionSecret();
+  const secret = await getSessionSecret();
   if (!value || !secret) return null;
   try {
     const [payload, signature] = value.split(".");
@@ -127,7 +146,7 @@ export async function loginAction(
     return { success: false, error: "Divisi tidak ditemukan!" };
   }
 
-  const expectedPassword = DIVISION_PASSWORDS[division.slug];
+  const expectedPassword = await getDivisionPassword(division.slug);
   if (!expectedPassword) {
     return { success: false, error: "Akses ini belum dikonfigurasi oleh Superadmin." };
   }
