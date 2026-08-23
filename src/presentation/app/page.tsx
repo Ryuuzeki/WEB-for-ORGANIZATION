@@ -3,7 +3,14 @@ import { HeroContainer } from "../containers/HeroContainer";
 import { VisionMissionContainer } from "../containers/VisionMissionContainer";
 import { ServicesContainer } from "../containers/ServicesContainer";
 import Link from "next/link";
-import { ArrowUpRight, BookOpenCheck, Building2, GraduationCap, Handshake, Waves } from "lucide-react";
+import {
+  ArrowUpRight,
+  Building2,
+  GraduationCap,
+  Handshake,
+  UsersRound,
+  Waves,
+} from "lucide-react";
 
 const programs = [
   {
@@ -26,11 +33,28 @@ const programs = [
   },
 ];
 
-export default async function Home() {
-  // UI layer now depends on lib/di instead of infrastructure
-  const getLandingPageData = di.getLandingPageData();
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
-  const data = await getLandingPageData.execute();
+export default async function Home() {
+  const getLandingPageData = di.getLandingPageData();
+  const getOrganizationStructure = di.getOrganizationStructure();
+  const [data, members] = await Promise.all([
+    getLandingPageData.execute(),
+    getOrganizationStructure.execute(),
+  ]);
+
+  const leadership = members
+    .filter((member) => member.division?.startsWith("BPH"))
+    .slice(0, 4);
+  const divisions = Array.from(
+    new Set(members.map((member) => member.division).filter(Boolean)),
+  );
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -46,11 +70,74 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <HeroContainer content={data.hero} />
 
-      <section id="program" className="bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+      <section id="about" className="scroll-mt-20 bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+        <div className="mx-auto grid max-w-[1400px] gap-10 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">Tentang Kami</p>
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">
+              Ruang tumbuh mahasiswa konstruksi bangunan air.
+            </h2>
+          </div>
+          <div className="grid gap-5 text-base leading-8 text-secondary/70 sm:text-lg">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <div className="mt-2 grid grid-cols-3 gap-3 border-t border-primary/10 pt-6">
+              <div><strong className="block text-2xl font-black text-primary">{members.length}+</strong><span className="text-xs font-semibold">Pengurus</span></div>
+              <div><strong className="block text-2xl font-black text-primary">{divisions.length}</strong><span className="text-xs font-semibold">Divisi</span></div>
+              <div><strong className="block text-2xl font-black text-primary">12+</strong><span className="text-xs font-semibold">Program kerja</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="vision" className="scroll-mt-20 bg-cream">
+        <VisionMissionContainer data={data.visionMission} />
+      </div>
+
+      <section id="struktur" className="scroll-mt-20 bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">Kabinet Amerta Abhinaya</p>
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">Struktur Organisasi</h2>
+              <p className="mt-5 max-w-2xl text-base leading-8 text-secondary/70 sm:text-lg">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Susunan pengurus periode 2024/2025 ditampilkan berdasarkan peran dan divisi.
+              </p>
+            </div>
+            <Link href="/struktur-organisasi" className="inline-flex min-h-12 w-fit items-center gap-2 rounded-2xl border border-primary/15 bg-cream px-6 text-sm font-bold text-primary transition hover:-translate-y-0.5 hover:bg-white">
+              Lihat Struktur Lengkap <ArrowUpRight size={18} />
+            </Link>
+          </div>
+
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            {leadership.map((member, index) => (
+              <article key={member.id} className="group rounded-[2rem] border border-primary/10 bg-cream/45 p-6 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8">
+                <div className="flex items-start justify-between gap-4">
+                  <span className="grid h-14 w-14 place-items-center rounded-2xl bg-primary text-lg font-black text-cream">{getInitials(member.name)}</span>
+                  <span className="text-4xl font-black text-primary/[.06]">0{index + 1}</span>
+                </div>
+                <h3 className="mt-6 text-lg font-extrabold text-primary">{member.name}</h3>
+                <p className="mt-1 text-sm font-semibold text-cta">{member.role}</p>
+                <p className="mt-3 text-xs text-secondary/55">Periode {member.period}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-2.5">
+            {divisions.map((division) => (
+              <span key={division} className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white px-4 py-2 text-xs font-bold text-secondary/75 shadow-sm">
+                <UsersRound size={15} className="text-cta" /> {division}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="program" className="scroll-mt-20 bg-cream px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
         <div className="mx-auto max-w-[1400px]">
           <div className="grid gap-8 lg:grid-cols-[.65fr_1.35fr] lg:items-end">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">Apa yang kami kerjakan</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">Program Kerja</p>
               <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">Lorem ipsum dolor sit amet consectetur.</h2>
             </div>
             <p className="max-w-2xl text-base leading-8 text-secondary/70 lg:justify-self-end lg:text-lg">
@@ -61,7 +148,7 @@ export default async function Home() {
             {programs.map((program, index) => {
               const Icon = program.icon;
               return (
-                <article key={program.title} className="group relative overflow-hidden rounded-[2rem] border border-primary/10 bg-cream/45 p-7 transition hover:-translate-y-1 hover:bg-cream hover:shadow-xl hover:shadow-primary/8">
+                <article key={program.title} className="group relative overflow-hidden rounded-[2rem] border border-primary/10 bg-white p-7 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8">
                   <span className="absolute right-6 top-5 text-5xl font-black text-primary/[.05]">0{index + 1}</span>
                   <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary text-cream"><Icon size={23} /></span>
                   <p className="mt-7 text-xs font-bold uppercase tracking-[0.18em] text-cta">{program.label}</p>
@@ -73,10 +160,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      <div id="vision" className="bg-cream">
-        <VisionMissionContainer data={data.visionMission} />
-      </div>
 
       <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
         <div className="mx-auto grid max-w-[1400px] overflow-hidden rounded-[2.5rem] bg-primary text-white lg:grid-cols-[1fr_.78fr]">
@@ -103,21 +186,11 @@ export default async function Home() {
         <ServicesContainer documents={data.documents} />
       </div>
 
-      <section className="bg-white px-5 pb-20 sm:px-8 lg:px-10 lg:pb-28">
-        <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-8 rounded-[2rem] border border-primary/10 bg-cream p-8 sm:p-10 lg:flex-row lg:items-center">
-          <div className="flex gap-5">
-            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary text-cream"><BookOpenCheck size={26} /></span>
-            <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-cta">Lorem ipsum dolor</p><h2 className="mt-2 text-2xl font-black text-primary sm:text-3xl">Sit amet, consectetur adipiscing.</h2><p className="mt-2 text-sm leading-6 text-secondary/65">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.</p></div>
-          </div>
-          <Link href="/struktur-organisasi" className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-2xl bg-primary px-6 text-sm font-bold text-cream">Lihat Struktur <ArrowUpRight size={18} /></Link>
-        </div>
-      </section>
-
       <footer id="contact" className="bg-[#091d4b] px-5 pb-8 pt-14 text-white sm:px-8 lg:px-10">
         <div className="mx-auto max-w-[1400px]">
           <div className="grid gap-10 border-b border-white/10 pb-12 md:grid-cols-[1.4fr_1fr_1fr]">
             <div className="max-w-md"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-primary"><Waves size={23} /></span><span className="text-xl font-black">HMTKBA</span></div><p className="mt-5 text-sm leading-7 text-white/60">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p></div>
-            <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">Jelajahi</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/#vision" className="hover:text-white">Visi & Misi</Link><Link href="/data-center" className="hover:text-white">Data Center</Link><Link href="/dokumen" className="hover:text-white">Dokumentasi</Link><Link href="/struktur-organisasi" className="hover:text-white">Struktur Organisasi</Link></div></div>
+            <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">Jelajahi</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/#about" className="hover:text-white">Tentang Kami</Link><Link href="/#vision" className="hover:text-white">Visi & Misi</Link><Link href="/#struktur" className="hover:text-white">Struktur Organisasi</Link><Link href="/#program" className="hover:text-white">Program Kerja</Link></div></div>
             <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">Akses cepat</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/dokumen" className="hover:text-white">Galeri kegiatan</Link><Link href="/#docs" className="hover:text-white">Pusat dokumen</Link><Link href="/admin/login" className="hover:text-white">Portal pengurus</Link><Link href="/data-center" className="hover:text-white">Wawasan keairan</Link></div></div>
           </div>
           <div className="flex flex-col gap-2 pt-7 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between"><p>© 2025 Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air.</p><p>Lorem ipsum dolor sit amet.</p></div>

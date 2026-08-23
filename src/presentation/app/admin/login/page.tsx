@@ -43,14 +43,14 @@ export default function AdminLoginPage() {
     <div className="relative min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary via-secondary to-accent overflow-hidden px-4">
       {/* Background graphic elements */}
       <div className="absolute inset-0 z-0 opacity-10">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <a href="/LOGO HIMA.png" target="_blank" rel="noopener noreferrer">
           <defs>
             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
               <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
+        </a>
       </div>
 
       {/* Floating waves illustration */}

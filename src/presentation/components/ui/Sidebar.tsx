@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
+  BriefcaseBusiness,
   BookOpenText,
   ChevronLeft,
   CircleUserRound,
@@ -17,10 +19,11 @@ import { useEffect, useState } from "react";
 
 const navigation = [
   { label: "Beranda", href: "/", icon: Home },
-  { label: "Visi & Misi", href: "/#vision", icon: BookOpenText },
-  { label: "Data Center", href: "/data-center", icon: BarChart3 },
+  { label: "Tentang Kami", href: "/#about", icon: BookOpenText },
+  { label: "Struktur", href: "/#struktur", icon: Network },
+  { label: "Program Kerja", href: "/#program", icon: BriefcaseBusiness },
   { label: "Dokumentasi", href: "/dokumen", icon: Waves },
-  { label: "Struktur", href: "/struktur-organisasi", icon: Network },
+  { label: "Data Center", href: "/data-center", icon: BarChart3 },
 ];
 
 export function Sidebar() {
@@ -43,8 +46,8 @@ export function Sidebar() {
     <>
       <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-primary/10 bg-[#fbf7ee]/90 px-4 backdrop-blur-xl lg:hidden">
         <Link href="/" className="flex items-center gap-2" aria-label="HMTKBA Beranda">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-cream">
-            <Waves size={20} aria-hidden="true" />
+          <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-white shadow-sm">
+            <Image src="/LOGO HIMA.png" alt="" width={36} height={36} className="h-full w-full object-contain" />
           </span>
           <span className="font-extrabold tracking-tight text-primary">HMTKBA</span>
         </Link>
@@ -75,8 +78,8 @@ export function Sidebar() {
       >
         <div className="flex h-20 items-center gap-3 border-b border-white/10 px-5">
           <Link href="/" className="flex min-w-0 flex-1 items-center gap-3" aria-label="HMTKBA Beranda">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-cream text-primary shadow-lg shadow-black/10">
-              <Waves size={24} aria-hidden="true" />
+            <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white shadow-lg shadow-black/10">
+              <Image src="/LOGO HIMA.png" alt="" width={44} height={44} className="h-full w-full object-contain" priority />
             </span>
             {!collapsed && (
               <span className="min-w-0">
