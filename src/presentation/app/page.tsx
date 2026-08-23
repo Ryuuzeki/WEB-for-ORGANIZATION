@@ -2,6 +2,7 @@ import { di } from "@/lib/di";
 import { HeroContainer } from "../containers/HeroContainer";
 import { VisionMissionContainer } from "../containers/VisionMissionContainer";
 import { ServicesContainer } from "../containers/ServicesContainer";
+import WaterCalendar from "../components/ui/WaterCalendar";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -162,24 +163,7 @@ export default async function Home() {
       </section>
 
       <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <div className="mx-auto grid max-w-[1400px] overflow-hidden rounded-[2.5rem] bg-primary text-white lg:grid-cols-[1fr_.78fr]">
-          <div className="p-8 sm:p-12 lg:p-16">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-sky-200">Data & wawasan</p>
-            <h2 className="mt-4 max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">Lorem ipsum dolor sit amet, consectetur adipiscing.</h2>
-            <p className="mt-5 max-w-2xl leading-8 text-white/70">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-            <Link href="/data-center" className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-cream px-6 text-sm font-bold text-primary transition hover:-translate-y-0.5">
-              Buka Data Center <ArrowUpRight size={18} />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 gap-px bg-white/10">
-            {[["3", "Indikator utama"], ["BMKG", "Sumber klimatologi"], ["2025", "Data terkini"], ["24/7", "Akses informasi"]].map(([value, label]) => (
-              <div key={label} className="flex min-h-36 flex-col justify-end bg-secondary/35 p-6 sm:min-h-44 sm:p-8">
-                <p className="text-2xl font-black text-cream sm:text-3xl">{value}</p>
-                <p className="mt-2 text-xs font-semibold text-sky-100/65">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <WaterCalendar />
       </section>
 
       <div id="docs" className="bg-white">

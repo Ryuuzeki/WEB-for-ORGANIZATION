@@ -1,0 +1,77 @@
+.shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 16%, rgb(117 192 224 / 32%) 0 6%, transparent 7%),
+    radial-gradient(circle at 88% 12%, rgb(255 255 255 / 13%) 0 9%, transparent 10%),
+    linear-gradient(135deg, #102a6b 0%, #015185 54%, #087ca7 100%);
+}
+
+.shell::before {
+  position: absolute;
+  z-index: -1;
+  right: -9rem;
+  bottom: -15rem;
+  width: 44rem;
+  height: 28rem;
+  border: 3rem solid rgb(255 255 255 / 8%);
+  border-radius: 50%;
+  content: "";
+  transform: rotate(-8deg);
+}
+
+.wave,
+.wave::before,
+.wave::after {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  border-radius: 50% 50% 0 0;
+  content: "";
+  pointer-events: none;
+}
+
+.wave {
+  z-index: -1;
+  bottom: -5.2rem;
+  height: 7.5rem;
+  background: rgb(89 144 192 / 21%);
+  animation: water-drift 8s ease-in-out infinite alternate;
+}
+
+.wave::before {
+  bottom: 1.5rem;
+  height: 5rem;
+  background: rgb(255 255 255 / 7%);
+  transform: translateX(-7%);
+}
+
+.wave::after {
+  bottom: 0.5rem;
+  height: 4rem;
+  background: rgb(1 81 133 / 32%);
+  transform: translateX(8%);
+}
+
+.todayRing {
+  box-shadow:
+    0 0 0 5px rgb(255 255 255 / 13%),
+    0 0 0 10px rgb(89 144 192 / 12%),
+    0 14px 30px rgb(5 24 72 / 25%);
+}
+
+@keyframes water-drift {
+  from {
+    transform: translateX(-2%) scaleY(0.94);
+  }
+  to {
+    transform: translateX(2%) scaleY(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave {
+    animation: none;
+  }
+}
