@@ -12,21 +12,29 @@ import { Document } from "@/domain/entities/Document";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
 import { AdminDivision, AdminDivisionSlug, getAdminDivisionBySlug } from "@/lib/adminDivisions";
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "hmtkba2025";
-const DIVISION_PASSWORDS: Record<AdminDivisionSlug, string> = {
-  bph: process.env.ADMIN_PASSWORD_BPH || ADMIN_PASSWORD,
-  sekretariat: process.env.ADMIN_PASSWORD_SEKRETARIAT || "sekretariat2025",
-  akademik: process.env.ADMIN_PASSWORD_AKADEMIK || "akademik2025",
-  "minat-bakat": process.env.ADMIN_PASSWORD_MINAT_BAKAT || "minatbakat2025",
-  "ekonomi-kreatif": process.env.ADMIN_PASSWORD_EKONOMI_KREATIF || "ekraf2025",
-  "komunikasi-publikasi": process.env.ADMIN_PASSWORD_KOMUNIKASI_PUBLIKASI || "kominfo2025",
+const DIVISION_PASSWORDS: Record<AdminDivisionSlug, string | undefined> = {
+  superadmin: process.env.SUPERADMIN_PASSWORD,
+  bph: process.env.ADMIN_PASSWORD_BPH || process.env.ADMIN_PASSWORD,
+  sekretariat: process.env.ADMIN_PASSWORD_SEKRETARIAT,
+  akademik: process.env.ADMIN_PASSWORD_AKADEMIK,
+  "minat-bakat": process.env.ADMIN_PASSWORD_MINAT_BAKAT,
+  "ekonomi-kreatif": process.env.ADMIN_PASSWORD_EKONOMI_KREATIF,
+  "komunikasi-publikasi": process.env.ADMIN_PASSWORD_KOMUNIKASI_PUBLIKASI,
 };
+
+const SESSION_DURATION_SECONDS = 60 * 60 * 8;
 
 export interface AdminSession {
   divisionSlug: AdminDivisionSlug;
   divisionName: string;
   memberDivision: string;
   canManageAllDivisions: boolean;
+  isSuperAdmin: boolean;
+}
+
+interface SignedSessionPayload {
+  divisionSlug: AdminDivisionSlug;
+  expiresAt: number;
 }
 
 function toSession(division: AdminDivision): AdminSession {
@@ -35,19 +43,58 @@ function toSession(division: AdminDivision): AdminSession {
     divisionName: division.name,
     memberDivision: division.memberDivision,
     canManageAllDivisions: division.canManageAllDivisions,
+    isSuperAdmin: division.isSuperAdmin,
   };
 }
 
-function parseSession(value: string | undefined): AdminSession | null {
-  if (!value) return null;
+function getSessionSecret(): string | null {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  return secret && secret.length >= 32 ? secret : null;
+}
 
-  if (value === "authenticated") {
-    const bph = getAdminDivisionBySlug("bph");
-    return bph ? toSession(bph) : null;
-  }
+function encodeBase64Url(value: string): string {
+  return Buffer.from(value, "utf8").toString("base64url");
+}
 
+async function importSessionKey(secret: string) {
+  return crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign", "verify"],
+  );
+}
+
+async function createSignedSession(divisionSlug: AdminDivisionSlug): Promise<string> {
+  const secret = getSessionSecret();
+  if (!secret) throw new Error("Konfigurasi keamanan admin belum lengkap.");
+  const payload = encodeBase64Url(JSON.stringify({
+    divisionSlug,
+    expiresAt: Date.now() + SESSION_DURATION_SECONDS * 1000,
+  } satisfies SignedSessionPayload));
+  const key = await importSessionKey(secret);
+  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload));
+  return `${payload}.${Buffer.from(signature).toString("base64url")}`;
+}
+
+async function parseSession(value: string | undefined): Promise<AdminSession | null> {
+  const secret = getSessionSecret();
+  if (!value || !secret) return null;
   try {
-    const parsed = JSON.parse(value) as Partial<AdminSession>;
+    const [payload, signature] = value.split(".");
+    if (!payload || !signature) return null;
+    const key = await importSessionKey(secret);
+    const verified = await crypto.subtle.verify(
+      "HMAC",
+      key,
+      Buffer.from(signature, "base64url"),
+      new TextEncoder().encode(payload),
+    );
+    if (!verified) return null;
+
+    const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as SignedSessionPayload;
+    if (!parsed.expiresAt || parsed.expiresAt <= Date.now()) return null;
     const division = getAdminDivisionBySlug(parsed.divisionSlug);
     return division ? toSession(division) : null;
   } catch {
@@ -57,7 +104,7 @@ function parseSession(value: string | undefined): AdminSession | null {
 
 async function verifyAuth(): Promise<AdminSession> {
   const cookieStore = await cookies();
-  const session = parseSession(cookieStore.get("admin_session")?.value);
+  const session = await parseSession(cookieStore.get("admin_session")?.value);
   if (!session) {
     throw new Error("Unauthorized");
   }
@@ -80,12 +127,26 @@ export async function loginAction(
     return { success: false, error: "Divisi tidak ditemukan!" };
   }
 
-  if (password === DIVISION_PASSWORDS[division.slug]) {
+  const expectedPassword = DIVISION_PASSWORDS[division.slug];
+  if (!expectedPassword) {
+    return { success: false, error: "Akses ini belum dikonfigurasi oleh Superadmin." };
+  }
+
+  const supplied = new TextEncoder().encode(password);
+  const expected = new TextEncoder().encode(expectedPassword);
+  let difference = supplied.length ^ expected.length;
+  const comparisonLength = Math.max(supplied.length, expected.length);
+  for (let index = 0; index < comparisonLength; index += 1) {
+    difference |= (supplied[index] ?? 0) ^ (expected[index] ?? 0);
+  }
+
+  if (difference === 0) {
     const cookieStore = await cookies();
-    cookieStore.set("admin_session", JSON.stringify(toSession(division)), {
+    cookieStore.set("admin_session", await createSignedSession(division.slug), {
       httpOnly: true,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 1 day
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: SESSION_DURATION_SECONDS,
       path: "/",
     });
     return { success: true };
@@ -100,7 +161,7 @@ export async function logoutAction(): Promise<void> {
 
 export async function checkAuthAction(): Promise<boolean> {
   const cookieStore = await cookies();
-  return Boolean(parseSession(cookieStore.get("admin_session")?.value));
+  return Boolean(await parseSession(cookieStore.get("admin_session")?.value));
 }
 
 export async function getAdminSessionAction(): Promise<AdminSession | null> {

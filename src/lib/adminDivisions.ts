@@ -1,4 +1,5 @@
 export type AdminDivisionSlug =
+  | "superadmin"
   | "bph"
   | "sekretariat"
   | "akademik"
@@ -12,15 +13,25 @@ export interface AdminDivision {
   shortName: string;
   memberDivision: string;
   canManageAllDivisions: boolean;
+  isSuperAdmin: boolean;
 }
 
 export const ADMIN_DIVISIONS: AdminDivision[] = [
+  {
+    slug: "superadmin",
+    name: "Superadmin",
+    shortName: "Superadmin",
+    memberDivision: "Semua Divisi",
+    canManageAllDivisions: true,
+    isSuperAdmin: true,
+  },
   {
     slug: "bph",
     name: "BPH (Badan Pengurus Harian)",
     shortName: "BPH",
     memberDivision: "BPH (Badan Pengurus Harian)",
     canManageAllDivisions: true,
+    isSuperAdmin: false,
   },
   {
     slug: "sekretariat",
@@ -28,6 +39,7 @@ export const ADMIN_DIVISIONS: AdminDivision[] = [
     shortName: "Sekretariat",
     memberDivision: "Sekretariat Kabinet",
     canManageAllDivisions: false,
+    isSuperAdmin: false,
   },
   {
     slug: "akademik",
@@ -35,6 +47,7 @@ export const ADMIN_DIVISIONS: AdminDivision[] = [
     shortName: "Akademik",
     memberDivision: "Akademik Mahasiswa",
     canManageAllDivisions: false,
+    isSuperAdmin: false,
   },
   {
     slug: "minat-bakat",
@@ -42,6 +55,7 @@ export const ADMIN_DIVISIONS: AdminDivision[] = [
     shortName: "Minat Bakat",
     memberDivision: "Minat dan Bakat",
     canManageAllDivisions: false,
+    isSuperAdmin: false,
   },
   {
     slug: "ekonomi-kreatif",
@@ -49,6 +63,7 @@ export const ADMIN_DIVISIONS: AdminDivision[] = [
     shortName: "Ekraf",
     memberDivision: "Ekonomi Kreatif",
     canManageAllDivisions: false,
+    isSuperAdmin: false,
   },
   {
     slug: "komunikasi-publikasi",
@@ -56,6 +71,7 @@ export const ADMIN_DIVISIONS: AdminDivision[] = [
     shortName: "Kominfo",
     memberDivision: "Komunikasi dan Publikasi",
     canManageAllDivisions: false,
+    isSuperAdmin: false,
   },
 ];
 

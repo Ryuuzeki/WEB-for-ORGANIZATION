@@ -18,7 +18,8 @@ import {
   Check,
   Loader2,
   BookOpen,
-  Waves
+  Waves,
+  Crown
 } from "lucide-react";
 import {
   logoutAction,
@@ -572,6 +573,11 @@ export default function AdminDashboardPage({
                 {adminSession.divisionName.slice(0, 2).toUpperCase()}
               </div>
               <span className="text-xs font-bold text-primary">{adminSession.divisionName}</span>
+              {adminSession.isSuperAdmin && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-amber-800">
+                  <Crown size={11} aria-hidden="true" /> Akses penuh
+                </span>
+              )}
             </div>
           </div>
         </header>
@@ -585,7 +591,9 @@ export default function AdminDashboardPage({
                 <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
                 <h3 className="text-2xl font-bold text-white mb-2">Selamat datang, {adminSession.divisionName}!</h3>
                 <p className="text-sm opacity-90 max-w-xl leading-relaxed">
-                  Gunakan dashboard ini untuk mengelola konten HMTKBA sesuai akses divisi yang sedang login.
+                  {adminSession.isSuperAdmin
+                    ? "Anda memiliki otoritas penuh untuk mengelola seluruh konten, pengurus, dokumen, unggahan, dan data website."
+                    : "Gunakan dashboard ini untuk mengelola konten HMTKBA sesuai akses divisi yang sedang login."}
                 </p>
               </div>
 

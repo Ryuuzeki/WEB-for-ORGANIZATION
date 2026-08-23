@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Lock, Eye, EyeOff, Waves, ShieldAlert, Building2 } from "lucide-react";
+import { Lock, Eye, EyeOff, Waves, ShieldAlert, Building2, Crown } from "lucide-react";
 import { loginAction } from "@/application/actions/adminActions";
 import { ADMIN_DIVISIONS, AdminDivisionSlug } from "@/lib/adminDivisions";
 import { Button } from "@/presentation/components/ui/Button";
 import { Typography } from "@/presentation/components/ui/Typography";
 
 export default function AdminLoginPage() {
-  const [divisionSlug, setDivisionSlug] = useState<AdminDivisionSlug>("bph");
+  const [divisionSlug, setDivisionSlug] = useState<AdminDivisionSlug>("superadmin");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,10 +64,10 @@ export default function AdminLoginPage() {
             <Waves className="h-10 w-10 text-primary" />
           </div>
           <Typography variant="h2" className="text-primary text-2xl font-bold tracking-tight text-center">
-            HMTKBA Admin
+            Portal Administrasi HMTKBA
           </Typography>
           <Typography variant="p" className="text-secondary/70 text-sm text-center mt-1">
-            Portal Login Tiap Divisi
+            Akses aman pengelolaan seluruh website
           </Typography>
         </div>
 
@@ -84,7 +84,7 @@ export default function AdminLoginPage() {
               htmlFor="division"
               className="text-sm font-bold text-primary tracking-wide block"
             >
-              Pilih Divisi
+              Pilih Tingkat Akses
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -104,6 +104,11 @@ export default function AdminLoginPage() {
                 ))}
               </select>
             </div>
+            {divisionSlug === "superadmin" && (
+              <p className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+                <Crown size={15} aria-hidden="true" /> Akses penuh seluruh konten, divisi, dokumen, dan data website.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -111,7 +116,7 @@ export default function AdminLoginPage() {
               htmlFor="password"
               className="text-sm font-bold text-primary tracking-wide block"
             >
-              Kata Sandi Admin
+              Kata Sandi {divisionSlug === "superadmin" ? "Superadmin" : "Admin"}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
