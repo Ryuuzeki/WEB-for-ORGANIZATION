@@ -76,6 +76,12 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  outputFileTracingExcludes: {
+    "/*": [
+      "node_modules/sharp/**/*",
+      "node_modules/@img/sharp-*/**/*",
+    ],
+  },
   images: {
     unoptimized: true,
     remotePatterns: [
