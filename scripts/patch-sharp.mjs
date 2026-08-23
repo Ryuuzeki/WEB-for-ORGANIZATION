@@ -17,6 +17,14 @@ const fastImmediatePath = resolve(
   nodeModulesRoot,
   "next/dist/server/node-environment-extensions/fast-set-immediate.external.js",
 );
+const nodeCryptoPath = resolve(
+  nodeModulesRoot,
+  "next/dist/server/node-environment-extensions/node-crypto.js",
+);
+const webCryptoPath = resolve(
+  nodeModulesRoot,
+  "next/dist/server/node-environment-extensions/web-crypto.js",
+);
 
 if (!sharpDir.startsWith(`${nodeModulesRoot}${sep}`)) {
   throw new Error("Refusing to patch sharp outside node_modules.");
@@ -36,9 +44,13 @@ writeFileSync(
 );
 
 if (
-  ![fileLoggerPath, consoleDimPath, fastImmediatePath].every((filePath) =>
-    filePath.startsWith(`${nodeModulesRoot}${sep}`),
-  )
+  ![
+    fileLoggerPath,
+    consoleDimPath,
+    fastImmediatePath,
+    nodeCryptoPath,
+    webCryptoPath,
+  ].every((filePath) => filePath.startsWith(`${nodeModulesRoot}${sep}`))
 ) {
   throw new Error("Refusing to patch Next.js outside node_modules.");
 }
@@ -60,3 +72,11 @@ writeFileSync(
   `"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\nfunction DANGEROUSLY_runPendingImmediatesAfterCurrentTask() {}\nfunction expectNoPendingImmediates() {}\nexports.DANGEROUSLY_runPendingImmediatesAfterCurrentTask = DANGEROUSLY_runPendingImmediatesAfterCurrentTask;\nexports.expectNoPendingImmediates = expectNoPendingImmediates;\nexports.unpatchedSetImmediate = globalThis.setImmediate;\n`,
   "utf8",
 );
+
+for (const cryptoExtensionPath of [nodeCryptoPath, webCryptoPath]) {
+  writeFileSync(
+    cryptoExtensionPath,
+    `"use strict";\nObject.defineProperty(exports, "__esModule", { value: true });\n`,
+    "utf8",
+  );
+}
