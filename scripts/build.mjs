@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -38,6 +38,79 @@ const distDir = join(projectRoot, "dist");
 if (!existsSync(join(openNextDir, "worker.js"))) {
   throw new Error("OpenNext did not produce .open-next/worker.js");
 }
+
+const workerPath = join(openNextDir, "worker.js");
+const originalWorkerPath = join(openNextDir, "worker-original.js");
+rmSync(originalWorkerPath, { force: true });
+renameSync(workerPath, originalWorkerPath);
+writeFileSync(
+  workerPath,
+  `import * as nodeAssert from "node:assert";
+import * as nodeAsyncHooks from "node:async_hooks";
+import * as nodeBuffer from "node:buffer";
+import * as nodeCrypto from "node:crypto";
+import * as nodeDiagnosticsChannel from "node:diagnostics_channel";
+import * as nodeDns from "node:dns";
+import * as nodeEvents from "node:events";
+import * as nodeFs from "node:fs";
+import * as nodeFsPromises from "node:fs/promises";
+import * as nodeHttp from "node:http";
+import * as nodeHttps from "node:https";
+import * as nodeNet from "node:net";
+import * as nodeOs from "node:os";
+import * as nodePath from "node:path";
+import * as nodePerfHooks from "node:perf_hooks";
+import * as nodeProcess from "node:process";
+import * as nodeQuerystring from "node:querystring";
+import * as nodeStream from "node:stream";
+import * as nodeStreamWeb from "node:stream/web";
+import * as nodeTimers from "node:timers";
+import * as nodeTimersPromises from "node:timers/promises";
+import * as nodeTls from "node:tls";
+import * as nodeUrl from "node:url";
+import * as nodeUtil from "node:util";
+import * as nodeZlib from "node:zlib";
+
+const nodeModules = new Map([
+  ["assert", nodeAssert],
+  ["async_hooks", nodeAsyncHooks],
+  ["buffer", nodeBuffer],
+  ["crypto", nodeCrypto],
+  ["diagnostics_channel", nodeDiagnosticsChannel],
+  ["dns", nodeDns],
+  ["events", nodeEvents],
+  ["fs", nodeFs],
+  ["fs/promises", nodeFsPromises],
+  ["http", nodeHttp],
+  ["https", nodeHttps],
+  ["net", nodeNet],
+  ["os", nodeOs],
+  ["path", nodePath],
+  ["perf_hooks", nodePerfHooks],
+  ["process", nodeProcess],
+  ["querystring", nodeQuerystring],
+  ["stream", nodeStream],
+  ["stream/web", nodeStreamWeb],
+  ["timers", nodeTimers],
+  ["timers/promises", nodeTimersPromises],
+  ["tls", nodeTls],
+  ["url", nodeUrl],
+  ["util", nodeUtil],
+  ["zlib", nodeZlib],
+]);
+
+globalThis.require = (specifier) => {
+  const normalized = specifier.startsWith("node:") ? specifier.slice(5) : specifier;
+  const loaded = nodeModules.get(normalized);
+  if (!loaded) throw new Error(\`Unsupported runtime require: \${specifier}\`);
+  return loaded;
+};
+
+const workerModule = await import("./worker-original.js");
+export default workerModule.default;
+`,
+  "utf8",
+);
 
 rmSync(distDir, { recursive: true, force: true });
 mkdirSync(join(distDir, "server"), { recursive: true });
