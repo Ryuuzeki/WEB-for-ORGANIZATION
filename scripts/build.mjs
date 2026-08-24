@@ -16,7 +16,7 @@ function run(command, args) {
 }
 
 const nextCli = join(projectRoot, "node_modules", "next", "dist", "bin", "next");
-run(process.execPath, [nextCli, "build"]);
+run(process.execPath, [nextCli, "build", "--webpack"]);
 
 // OpenNext's local transformer is supported on Linux/macOS. The hosted build
 // runs on Linux; Windows keeps the verified standard Next.js build for local QA.
