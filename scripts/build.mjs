@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -39,51 +39,38 @@ if (!existsSync(join(openNextDir, "worker.js"))) {
   throw new Error("OpenNext did not produce .open-next/worker.js");
 }
 
-const workerPath = join(openNextDir, "worker.js");
-const originalWorkerPath = join(openNextDir, "worker-original.js");
-rmSync(originalWorkerPath, { force: true });
-renameSync(workerPath, originalWorkerPath);
+const handlerPath = join(
+  openNextDir,
+  "server-functions",
+  "default",
+  "handler.mjs",
+);
+if (!existsSync(handlerPath)) {
+  throw new Error("OpenNext did not produce the default server handler.");
+}
+const handlerSource = readFileSync(handlerPath, "utf8");
 writeFileSync(
-  workerPath,
-  `import * as nodeAssert from "node:assert";
-import * as nodeAsyncHooks from "node:async_hooks";
-import * as nodeBuffer from "node:buffer";
-import * as nodeCrypto from "node:crypto";
-import * as nodeEvents from "node:events";
-import * as nodeFs from "node:fs";
-import * as nodeFsPromises from "node:fs/promises";
-import * as nodeOs from "node:os";
-import * as nodePath from "node:path";
-import * as nodeProcess from "node:process";
-import * as nodeStream from "node:stream";
-import * as nodeUrl from "node:url";
-import * as nodeUtil from "node:util";
+  handlerPath,
+  `import * as __codexNodeCrypto from "node:crypto";
+import * as __codexNodeFs from "node:fs";
+import * as __codexNodePath from "node:path";
+import * as __codexNodeUtil from "node:util";
 
-const nodeModules = new Map([
-  ["assert", nodeAssert],
-  ["async_hooks", nodeAsyncHooks],
-  ["buffer", nodeBuffer],
-  ["crypto", nodeCrypto],
-  ["events", nodeEvents],
-  ["fs", nodeFs],
-  ["fs/promises", nodeFsPromises],
-  ["os", nodeOs],
-  ["path", nodePath],
-  ["process", nodeProcess],
-  ["stream", nodeStream],
-  ["url", nodeUrl],
-  ["util", nodeUtil],
+const __codexRequireModules = new Map([
+  ["crypto", __codexNodeCrypto],
+  ["fs", __codexNodeFs],
+  ["path", __codexNodePath],
+  ["util", __codexNodeUtil],
 ]);
 
 globalThis.require = (specifier) => {
   const normalized = specifier.startsWith("node:") ? specifier.slice(5) : specifier;
-  const loaded = nodeModules.get(normalized);
+  const loaded = __codexRequireModules.get(normalized);
   if (!loaded) throw new Error(\`Unsupported runtime require: \${specifier}\`);
   return loaded;
 };
 
-const workerModule = await import("./worker-original.js");
-export default workerModule.default;
+${handlerSource}
 `,
   "utf8",
 );
