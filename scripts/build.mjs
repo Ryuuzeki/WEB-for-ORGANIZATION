@@ -18,10 +18,6 @@ function run(command, args) {
 const nextCli = join(projectRoot, "node_modules", "next", "dist", "bin", "next");
 run(process.execPath, [nextCli, "build", "--webpack"]);
 
-// OpenNext's local transformer is supported on Linux/macOS. The hosted build
-// runs on Linux; Windows keeps the verified standard Next.js build for local QA.
-if (process.platform === "win32") process.exit(0);
-
 const openNextCli = join(
   projectRoot,
   "node_modules",
@@ -96,7 +92,7 @@ const __codexRequireModules = new Map([
   ["fs/promises", __codexNodeFsPromises],
   ["http", __codexNodeHttp],
   ["https", __codexNodeHttps],
-  ["module", __codexNodeModule],
+  ["module", __codexNodeModule.default ?? __codexNodeModule.Module],
   ["net", __codexNodeNet],
   ["os", __codexNodeOs],
   ["path", __codexNodePath],
@@ -115,12 +111,21 @@ const __codexRequireModules = new Map([
   ["zlib", __codexNodeZlib],
 ]);
 
-globalThis.require = (specifier) => {
+const __codexRequire = (specifier) => {
   const normalized = specifier.startsWith("node:") ? specifier.slice(5) : specifier;
   const loaded = __codexRequireModules.get(normalized);
   if (!loaded) throw new Error(\`Unsupported runtime require: \${specifier}\`);
   return loaded;
 };
+
+// Next's require hook probes optional packages through require.resolve().
+// The packages are already bundled for Workers, so an unresolved probe should
+// simply follow the hook's existing try/catch fallback.
+__codexRequire.resolve = (specifier) => {
+  throw new Error(\`Runtime resolution is unavailable for bundled module: \${specifier}\`);
+};
+
+globalThis.require = __codexRequire;
 
 ${handlerSource}
 `,

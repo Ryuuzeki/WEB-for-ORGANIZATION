@@ -3,9 +3,9 @@ import { HeroContent } from "@/domain/entities/HeroContent";
 import { VisionMission } from "@/domain/entities/VisionMission";
 import { Member } from "@/domain/entities/Member";
 import { Document } from "@/domain/entities/Document";
-import { MockLandingRepository } from "./MockLandingRepository";
 import { readFile, writeFile, mkdir } from "fs/promises";
 import path from "path";
+import landingSeed from "../data/landing.json";
 
 const DATA_DIR = path.join(process.cwd(), "src", "infrastructure", "data");
 const DATA_FILE = path.join(DATA_DIR, "landing.json");
@@ -17,24 +17,34 @@ interface LandingDataSchema {
   members: Member[];
 }
 
-export class JsonLandingRepository implements ILandingRepository {
-  private mockRepo = new MockLandingRepository();
+let memoryData: LandingDataSchema | null = null;
 
+const cloneSeedData = (): LandingDataSchema =>
+  JSON.parse(JSON.stringify(landingSeed)) as LandingDataSchema;
+
+export class JsonLandingRepository implements ILandingRepository {
   private async ensureDataInitialized(): Promise<LandingDataSchema> {
+    if (memoryData) return memoryData;
+
+    try {
+      const content = await readFile(DATA_FILE, "utf-8");
+      memoryData = JSON.parse(content) as LandingDataSchema;
+    } catch {
+      // Cloudflare Workers exposes a read-only bundle. The imported JSON keeps
+      // the public site available there while local development can use files.
+      memoryData = cloneSeedData();
+    }
+
+    return memoryData;
+  }
+
+  private async persist(data: LandingDataSchema): Promise<void> {
+    memoryData = data;
     try {
       await mkdir(DATA_DIR, { recursive: true });
-      const content = await readFile(DATA_FILE, "utf-8");
-      return JSON.parse(content);
-    } catch {
-      // Initialize with mock data
-      const hero = await this.mockRepo.getHeroContent();
-      const visionMission = await this.mockRepo.getVisionMission();
-      const documents = await this.mockRepo.getLatestDocuments();
-      const members = await this.mockRepo.getOrganizationStructure();
-
-      const data: LandingDataSchema = { hero, visionMission, documents, members };
       await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
-      return data;
+    } catch {
+      // The in-memory copy remains usable in read-only serverless runtimes.
     }
   }
 
@@ -62,13 +72,13 @@ export class JsonLandingRepository implements ILandingRepository {
   async updateHeroContent(content: HeroContent): Promise<void> {
     const data = await this.ensureDataInitialized();
     data.hero = content;
-    await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+    await this.persist(data);
   }
 
   async updateVisionMission(visionMission: VisionMission): Promise<void> {
     const data = await this.ensureDataInitialized();
     data.visionMission = visionMission;
-    await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+    await this.persist(data);
   }
 
   async saveMember(member: Member): Promise<void> {
@@ -79,13 +89,13 @@ export class JsonLandingRepository implements ILandingRepository {
     } else {
       data.members.push(member);
     }
-    await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+    await this.persist(data);
   }
 
   async deleteMember(id: string): Promise<void> {
     const data = await this.ensureDataInitialized();
     data.members = data.members.filter((m) => m.id !== id);
-    await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+    await this.persist(data);
   }
 
   async saveDocument(document: Document): Promise<void> {
@@ -96,12 +106,12 @@ export class JsonLandingRepository implements ILandingRepository {
     } else {
       data.documents.push(document);
     }
-    await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+    await this.persist(data);
   }
 
   async deleteDocument(id: string): Promise<void> {
     const data = await this.ensureDataInitialized();
     data.documents = data.documents.filter((d) => d.id !== id);
-    await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+    await this.persist(data);
   }
 }
