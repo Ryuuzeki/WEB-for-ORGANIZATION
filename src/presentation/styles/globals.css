@@ -21,7 +21,7 @@
   --color-cta: var(--hmtkba-gold);
   --color-cream: var(--hmtkba-cream);
 
-  --font-sans: "Aptos", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {

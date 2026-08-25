@@ -3,9 +3,10 @@
   isolation: isolate;
   overflow: hidden;
   background:
-    radial-gradient(circle at 12% 16%, rgb(117 192 224 / 32%) 0 6%, transparent 7%),
-    radial-gradient(circle at 88% 12%, rgb(255 255 255 / 13%) 0 9%, transparent 10%),
-    linear-gradient(135deg, #102a6b 0%, #015185 54%, #087ca7 100%);
+    radial-gradient(circle at 12% 16%, rgb(206 162 115 / 34%) 0 6%, transparent 7%),
+    radial-gradient(circle at 88% 12%, rgb(252 237 211 / 14%) 0 9%, transparent 10%),
+    linear-gradient(135deg, #102a6b 0%, #102a6b 72%, #cea273 155%);
+  font-family: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 }
 
 .shell::before {
@@ -15,7 +16,7 @@
   bottom: -15rem;
   width: 44rem;
   height: 28rem;
-  border: 3rem solid rgb(255 255 255 / 8%);
+  border: 3rem solid rgb(206 162 115 / 12%);
   border-radius: 50%;
   content: "";
   transform: rotate(-8deg);
@@ -36,29 +37,29 @@
   z-index: -1;
   bottom: -5.2rem;
   height: 7.5rem;
-  background: rgb(89 144 192 / 21%);
+  background: rgb(206 162 115 / 18%);
   animation: water-drift 8s ease-in-out infinite alternate;
 }
 
 .wave::before {
   bottom: 1.5rem;
   height: 5rem;
-  background: rgb(255 255 255 / 7%);
+  background: rgb(252 237 211 / 10%);
   transform: translateX(-7%);
 }
 
 .wave::after {
   bottom: 0.5rem;
   height: 4rem;
-  background: rgb(1 81 133 / 32%);
+  background: rgb(16 42 107 / 34%);
   transform: translateX(8%);
 }
 
 .todayRing {
   box-shadow:
-    0 0 0 5px rgb(255 255 255 / 13%),
-    0 0 0 10px rgb(89 144 192 / 12%),
-    0 14px 30px rgb(5 24 72 / 25%);
+    0 0 0 5px rgb(252 237 211 / 16%),
+    0 0 0 10px rgb(206 162 115 / 16%),
+    0 14px 30px rgb(16 42 107 / 25%);
 }
 
 @keyframes water-drift {

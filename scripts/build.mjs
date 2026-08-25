@@ -73,6 +73,7 @@ import * as __codexNodeProcess from "node:process";
 import * as __codexNodeQuerystring from "node:querystring";
 import * as __codexNodeStream from "node:stream";
 import * as __codexNodeStreamPromises from "node:stream/promises";
+import * as __codexNodeStreamWeb from "node:stream/web";
 import * as __codexNodeTimers from "node:timers";
 import * as __codexNodeTimersPromises from "node:timers/promises";
 import * as __codexNodeUrl from "node:url";
@@ -104,6 +105,7 @@ const __codexRequireModules = new Map([
   ["querystring", __codexNodeQuerystring],
   ["stream", __codexNodeStream],
   ["stream/promises", __codexNodeStreamPromises],
+  ["stream/web", __codexNodeStreamWeb],
   ["timers", __codexNodeTimers],
   ["timers/promises", __codexNodeTimersPromises],
   ["url", __codexNodeUrl],
