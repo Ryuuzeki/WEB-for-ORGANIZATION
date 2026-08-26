@@ -3,6 +3,7 @@ import { di } from "@/lib/di";
 import { getAdminSessionAction } from "@/application/actions/adminActions";
 import AdminDashboardPage from "@/presentation/app/admin/page";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
+import { listCalendarEvents } from "@/lib/calendarEvents";
 
 export const metadata = {
   title: "Dashboard Admin - HMTKBA",
@@ -19,6 +20,7 @@ export default async function Page() {
   // Load initial content to display and edit in the dashboard
   const landingPageData = await di.getLandingPageData().execute();
   const allMembers = await di.getOrganizationStructure().execute();
+  const calendarEvents = await listCalendarEvents();
   const members = session.canManageAllDivisions
     ? allMembers
     : allMembers.filter((member) => member.division === session.memberDivision);
@@ -37,6 +39,7 @@ export default async function Page() {
       initialMembers={members}
       initialDocuments={landingPageData.documents}
       initialRegionalStats={regionalStats}
+      initialCalendarEvents={calendarEvents}
       regions={regions}
       adminSession={session}
     />

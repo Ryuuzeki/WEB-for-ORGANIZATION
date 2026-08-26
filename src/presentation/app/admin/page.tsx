@@ -19,7 +19,11 @@ import {
   Loader2,
   BookOpen,
   Waves,
-  Crown
+  Crown,
+  CalendarClock,
+  Clock3,
+  MapPin,
+  BellRing
 } from "lucide-react";
 import {
   logoutAction,
@@ -31,13 +35,16 @@ import {
   deleteDocumentAction,
   saveStatAction,
   deleteStatAction,
-  uploadFileAction
+  uploadFileAction,
+  saveCalendarEventAction,
+  deleteCalendarEventAction
 } from "@/application/actions/adminActions";
 import { HeroContent } from "@/domain/entities/HeroContent";
 import { VisionMission } from "@/domain/entities/VisionMission";
 import { Member } from "@/domain/entities/Member";
 import { Document } from "@/domain/entities/Document";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
+import { CalendarEvent } from "@/domain/entities/CalendarEvent";
 import type { AdminSession } from "@/application/actions/adminActions";
 
 interface AdminDashboardPageProps {
@@ -46,11 +53,12 @@ interface AdminDashboardPageProps {
   initialMembers: Member[];
   initialDocuments: Document[];
   initialRegionalStats: Record<string, RegionalStat[]>;
+  initialCalendarEvents: CalendarEvent[];
   regions: string[];
   adminSession: AdminSession;
 }
 
-type TabType = "dashboard" | "hero" | "vision" | "members" | "documents" | "stats";
+type TabType = "dashboard" | "hero" | "vision" | "members" | "documents" | "events" | "stats";
 
 const DIVISIONS = [
   "BPH (Badan Pengurus Harian)",
@@ -61,12 +69,49 @@ const DIVISIONS = [
   "Komunikasi dan Publikasi"
 ];
 
+interface EventFormState {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  startsAt: string;
+  endsAt: string;
+}
+
+const EMPTY_EVENT_FORM: EventFormState = {
+  id: "",
+  title: "",
+  description: "",
+  location: "",
+  startsAt: "",
+  endsAt: ""
+};
+
+const toLocalDateTimeInput = (value: string | null) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 16);
+};
+
+const formatAdminEventDate = (value: string) =>
+  new Intl.DateTimeFormat("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(value));
+
 export default function AdminDashboardPage({
   initialHero,
   initialVisionMission,
   initialMembers,
   initialDocuments,
   initialRegionalStats,
+  initialCalendarEvents,
   regions,
   adminSession
 }: AdminDashboardPageProps) {
@@ -81,6 +126,8 @@ export default function AdminDashboardPage({
   const [members, setMembers] = useState<Member[]>(initialMembers);
   const [documents, setDocuments] = useState<Document[]>(initialDocuments);
   const [regionalStats, setRegionalStats] = useState<Record<string, RegionalStat[]>>(initialRegionalStats);
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(initialCalendarEvents);
+  const [eventForm, setEventForm] = useState<EventFormState>(EMPTY_EVENT_FORM);
   const availableDivisions = adminSession.canManageAllDivisions ? DIVISIONS : [adminSession.memberDivision];
   const defaultMemberDivision = availableDivisions[0];
   
@@ -425,6 +472,71 @@ export default function AdminDashboardPage({
     }
   };
 
+  // 6. Calendar Event Handlers (Superadmin only)
+  const handleEventSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!adminSession.isSuperAdmin) {
+      triggerNotification("Hanya Superadmin yang dapat mengelola kegiatan kalender.", true);
+      return;
+    }
+    if (!eventForm.title.trim() || !eventForm.startsAt) {
+      triggerNotification("Nama kegiatan serta tanggal dan waktu mulai wajib diisi.", true);
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const savedEvent = await saveCalendarEventAction({
+        id: eventForm.id || undefined,
+        title: eventForm.title,
+        description: eventForm.description,
+        location: eventForm.location,
+        startsAt: new Date(eventForm.startsAt).toISOString(),
+        endsAt: eventForm.endsAt ? new Date(eventForm.endsAt).toISOString() : null
+      });
+
+      setCalendarEvents((current) =>
+        [...current.filter((item) => item.id !== savedEvent.id), savedEvent].sort((first, second) =>
+          first.startsAt.localeCompare(second.startsAt)
+        )
+      );
+      setEventForm(EMPTY_EVENT_FORM);
+      triggerNotification(eventForm.id ? "Kegiatan berhasil diperbarui!" : "Kegiatan berhasil ditambahkan ke kalender!");
+    } catch (err: unknown) {
+      triggerNotification(getErrorMessage(err, "Gagal menyimpan kegiatan"), true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEditEvent = (event: CalendarEvent) => {
+    setEventForm({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      location: event.location,
+      startsAt: toLocalDateTimeInput(event.startsAt),
+      endsAt: toLocalDateTimeInput(event.endsAt)
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDeleteEvent = async (id: string) => {
+    if (!adminSession.isSuperAdmin || !confirm("Apakah Anda yakin ingin menghapus kegiatan ini dari kalender?")) return;
+
+    setIsSubmitting(true);
+    try {
+      await deleteCalendarEventAction(id);
+      setCalendarEvents((current) => current.filter((event) => event.id !== id));
+      if (eventForm.id === id) setEventForm(EMPTY_EVENT_FORM);
+      triggerNotification("Kegiatan berhasil dihapus dari kalender.");
+    } catch (err: unknown) {
+      triggerNotification(getErrorMessage(err, "Gagal menghapus kegiatan"), true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Filtered Lists
   const filteredMembers = members.filter((m) => {
     const matchSearch = m.name.toLowerCase().includes(memberSearch.toLowerCase()) || 
@@ -522,6 +634,19 @@ export default function AdminDashboardPage({
             <FileText size={18} />
             Pusat Dokumen
           </button>
+          {adminSession.isSuperAdmin && (
+            <button
+              onClick={() => setActiveTab("events")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
+                activeTab === "events"
+                  ? "bg-cta text-primary shadow-md font-bold"
+                  : "text-cream/80 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <CalendarClock size={18} />
+              Kalender Kegiatan
+            </button>
+          )}
           <button
             onClick={() => setActiveTab("stats")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
@@ -556,6 +681,7 @@ export default function AdminDashboardPage({
             {activeTab === "vision" && "Kelola Visi & Misi"}
             {activeTab === "members" && "Pengurus Struktur Organisasi"}
             {activeTab === "documents" && "Pusat Dokumen & Regulasi"}
+            {activeTab === "events" && "Kalender Kegiatan & Pengingat"}
             {activeTab === "stats" && "Pusat Statistik Regional"}
           </h2>
           <div className="flex items-center gap-4">
@@ -598,7 +724,7 @@ export default function AdminDashboardPage({
               </div>
 
               {/* Statistics Row */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                   <div>
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Pengurus</span>
@@ -607,6 +733,17 @@ export default function AdminDashboardPage({
                   </div>
                   <div className="p-4 bg-blue-50 text-blue-600 rounded-xl">
                     <Users size={26} />
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Kegiatan Kalender</span>
+                    <span className="text-3xl font-extrabold text-primary">{calendarEvents.length}</span>
+                    <span className="text-xs text-secondary/70 block mt-1">Pengingat terjadwal</span>
+                  </div>
+                  <div className="p-4 bg-orange-50 text-orange-600 rounded-xl">
+                    <CalendarClock size={26} />
                   </div>
                 </div>
 
@@ -652,6 +789,12 @@ export default function AdminDashboardPage({
                     <span className="h-5 w-5 bg-slate-100 text-primary flex items-center justify-center font-bold text-xs rounded-full mt-0.5 shrink-0">3</span>
                     <p><strong>Upload Dokumen:</strong> Masuk ke tab &quot;Pusat Dokumen&quot;, klik tambah, dan langsung seret berkas PDF standar irigasi atau modul hidrolika Anda ke kolom unggah.</p>
                   </li>
+                  {adminSession.isSuperAdmin && (
+                    <li className="flex items-start gap-2.5">
+                      <span className="h-5 w-5 bg-slate-100 text-primary flex items-center justify-center font-bold text-xs rounded-full mt-0.5 shrink-0">4</span>
+                      <p><strong>Jadwalkan Kegiatan:</strong> Buka tab &quot;Kalender Kegiatan&quot; untuk menambah acara. Tanggalnya akan ditandai pada kalender publik dan hitung mundur muncul otomatis.</p>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
@@ -1035,7 +1178,181 @@ export default function AdminDashboardPage({
             </div>
           )}
 
-          {/* TAB 6: DATA CENTER (REGIONAL STATS) */}
+          {/* TAB 6: CALENDAR EVENTS — SUPERADMIN ONLY */}
+          {activeTab === "events" && adminSession.isSuperAdmin && (
+            <div className="grid gap-6 xl:grid-cols-[.85fr_1.15fr] animate-fade-in">
+              <form onSubmit={handleEventSubmit} className="h-fit rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+                <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
+                  <div>
+                    <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-cta">
+                      <BellRing size={16} /> Pengingat publik
+                    </p>
+                    <h3 className="mt-2 text-xl font-black text-primary">
+                      {eventForm.id ? "Edit kegiatan" : "Tambah kegiatan baru"}
+                    </h3>
+                    <p className="mt-2 text-xs leading-5 text-slate-500">
+                      Kegiatan akan ditandai di kalender halaman utama dan acara terdekat memiliki hitung mundur otomatis.
+                    </p>
+                  </div>
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-cream">
+                    <CalendarClock size={21} />
+                  </span>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Nama kegiatan</label>
+                    <input
+                      type="text"
+                      value={eventForm.title}
+                      onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+                      required
+                      maxLength={120}
+                      placeholder="Contoh: Rapat Besar HMTKBA"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Mulai</label>
+                      <input
+                        type="datetime-local"
+                        value={eventForm.startsAt}
+                        onChange={(e) => setEventForm({ ...eventForm, startsAt: e.target.value })}
+                        required
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Selesai (opsional)</label>
+                      <input
+                        type="datetime-local"
+                        value={eventForm.endsAt}
+                        min={eventForm.startsAt || undefined}
+                        onChange={(e) => setEventForm({ ...eventForm, endsAt: e.target.value })}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Lokasi (opsional)</label>
+                    <div className="relative">
+                      <MapPin size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
+                      <input
+                        type="text"
+                        value={eventForm.location}
+                        onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
+                        maxLength={160}
+                        placeholder="Contoh: Aula Kampus"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-semibold focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Keterangan (opsional)</label>
+                    <textarea
+                      value={eventForm.description}
+                      onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                      maxLength={800}
+                      rows={4}
+                      placeholder="Tuliskan informasi yang perlu diingat peserta..."
+                      className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-6 flex flex-col-reverse gap-2 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+                  {eventForm.id && (
+                    <button
+                      type="button"
+                      onClick={() => setEventForm(EMPTY_EVENT_FORM)}
+                      className="rounded-xl border border-slate-200 px-5 py-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                    >
+                      Batal edit
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-xs font-black text-cream shadow-md transition hover:bg-secondary disabled:cursor-wait disabled:opacity-60"
+                  >
+                    {isSubmitting ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}
+                    {eventForm.id ? "Simpan perubahan" : "Tambahkan ke kalender"}
+                  </button>
+                </div>
+              </form>
+
+              <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-cta">Daftar agenda</p>
+                    <h3 className="mt-2 text-xl font-black text-primary">{calendarEvents.length} kegiatan terjadwal</h3>
+                  </div>
+                  <span className="rounded-full bg-cream px-3 py-1.5 text-[11px] font-black text-primary">Tersimpan</span>
+                </div>
+
+                {calendarEvents.length > 0 ? (
+                  <div className="mt-6 space-y-3">
+                    {calendarEvents.map((event) => {
+                      const hasPassed = new Date(event.endsAt ?? event.startsAt).getTime() < Date.now();
+                      return (
+                        <article key={event.id} className={`rounded-2xl border p-5 ${hasPassed ? "border-slate-100 bg-slate-50/70" : "border-cta/35 bg-cream/30"}`}>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <h4 className="font-black text-primary">{event.title}</h4>
+                                <span className={`rounded-full px-2 py-1 text-[9px] font-black uppercase tracking-wide ${hasPassed ? "bg-slate-200 text-slate-500" : "bg-primary text-cream"}`}>
+                                  {hasPassed ? "Selesai" : "Mendatang"}
+                                </span>
+                              </div>
+                              <p className="mt-2 flex items-start gap-2 text-xs font-semibold leading-5 text-slate-600">
+                                <Clock3 size={15} className="mt-0.5 shrink-0 text-cta" /> {formatAdminEventDate(event.startsAt)}
+                              </p>
+                              {event.location && (
+                                <p className="mt-1 flex items-start gap-2 text-xs leading-5 text-slate-500">
+                                  <MapPin size={15} className="mt-0.5 shrink-0 text-cta" /> {event.location}
+                                </p>
+                              )}
+                              {event.description && <p className="mt-3 text-xs leading-5 text-slate-500">{event.description}</p>}
+                            </div>
+                            <div className="flex shrink-0 gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => handleEditEvent(event)}
+                                className="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:border-primary hover:text-primary"
+                                aria-label={`Edit ${event.title}`}
+                              >
+                                <Edit2 size={14} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteEvent(event.id)}
+                                className="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:border-red-200 hover:text-red-500"
+                                aria-label={`Hapus ${event.title}`}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="mt-6 rounded-2xl border-2 border-dashed border-slate-200 px-6 py-12 text-center">
+                    <CalendarClock size={32} className="mx-auto text-slate-300" />
+                    <p className="mt-3 text-sm font-bold text-slate-500">Belum ada kegiatan.</p>
+                    <p className="mt-1 text-xs text-slate-400">Isi formulir di samping untuk membuat pengingat pertama.</p>
+                  </div>
+                )}
+              </section>
+            </div>
+          )}
+
+          {/* TAB 7: DATA CENTER (REGIONAL STATS) */}
           {activeTab === "stats" && (
             <div className="space-y-6 animate-fade-in">
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">

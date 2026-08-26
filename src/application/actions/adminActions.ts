@@ -11,7 +11,13 @@ import { VisionMission } from "@/domain/entities/VisionMission";
 import { Member } from "@/domain/entities/Member";
 import { Document } from "@/domain/entities/Document";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
+import { CalendarEvent, CalendarEventInput } from "@/domain/entities/CalendarEvent";
 import { AdminDivision, AdminDivisionSlug, getAdminDivisionBySlug } from "@/lib/adminDivisions";
+import {
+  listCalendarEvents,
+  removeCalendarEvent,
+  upsertCalendarEvent,
+} from "@/lib/calendarEvents";
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 8;
 const FALLBACK_SUPERADMIN_PASSWORD_HASH =
@@ -165,6 +171,43 @@ function ensureCanManageMember(session: AdminSession, member?: Member) {
   }
 }
 
+function ensureSuperAdmin(session: AdminSession): void {
+  if (!session.isSuperAdmin) {
+    throw new Error("Hanya Superadmin yang dapat mengelola kegiatan kalender.");
+  }
+}
+
+function cleanEventText(value: string | undefined, maximumLength: number): string {
+  return (value ?? "").trim().slice(0, maximumLength);
+}
+
+function normalizeEventInput(input: CalendarEventInput): CalendarEvent {
+  const title = cleanEventText(input.title, 120);
+  const description = cleanEventText(input.description, 800);
+  const location = cleanEventText(input.location, 160);
+  const startsAt = new Date(input.startsAt);
+  const endsAt = input.endsAt ? new Date(input.endsAt) : null;
+
+  if (!title) throw new Error("Nama kegiatan wajib diisi.");
+  if (Number.isNaN(startsAt.getTime())) throw new Error("Tanggal dan waktu mulai tidak valid.");
+  if (endsAt && Number.isNaN(endsAt.getTime())) throw new Error("Waktu selesai tidak valid.");
+  if (endsAt && endsAt.getTime() < startsAt.getTime()) {
+    throw new Error("Waktu selesai tidak boleh lebih awal dari waktu mulai.");
+  }
+
+  const now = new Date().toISOString();
+  return {
+    id: cleanEventText(input.id, 80) || crypto.randomUUID(),
+    title,
+    description,
+    location,
+    startsAt: startsAt.toISOString(),
+    endsAt: endsAt?.toISOString() ?? null,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
 export async function loginAction(
   divisionSlug: AdminDivisionSlug,
   password: string
@@ -206,6 +249,38 @@ export async function checkAuthAction(): Promise<boolean> {
 export async function getAdminSessionAction(): Promise<AdminSession | null> {
   const cookieStore = await cookies();
   return parseSession(cookieStore.get("admin_session")?.value);
+}
+
+// Public calendar reads and Superadmin-only calendar management
+export async function getCalendarEventsAction(): Promise<CalendarEvent[]> {
+  return listCalendarEvents();
+}
+
+export async function saveCalendarEventAction(input: CalendarEventInput): Promise<CalendarEvent> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+
+  const event = normalizeEventInput(input);
+  if (input.id) {
+    const existing = (await listCalendarEvents()).find((item) => item.id === event.id);
+    if (existing) event.createdAt = existing.createdAt;
+  }
+
+  await upsertCalendarEvent(event);
+  revalidatePath("/");
+  revalidatePath("/admin");
+  return event;
+}
+
+export async function deleteCalendarEventAction(id: string): Promise<void> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+  const normalizedId = cleanEventText(id, 80);
+  if (!normalizedId) throw new Error("Kegiatan tidak ditemukan.");
+
+  await removeCalendarEvent(normalizedId);
+  revalidatePath("/");
+  revalidatePath("/admin");
 }
 
 // Hero actions

@@ -3,6 +3,7 @@ import { HeroContainer } from "../containers/HeroContainer";
 import { VisionMissionContainer } from "../containers/VisionMissionContainer";
 import { ServicesContainer } from "../containers/ServicesContainer";
 import WaterCalendar from "../components/ui/WaterCalendar";
+import { listCalendarEvents } from "@/lib/calendarEvents";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -42,12 +43,15 @@ const getInitials = (name: string) =>
     .slice(0, 2)
     .toUpperCase();
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const getLandingPageData = di.getLandingPageData();
   const getOrganizationStructure = di.getOrganizationStructure();
-  const [data, members] = await Promise.all([
+  const [data, members, calendarEvents] = await Promise.all([
     getLandingPageData.execute(),
     getOrganizationStructure.execute(),
+    listCalendarEvents(),
   ]);
 
   const leadership = members
@@ -163,7 +167,7 @@ export default async function Home() {
       </section>
 
       <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <WaterCalendar />
+        <WaterCalendar events={calendarEvents} />
       </section>
 
       <div id="docs" className="bg-white">
