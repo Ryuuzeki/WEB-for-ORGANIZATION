@@ -1427,7 +1427,7 @@ export default function AdminDashboardPage({
                       placeholder="Atau tempel URL foto (opsional)"
                       className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
                     />
-                    <p className="text-[11px] leading-5 text-slate-400">Format JPG, PNG, WebP, atau AVIF. Maksimal 8 MB.</p>
+                    <p className="text-[11px] leading-5 text-slate-400">Format JPG, PNG, WebP, atau AVIF. Maksimal 4 MB.</p>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-[1fr_110px]">

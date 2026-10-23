@@ -76,6 +76,11 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "4mb",
+    },
+  },
   outputFileTracingExcludes: {
     "/*": [
       "node_modules/sharp/**/*",

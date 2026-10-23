@@ -338,7 +338,7 @@ export async function saveNewsItemAction(formData: FormData): Promise<NewsItem> 
 
   if (image instanceof File && image.size > 0) {
     if (!image.type.startsWith("image/")) throw new Error("Berkas foto harus berupa gambar.");
-    if (image.size > 8 * 1024 * 1024) throw new Error("Ukuran foto maksimal 8 MB.");
+    if (image.size > 4 * 1024 * 1024) throw new Error("Ukuran foto maksimal 4 MB.");
     imageUrl = await uploadNewsImage(image);
   }
   if (!imageUrl) imageUrl = existing?.imageUrl || "/LOGO HIMA.png";
