@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   CircleUserRound,
   Home,
+  Landmark,
   Menu,
   Network,
   Waves,
@@ -19,6 +20,7 @@ import { useEffect, useState } from "react";
 
 const navigation = [
   { label: "Beranda", href: "/", icon: Home },
+  { label: "Profil Prodi", href: "/teknologi-konstruksi-bangunan-air", icon: Landmark },
   { label: "Tentang Kami", href: "/#about", icon: BookOpenText },
   { label: "Struktur", href: "/#struktur", icon: Network },
   { label: "Program Kerja", href: "/#program", icon: BriefcaseBusiness },
@@ -30,8 +32,6 @@ export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => setMobileOpen(false), [pathname]);
 
   const sidebarWidth = collapsed ? "88px" : "272px";
 
@@ -114,6 +114,7 @@ export function Sidebar() {
                 <li key={item.label}>
                   <Link
                     href={item.href}
+                    onClick={() => setMobileOpen(false)}
                     title={collapsed ? item.label : undefined}
                     className={`group flex min-h-12 items-center gap-3 rounded-2xl px-3 text-sm font-semibold transition-colors ${
                       active ? "bg-white text-primary shadow-lg shadow-black/10" : "text-white/75 hover:bg-white/10 hover:text-white"
