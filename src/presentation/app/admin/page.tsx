@@ -23,7 +23,9 @@ import {
   CalendarClock,
   Clock3,
   MapPin,
-  BellRing
+  BellRing,
+  Newspaper,
+  ImageIcon
 } from "lucide-react";
 import {
   logoutAction,
@@ -37,7 +39,10 @@ import {
   deleteStatAction,
   uploadFileAction,
   saveCalendarEventAction,
-  deleteCalendarEventAction
+  deleteCalendarEventAction,
+  saveNewsItemAction,
+  setNewsPublishedAction,
+  deleteNewsItemAction
 } from "@/application/actions/adminActions";
 import { HeroContent } from "@/domain/entities/HeroContent";
 import { VisionMission } from "@/domain/entities/VisionMission";
@@ -45,6 +50,7 @@ import { Member } from "@/domain/entities/Member";
 import { Document } from "@/domain/entities/Document";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
 import { CalendarEvent } from "@/domain/entities/CalendarEvent";
+import { NewsItem } from "@/domain/entities/NewsItem";
 import type { AdminSession } from "@/application/actions/adminActions";
 
 interface AdminDashboardPageProps {
@@ -54,11 +60,12 @@ interface AdminDashboardPageProps {
   initialDocuments: Document[];
   initialRegionalStats: Record<string, RegionalStat[]>;
   initialCalendarEvents: CalendarEvent[];
+  initialNewsItems: NewsItem[];
   regions: string[];
   adminSession: AdminSession;
 }
 
-type TabType = "dashboard" | "hero" | "vision" | "members" | "documents" | "events" | "stats";
+type TabType = "dashboard" | "hero" | "vision" | "members" | "documents" | "news" | "events" | "stats";
 
 const DIVISIONS = [
   "BPH (Badan Pengurus Harian)",
@@ -87,6 +94,30 @@ const EMPTY_EVENT_FORM: EventFormState = {
   endsAt: ""
 };
 
+interface NewsFormState {
+  id: string;
+  title: string;
+  category: string;
+  summary: string;
+  imageUrl: string;
+  linkUrl: string;
+  publishedAt: string;
+  isPublished: boolean;
+  order: number;
+}
+
+const EMPTY_NEWS_FORM: NewsFormState = {
+  id: "",
+  title: "",
+  category: "Prestasi",
+  summary: "",
+  imageUrl: "",
+  linkUrl: "",
+  publishedAt: new Date().toISOString().slice(0, 10),
+  isPublished: true,
+  order: 1,
+};
+
 const toLocalDateTimeInput = (value: string | null) => {
   if (!value) return "";
   const date = new Date(value);
@@ -112,6 +143,7 @@ export default function AdminDashboardPage({
   initialDocuments,
   initialRegionalStats,
   initialCalendarEvents,
+  initialNewsItems,
   regions,
   adminSession
 }: AdminDashboardPageProps) {
@@ -128,6 +160,10 @@ export default function AdminDashboardPage({
   const [regionalStats, setRegionalStats] = useState<Record<string, RegionalStat[]>>(initialRegionalStats);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(initialCalendarEvents);
   const [eventForm, setEventForm] = useState<EventFormState>(EMPTY_EVENT_FORM);
+  const [newsItems, setNewsItems] = useState<NewsItem[]>(initialNewsItems);
+  const [newsForm, setNewsForm] = useState<NewsFormState>(EMPTY_NEWS_FORM);
+  const [newsImage, setNewsImage] = useState<File | null>(null);
+  const [newsFileInputKey, setNewsFileInputKey] = useState(0);
   const availableDivisions = adminSession.canManageAllDivisions ? DIVISIONS : [adminSession.memberDivision];
   const defaultMemberDivision = availableDivisions[0];
   
@@ -537,6 +573,91 @@ export default function AdminDashboardPage({
     }
   };
 
+  // 7. News & Achievement Handlers (Superadmin only)
+  const resetNewsForm = () => {
+    const nextOrder = Math.max(0, newsForm.order, ...newsItems.map((item) => item.order)) + 1;
+    setNewsForm({ ...EMPTY_NEWS_FORM, order: nextOrder });
+    setNewsImage(null);
+    setNewsFileInputKey((current) => current + 1);
+  };
+
+  const sortNewsItems = (items: NewsItem[]) =>
+    [...items].sort((first, second) => first.order - second.order || second.publishedAt.localeCompare(first.publishedAt));
+
+  const handleNewsSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!adminSession.isSuperAdmin) {
+      triggerNotification("Hanya Superadmin yang dapat mengelola berita.", true);
+      return;
+    }
+    if (!newsForm.title.trim() || !newsForm.category.trim() || !newsForm.summary.trim()) {
+      triggerNotification("Judul, kategori, dan ringkasan berita wajib diisi.", true);
+      return;
+    }
+
+    const formData = new FormData();
+    Object.entries(newsForm).forEach(([key, value]) => formData.set(key, String(value)));
+    if (newsImage) formData.set("image", newsImage);
+
+    setIsSubmitting(true);
+    try {
+      const savedNews = await saveNewsItemAction(formData);
+      setNewsItems((current) => sortNewsItems([...current.filter((item) => item.id !== savedNews.id), savedNews]));
+      const wasEditing = Boolean(newsForm.id);
+      resetNewsForm();
+      triggerNotification(wasEditing ? "Berita berhasil diperbarui!" : "Berita berhasil ditambahkan!");
+    } catch (err: unknown) {
+      triggerNotification(getErrorMessage(err, "Gagal menyimpan berita"), true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEditNews = (item: NewsItem) => {
+    setNewsForm({
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      summary: item.summary,
+      imageUrl: item.imageUrl,
+      linkUrl: item.linkUrl,
+      publishedAt: item.publishedAt.slice(0, 10),
+      isPublished: item.isPublished,
+      order: item.order,
+    });
+    setNewsImage(null);
+    setNewsFileInputKey((current) => current + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleToggleNews = async (item: NewsItem) => {
+    setIsSubmitting(true);
+    try {
+      const updated = await setNewsPublishedAction(item.id, !item.isPublished);
+      setNewsItems((current) => current.map((news) => (news.id === item.id ? updated : news)));
+      triggerNotification(updated.isPublished ? "Berita ditampilkan di beranda." : "Berita disembunyikan dari beranda.");
+    } catch (err: unknown) {
+      triggerNotification(getErrorMessage(err, "Gagal mengubah status berita"), true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteNews = async (item: NewsItem) => {
+    if (!confirm(`Hapus berita “${item.title}”?`)) return;
+    setIsSubmitting(true);
+    try {
+      await deleteNewsItemAction(item.id);
+      setNewsItems((current) => current.filter((news) => news.id !== item.id));
+      if (newsForm.id === item.id) resetNewsForm();
+      triggerNotification("Berita berhasil dihapus.");
+    } catch (err: unknown) {
+      triggerNotification(getErrorMessage(err, "Gagal menghapus berita"), true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Filtered Lists
   const filteredMembers = members.filter((m) => {
     const matchSearch = m.name.toLowerCase().includes(memberSearch.toLowerCase()) || 
@@ -636,6 +757,19 @@ export default function AdminDashboardPage({
           </button>
           {adminSession.isSuperAdmin && (
             <button
+              onClick={() => setActiveTab("news")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
+                activeTab === "news"
+                  ? "bg-cta text-primary shadow-md font-bold"
+                  : "text-cream/80 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <Newspaper size={18} />
+              Berita & Prestasi
+            </button>
+          )}
+          {adminSession.isSuperAdmin && (
+            <button
               onClick={() => setActiveTab("events")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
                 activeTab === "events"
@@ -681,6 +815,7 @@ export default function AdminDashboardPage({
             {activeTab === "vision" && "Kelola Visi & Misi"}
             {activeTab === "members" && "Pengurus Struktur Organisasi"}
             {activeTab === "documents" && "Pusat Dokumen & Regulasi"}
+            {activeTab === "news" && "Berita & Prestasi"}
             {activeTab === "events" && "Kalender Kegiatan & Pengingat"}
             {activeTab === "stats" && "Pusat Statistik Regional"}
           </h2>
@@ -724,7 +859,7 @@ export default function AdminDashboardPage({
               </div>
 
               {/* Statistics Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
                 <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                   <div>
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Pengurus</span>
@@ -733,6 +868,17 @@ export default function AdminDashboardPage({
                   </div>
                   <div className="p-4 bg-blue-50 text-blue-600 rounded-xl">
                     <Users size={26} />
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Berita Aktif</span>
+                    <span className="text-3xl font-extrabold text-primary">{newsItems.filter((item) => item.isPublished).length}</span>
+                    <span className="text-xs text-secondary/70 block mt-1">Tampil di beranda</span>
+                  </div>
+                  <div className="p-4 bg-violet-50 text-violet-600 rounded-xl">
+                    <Newspaper size={26} />
                   </div>
                 </div>
 
@@ -1178,7 +1324,250 @@ export default function AdminDashboardPage({
             </div>
           )}
 
-          {/* TAB 6: CALENDAR EVENTS — SUPERADMIN ONLY */}
+          {/* TAB 6: NEWS & ACHIEVEMENTS — SUPERADMIN ONLY */}
+          {activeTab === "news" && adminSession.isSuperAdmin && (
+            <div className="grid gap-6 xl:grid-cols-[.9fr_1.1fr] animate-fade-in">
+              <form onSubmit={handleNewsSubmit} className="h-fit rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+                <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
+                  <div>
+                    <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-cta">
+                      <Newspaper size={16} /> Konten beranda
+                    </p>
+                    <h3 className="mt-2 text-xl font-black text-primary">
+                      {newsForm.id ? "Edit berita" : "Tambah berita baru"}
+                    </h3>
+                    <p className="mt-2 text-xs leading-5 text-slate-500">
+                      Cocok untuk kabar lomba, prestasi mahasiswa, kegiatan, dan pengumuman penting.
+                    </p>
+                  </div>
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-cream">
+                    <ImageIcon size={21} />
+                  </span>
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Judul berita</label>
+                    <input
+                      type="text"
+                      value={newsForm.title}
+                      onChange={(e) => setNewsForm({ ...newsForm, title: e.target.value })}
+                      required
+                      maxLength={160}
+                      placeholder="Contoh: Tim HMTKBA Raih Juara 1 Lomba..."
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-[1fr_.75fr]">
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Kategori</label>
+                      <input
+                        type="text"
+                        value={newsForm.category}
+                        onChange={(e) => setNewsForm({ ...newsForm, category: e.target.value })}
+                        required
+                        maxLength={60}
+                        placeholder="Prestasi / Kegiatan"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Tanggal</label>
+                      <input
+                        type="date"
+                        value={newsForm.publishedAt}
+                        onChange={(e) => setNewsForm({ ...newsForm, publishedAt: e.target.value })}
+                        required
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Ringkasan</label>
+                    <textarea
+                      value={newsForm.summary}
+                      onChange={(e) => setNewsForm({ ...newsForm, summary: e.target.value })}
+                      required
+                      maxLength={1000}
+                      rows={5}
+                      placeholder="Tuliskan ringkasan singkat yang akan tampil di beranda..."
+                      className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Foto utama</label>
+                    {(newsForm.imageUrl || newsImage) && (
+                      <div className="relative h-40 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                        {newsImage ? (
+                          <div className="grid h-full place-items-center px-5 text-center text-xs font-bold text-primary">
+                            Foto baru dipilih: {newsImage.name}
+                          </div>
+                        ) : (
+                          <img src={newsForm.imageUrl} alt="Pratinjau berita" className="h-full w-full object-cover" />
+                        )}
+                      </div>
+                    )}
+                    <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-500 transition hover:border-primary hover:text-primary">
+                      <Upload size={15} /> {newsImage ? "Ganti pilihan foto" : "Pilih foto dari perangkat"}
+                      <input
+                        key={newsFileInputKey}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/avif"
+                        onChange={(e) => setNewsImage(e.target.files?.[0] ?? null)}
+                        className="hidden"
+                      />
+                    </label>
+                    <input
+                      type="url"
+                      value={newsForm.imageUrl.startsWith("http") ? newsForm.imageUrl : ""}
+                      onChange={(e) => setNewsForm({ ...newsForm, imageUrl: e.target.value })}
+                      placeholder="Atau tempel URL foto (opsional)"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                    <p className="text-[11px] leading-5 text-slate-400">Format JPG, PNG, WebP, atau AVIF. Maksimal 8 MB.</p>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-[1fr_110px]">
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Tautan detail (opsional)</label>
+                      <input
+                        type="text"
+                        value={newsForm.linkUrl}
+                        onChange={(e) => setNewsForm({ ...newsForm, linkUrl: e.target.value })}
+                        placeholder="https://... atau /halaman"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">Urutan</label>
+                      <input
+                        type="number"
+                        min={0}
+                        max={999}
+                        value={newsForm.order}
+                        onChange={(e) => setNewsForm({ ...newsForm, order: Number(e.target.value) })}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/15"
+                      />
+                    </div>
+                  </div>
+
+                  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <span>
+                      <span className="block text-xs font-black text-primary">Tampilkan di beranda</span>
+                      <span className="mt-1 block text-[11px] text-slate-500">Matikan untuk menyimpan sebagai draf.</span>
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={newsForm.isPublished}
+                      onChange={(e) => setNewsForm({ ...newsForm, isPublished: e.target.checked })}
+                      className="h-5 w-5 accent-primary"
+                    />
+                  </label>
+                </div>
+
+                <div className="mt-6 flex flex-col-reverse gap-2 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+                  {newsForm.id && (
+                    <button
+                      type="button"
+                      onClick={resetNewsForm}
+                      className="rounded-xl border border-slate-200 px-5 py-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                    >
+                      Batal edit
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-xs font-black text-cream shadow-md transition hover:bg-secondary disabled:cursor-wait disabled:opacity-60"
+                  >
+                    {isSubmitting ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}
+                    {newsForm.id ? "Simpan perubahan" : "Terbitkan berita"}
+                  </button>
+                </div>
+              </form>
+
+              <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-cta">Daftar berita</p>
+                    <h3 className="mt-2 text-xl font-black text-primary">{newsItems.length} konten tersimpan</h3>
+                  </div>
+                  <span className="rounded-full bg-cream px-3 py-1.5 text-[11px] font-black text-primary">
+                    {newsItems.filter((item) => item.isPublished).length} aktif
+                  </span>
+                </div>
+
+                {newsItems.length > 0 ? (
+                  <div className="mt-6 space-y-4">
+                    {newsItems.map((item) => (
+                      <article key={item.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                        <div className="grid sm:grid-cols-[150px_1fr]">
+                          <div className="h-36 bg-slate-100 sm:h-full">
+                            <img src={item.imageUrl || "/LOGO HIMA.png"} alt="" className="h-full w-full object-cover" />
+                          </div>
+                          <div className="p-5">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="rounded-full bg-cream px-2.5 py-1 text-[9px] font-black uppercase tracking-wide text-primary">{item.category}</span>
+                                  <span className={`rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-wide ${item.isPublished ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
+                                    {item.isPublished ? "Tayang" : "Draf"}
+                                  </span>
+                                  <span className="text-[10px] font-bold text-slate-400">Urutan {item.order}</span>
+                                </div>
+                                <h4 className="mt-3 font-black leading-snug text-primary">{item.title}</h4>
+                                <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{item.summary}</p>
+                                <p className="mt-3 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                                  {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(item.publishedAt))}
+                                </p>
+                              </div>
+                              <div className="flex shrink-0 flex-col gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => handleEditNews(item)}
+                                  className="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:border-primary hover:text-primary"
+                                  aria-label={`Edit ${item.title}`}
+                                >
+                                  <Edit2 size={14} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleNews(item)}
+                                  className="rounded-lg border border-slate-200 px-2 py-1.5 text-[9px] font-black text-slate-500 transition hover:border-primary hover:text-primary"
+                                  aria-label={item.isPublished ? `Sembunyikan ${item.title}` : `Tampilkan ${item.title}`}
+                                >
+                                  {item.isPublished ? "Draf" : "Tayang"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteNews(item)}
+                                  className="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:border-red-200 hover:text-red-500"
+                                  aria-label={`Hapus ${item.title}`}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-6 rounded-2xl border-2 border-dashed border-slate-200 px-6 py-12 text-center">
+                    <Newspaper size={32} className="mx-auto text-slate-300" />
+                    <p className="mt-3 text-sm font-bold text-slate-500">Belum ada berita.</p>
+                    <p className="mt-1 text-xs text-slate-400">Isi formulir di samping untuk menerbitkan kabar pertama.</p>
+                  </div>
+                )}
+              </section>
+            </div>
+          )}
+
+          {/* TAB 7: CALENDAR EVENTS — SUPERADMIN ONLY */}
           {activeTab === "events" && adminSession.isSuperAdmin && (
             <div className="grid gap-6 xl:grid-cols-[.85fr_1.15fr] animate-fade-in">
               <form onSubmit={handleEventSubmit} className="h-fit rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">

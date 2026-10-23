@@ -12,12 +12,19 @@ import { Member } from "@/domain/entities/Member";
 import { Document } from "@/domain/entities/Document";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
 import { CalendarEvent, CalendarEventInput } from "@/domain/entities/CalendarEvent";
+import { NewsItem } from "@/domain/entities/NewsItem";
 import { AdminDivision, AdminDivisionSlug, getAdminDivisionBySlug } from "@/lib/adminDivisions";
 import {
   listCalendarEvents,
   removeCalendarEvent,
   upsertCalendarEvent,
 } from "@/lib/calendarEvents";
+import {
+  deleteNewsImage,
+  listNewsItems,
+  saveNewsItems,
+  uploadNewsImage,
+} from "@/lib/newsRepository";
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 8;
 const FALLBACK_SUPERADMIN_PASSWORD_HASH =
@@ -173,7 +180,7 @@ function ensureCanManageMember(session: AdminSession, member?: Member) {
 
 function ensureSuperAdmin(session: AdminSession): void {
   if (!session.isSuperAdmin) {
-    throw new Error("Hanya Superadmin yang dapat mengelola kegiatan kalender.");
+    throw new Error("Hanya Superadmin yang dapat mengelola bagian ini.");
   }
 }
 
@@ -279,6 +286,107 @@ export async function deleteCalendarEventAction(id: string): Promise<void> {
   if (!normalizedId) throw new Error("Kegiatan tidak ditemukan.");
 
   await removeCalendarEvent(normalizedId);
+  revalidatePath("/");
+  revalidatePath("/admin");
+}
+
+function normalizeOptionalUrl(value: FormDataEntryValue | null, fieldName: string): string {
+  const normalized = typeof value === "string" ? value.trim().slice(0, 1000) : "";
+  if (!normalized) return "";
+  if (normalized.startsWith("/")) return normalized;
+  try {
+    const parsed = new URL(normalized);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error();
+    return parsed.toString();
+  } catch {
+    throw new Error(`${fieldName} harus berupa alamat http(s) yang valid.`);
+  }
+}
+
+function parseNewsDate(value: FormDataEntryValue | null): string {
+  const date = new Date(typeof value === "string" ? value : "");
+  if (Number.isNaN(date.getTime())) throw new Error("Tanggal publikasi tidak valid.");
+  return date.toISOString();
+}
+
+// Public news reads and Superadmin-only news management
+export async function getNewsItemsAction(): Promise<NewsItem[]> {
+  return listNewsItems();
+}
+
+export async function saveNewsItemAction(formData: FormData): Promise<NewsItem> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+
+  const id = cleanEventText(String(formData.get("id") ?? ""), 80) || crypto.randomUUID();
+  const title = cleanEventText(String(formData.get("title") ?? ""), 160);
+  const category = cleanEventText(String(formData.get("category") ?? ""), 60);
+  const summary = cleanEventText(String(formData.get("summary") ?? ""), 1000);
+  const publishedAt = parseNewsDate(formData.get("publishedAt"));
+  const orderValue = Number.parseInt(String(formData.get("order") ?? "0"), 10);
+  const isPublished = formData.get("isPublished") === "true";
+
+  if (!title) throw new Error("Judul berita wajib diisi.");
+  if (!category) throw new Error("Kategori berita wajib diisi.");
+  if (!summary) throw new Error("Ringkasan berita wajib diisi.");
+
+  const currentItems = await listNewsItems();
+  const existing = currentItems.find((item) => item.id === id);
+  let imageUrl = normalizeOptionalUrl(formData.get("imageUrl"), "URL gambar");
+  const linkUrl = normalizeOptionalUrl(formData.get("linkUrl"), "Tautan berita");
+  const image = formData.get("image");
+
+  if (image instanceof File && image.size > 0) {
+    if (!image.type.startsWith("image/")) throw new Error("Berkas foto harus berupa gambar.");
+    if (image.size > 8 * 1024 * 1024) throw new Error("Ukuran foto maksimal 8 MB.");
+    imageUrl = await uploadNewsImage(image);
+  }
+  if (!imageUrl) imageUrl = existing?.imageUrl || "/LOGO HIMA.png";
+
+  const now = new Date().toISOString();
+  const newsItem: NewsItem = {
+    id,
+    title,
+    category,
+    summary,
+    imageUrl,
+    linkUrl,
+    publishedAt,
+    isPublished,
+    order: Number.isFinite(orderValue) ? Math.max(0, Math.min(orderValue, 999)) : 0,
+    createdAt: existing?.createdAt ?? now,
+    updatedAt: now,
+  };
+
+  await saveNewsItems([...currentItems.filter((item) => item.id !== id), newsItem]);
+  if (existing?.imageUrl && existing.imageUrl !== imageUrl) await deleteNewsImage(existing.imageUrl);
+  revalidatePath("/");
+  revalidatePath("/admin");
+  return newsItem;
+}
+
+export async function setNewsPublishedAction(id: string, isPublished: boolean): Promise<NewsItem> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+  const items = await listNewsItems();
+  const existing = items.find((item) => item.id === id);
+  if (!existing) throw new Error("Berita tidak ditemukan.");
+  const updated = { ...existing, isPublished, updatedAt: new Date().toISOString() };
+  await saveNewsItems([...items.filter((item) => item.id !== id), updated]);
+  revalidatePath("/");
+  revalidatePath("/admin");
+  return updated;
+}
+
+export async function deleteNewsItemAction(id: string): Promise<void> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+  const normalizedId = cleanEventText(id, 80);
+  const items = await listNewsItems();
+  const existing = items.find((item) => item.id === normalizedId);
+  if (!existing) throw new Error("Berita tidak ditemukan.");
+  await saveNewsItems(items.filter((item) => item.id !== normalizedId));
+  await deleteNewsImage(existing.imageUrl);
   revalidatePath("/");
   revalidatePath("/admin");
 }

@@ -15,6 +15,7 @@
   "dependencies": {
     "@fontsource/montserrat": "^5.2.8",
     "@use-gesture/react": "^10.3.1",
+    "@vercel/blob": "^2.8.2",
     "drizzle-orm": "0.45.2",
     "fast-xml-parser": "^5.3.7",
     "framer-motion": "^12.34.3",

@@ -9,7 +9,7 @@ const securityHeaders = [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://images.unsplash.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://*.public.blob.vercel-storage.com",
       "font-src 'self' data:",
       `connect-src 'self' https://data.bmkg.go.id${isDevelopment ? " ws: wss:" : ""}`,
       "base-uri 'self'",
@@ -88,6 +88,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
       },
     ],
   },

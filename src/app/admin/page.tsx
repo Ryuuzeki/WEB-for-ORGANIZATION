@@ -4,6 +4,7 @@ import { getAdminSessionAction } from "@/application/actions/adminActions";
 import AdminDashboardPage from "@/presentation/app/admin/page";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
 import { listCalendarEvents } from "@/lib/calendarEvents";
+import { listNewsItems } from "@/lib/newsRepository";
 
 export const metadata = {
   title: "Dashboard Admin - HMTKBA",
@@ -20,7 +21,10 @@ export default async function Page() {
   // Load initial content to display and edit in the dashboard
   const landingPageData = await di.getLandingPageData().execute();
   const allMembers = await di.getOrganizationStructure().execute();
-  const calendarEvents = await listCalendarEvents();
+  const [calendarEvents, newsItems] = await Promise.all([
+    listCalendarEvents(),
+    listNewsItems(),
+  ]);
   const members = session.canManageAllDivisions
     ? allMembers
     : allMembers.filter((member) => member.division === session.memberDivision);
@@ -40,6 +44,7 @@ export default async function Page() {
       initialDocuments={landingPageData.documents}
       initialRegionalStats={regionalStats}
       initialCalendarEvents={calendarEvents}
+      initialNewsItems={newsItems}
       regions={regions}
       adminSession={session}
     />

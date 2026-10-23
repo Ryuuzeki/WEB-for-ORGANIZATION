@@ -3,7 +3,9 @@ import { HeroContainer } from "../containers/HeroContainer";
 import { VisionMissionContainer } from "../containers/VisionMissionContainer";
 import { ServicesContainer } from "../containers/ServicesContainer";
 import WaterCalendar from "../components/ui/WaterCalendar";
+import NewsShowcase from "../components/ui/NewsShowcase";
 import { listCalendarEvents } from "@/lib/calendarEvents";
+import { listNewsItems } from "@/lib/newsRepository";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -48,10 +50,11 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const getLandingPageData = di.getLandingPageData();
   const getOrganizationStructure = di.getOrganizationStructure();
-  const [data, members, calendarEvents] = await Promise.all([
+  const [data, members, calendarEvents, newsItems] = await Promise.all([
     getLandingPageData.execute(),
     getOrganizationStructure.execute(),
     listCalendarEvents(),
+    listNewsItems(),
   ]);
 
   const leadership = members
@@ -74,6 +77,7 @@ export default async function Home() {
     <main className="overflow-hidden pt-16 lg:pt-0">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <HeroContainer content={data.hero} />
+      <NewsShowcase items={newsItems} />
 
       <section id="about" className="scroll-mt-20 bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
         <div className="mx-auto grid max-w-[1400px] gap-10 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">

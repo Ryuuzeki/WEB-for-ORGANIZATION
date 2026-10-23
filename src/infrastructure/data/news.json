@@ -1,0 +1,15 @@
+[
+  {
+    "id": "ruang-berita-hmtkba",
+    "title": "Ruang Berita & Prestasi HMTKBA Kini Hadir",
+    "category": "Pengumuman",
+    "summary": "Ikuti kabar kegiatan, pencapaian mahasiswa, dan informasi terbaru HMTKBA melalui ruang berita ini.",
+    "imageUrl": "/LOGO HIMA.png",
+    "linkUrl": "",
+    "publishedAt": "2026-10-23T00:00:00.000Z",
+    "isPublished": true,
+    "order": 1,
+    "createdAt": "2026-10-23T00:00:00.000Z",
+    "updatedAt": "2026-10-23T00:00:00.000Z"
+  }
+]
