@@ -2,9 +2,16 @@
 .next
 node_modules
 coverage
+dist
+.open-next
+.wrangler
+.openai
 
 *.log
+*.tar.gz
 *.tsbuildinfo
+
+/LOGO HIMA.png
 
 .env
 .env.*
