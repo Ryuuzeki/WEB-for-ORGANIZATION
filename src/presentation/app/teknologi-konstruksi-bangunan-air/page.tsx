@@ -259,7 +259,10 @@ export default async function TechnologyConstructionWaterBuildingPage() {
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-cta">Kabar Mahasiswa</p>
                 <h2 className="mt-4 text-3xl font-black text-primary sm:text-5xl">Berita terkait HMTKBA.</h2>
               </div>
-              <Link href="/#berita" className="inline-flex items-center gap-2 text-sm font-black text-primary">Lihat semua berita <ArrowRight size={16} /></Link>
+              <div className="flex flex-wrap gap-4">
+                <Link href="/prestasi" className="inline-flex items-center gap-2 text-sm font-black text-primary">Ruang prestasi <Award size={16} className="text-cta" /></Link>
+                <Link href="/#berita" className="inline-flex items-center gap-2 text-sm font-black text-primary">Lihat semua berita <ArrowRight size={16} /></Link>
+              </div>
             </div>
             <div className="mt-10 grid gap-5 lg:grid-cols-3">
               {newsItems.map((item) => (

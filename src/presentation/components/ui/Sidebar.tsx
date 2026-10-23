@@ -13,6 +13,7 @@ import {
   Landmark,
   Menu,
   Network,
+  Trophy,
   UsersRound,
   Waves,
   X,
@@ -23,6 +24,7 @@ const navigation = [
   { label: "Beranda", href: "/", icon: Home },
   { label: "Profil Prodi", href: "/teknologi-konstruksi-bangunan-air", icon: Landmark },
   { label: "Dosen TKBA", href: "/dosen", icon: UsersRound },
+  { label: "Prestasi", href: "/prestasi", icon: Trophy },
   { label: "Tentang Kami", href: "/#about", icon: BookOpenText },
   { label: "Struktur", href: "/#struktur", icon: Network },
   { label: "Program Kerja", href: "/#program", icon: BriefcaseBusiness },
@@ -102,9 +104,9 @@ export function Sidebar() {
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-6" aria-label="Navigasi utama">
+        <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Navigasi utama">
           {!collapsed && <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.22em] text-sky-200/65">Navigasi</p>}
-          <ul className="space-y-1.5">
+          <ul className="space-y-1">
             {navigation.map((item) => {
               const Icon = item.icon;
               const active = item.href.includes("#")
@@ -118,7 +120,7 @@ export function Sidebar() {
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
                     title={collapsed ? item.label : undefined}
-                    className={`group flex min-h-12 items-center gap-3 rounded-2xl px-3 text-sm font-semibold transition-colors ${
+                    className={`group flex min-h-11 items-center gap-3 rounded-2xl px-3 text-sm font-semibold transition-colors ${
                       active ? "bg-white text-primary shadow-lg shadow-black/10" : "text-white/75 hover:bg-white/10 hover:text-white"
                     }`}
                   >
