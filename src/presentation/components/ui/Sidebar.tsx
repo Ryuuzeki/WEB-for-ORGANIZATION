@@ -13,6 +13,7 @@ import {
   Landmark,
   Menu,
   Network,
+  UsersRound,
   Waves,
   X,
 } from "lucide-react";
@@ -21,6 +22,7 @@ import { useEffect, useState } from "react";
 const navigation = [
   { label: "Beranda", href: "/", icon: Home },
   { label: "Profil Prodi", href: "/teknologi-konstruksi-bangunan-air", icon: Landmark },
+  { label: "Dosen TKBA", href: "/dosen", icon: UsersRound },
   { label: "Tentang Kami", href: "/#about", icon: BookOpenText },
   { label: "Struktur", href: "/#struktur", icon: Network },
   { label: "Program Kerja", href: "/#program", icon: BriefcaseBusiness },

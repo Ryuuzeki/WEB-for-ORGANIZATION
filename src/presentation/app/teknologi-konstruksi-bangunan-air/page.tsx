@@ -233,6 +233,11 @@ export default async function TechnologyConstructionWaterBuildingPage() {
               </article>
             ))}
           </div>
+          <div className="mt-8 flex justify-end">
+            <Link href="/dosen" className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-xs font-black text-white transition hover:-translate-y-0.5 hover:bg-[#173a8b]">
+              Lihat seluruh dosen TKBA <ArrowRight size={15} />
+            </Link>
+          </div>
         </div>
       </section>
 
