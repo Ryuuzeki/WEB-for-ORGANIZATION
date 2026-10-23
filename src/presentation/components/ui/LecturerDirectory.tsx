@@ -58,7 +58,7 @@ export default function LecturerDirectory() {
               key={lecturer.name}
               className="group overflow-hidden rounded-[1.75rem] border border-primary/9 bg-white shadow-[0_16px_50px_rgba(16,42,107,.075)] transition duration-300 hover:-translate-y-1 hover:border-cta/55 hover:shadow-[0_24px_65px_rgba(16,42,107,.13)]"
             >
-              <div className="relative aspect-[4/4.3] overflow-hidden bg-[#eef2f8]">
+              <div className="photo-frame relative aspect-[4/4.3] overflow-hidden bg-[#eef2f8]">
                 <div className="absolute inset-x-0 top-0 z-10 h-1.5 bg-gradient-to-r from-primary via-sky-500 to-cta" />
                 <Image
                   src={lecturer.image}

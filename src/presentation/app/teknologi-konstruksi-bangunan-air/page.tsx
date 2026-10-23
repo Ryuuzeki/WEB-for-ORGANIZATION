@@ -267,7 +267,7 @@ export default async function TechnologyConstructionWaterBuildingPage() {
             <div className="mt-10 grid gap-5 lg:grid-cols-3">
               {newsItems.map((item) => (
                 <article key={item.id} className="overflow-hidden rounded-[1.75rem] border border-primary/8 bg-white shadow-[0_18px_55px_rgba(16,42,107,.08)]">
-                  <div className="h-56 overflow-hidden bg-primary/5">
+                  <div className="photo-frame relative h-56 overflow-hidden bg-primary/5">
                     {/* News images can use administrator-provided external URLs. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={item.imageUrl || "/LOGO HIMA.png"} alt={`Foto berita: ${item.title}`} className="h-full w-full object-cover transition duration-500 hover:scale-105" />

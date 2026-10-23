@@ -90,7 +90,7 @@ export default function DokumenPage() {
           </div>
           <div className="grid h-[430px] grid-cols-2 grid-rows-2 gap-3">
             {mediaItems.slice(0, 3).map((item, index) => (
-              <div key={item.id} className={`group relative overflow-hidden rounded-3xl ${index === 0 ? "row-span-2" : ""}`}>
+              <div key={item.id} className={`photo-frame group relative overflow-hidden rounded-3xl ${index === 0 ? "row-span-2" : ""}`}>
                 <img src={item.thumbnail} alt={item.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent to-transparent" />
                 <span className="absolute bottom-4 left-4 right-4 text-xs font-bold leading-5 text-white">{item.title}</span>
@@ -139,7 +139,7 @@ export default function DokumenPage() {
             >
               <div>
                 {/* Media Image/Video Container */}
-                <div className="relative aspect-video overflow-hidden bg-black/5">
+                <div className="photo-frame relative aspect-video overflow-hidden bg-black/5">
                   <img
                     src={item.thumbnail}
                     alt={item.title}

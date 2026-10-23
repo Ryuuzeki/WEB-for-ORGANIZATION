@@ -50,11 +50,11 @@ export default function AchievementPage() {
           </div>
 
           <div className="relative min-h-[510px] sm:min-h-[570px]">
-            <div className="absolute left-0 top-10 h-[70%] w-[68%] overflow-hidden rounded-[2rem] border-4 border-white/10 bg-white shadow-2xl sm:left-6">
+            <div className="photo-frame absolute left-0 top-10 h-[70%] w-[68%] overflow-hidden rounded-[2rem] bg-white shadow-2xl sm:left-6">
               <Image src="/prestasi/basket-tkba.jpg" alt="Prestasi Juara 1 basket mahasiswa TKBA" fill sizes="(max-width: 1024px) 70vw, 40vw" className="object-cover object-top" priority />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent to-transparent" />
             </div>
-            <div className="absolute bottom-2 right-0 h-[48%] w-[50%] overflow-hidden rounded-[1.75rem] border-4 border-primary bg-white shadow-2xl sm:right-6">
+            <div className="photo-frame absolute bottom-2 right-0 h-[48%] w-[50%] overflow-hidden rounded-[1.75rem] bg-white shadow-2xl sm:right-6">
               <Image src="/prestasi/keila-andromeda.jpg" alt="Prestasi tinju Keila Raesya Nuha" fill sizes="280px" className="object-cover" priority />
             </div>
             <div className="absolute right-0 top-2 grid h-28 w-28 place-items-center rounded-full border-[10px] border-primary bg-cta text-primary shadow-2xl sm:h-36 sm:w-36">
@@ -100,7 +100,7 @@ export default function AchievementPage() {
           <div className="mt-12 grid gap-5 lg:grid-cols-3">
             {achievementStories.map((story) => (
               <article key={story.url} className="group overflow-hidden rounded-[1.75rem] border border-primary/9 bg-white shadow-[0_18px_55px_rgba(16,42,107,.08)]">
-                <div className="relative h-72 overflow-hidden bg-primary/5"><Image src={story.image} alt={`Foto ${story.title}`} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition duration-500 group-hover:scale-105" /></div>
+                <div className="photo-frame relative h-72 overflow-hidden bg-primary/5"><Image src={story.image} alt={`Foto ${story.title}`} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition duration-500 group-hover:scale-105" /></div>
                 <div className="p-6"><p className="text-[10px] font-black uppercase tracking-[0.14em] text-cta">{story.date}</p><h3 className="mt-3 text-xl font-black leading-snug text-primary">{story.title}</h3><p className="mt-3 text-sm font-medium leading-6 text-secondary/62">{story.summary}</p><a href={story.url} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-xs font-black text-primary">Baca cerita lengkap <ArrowUpRight size={15} /></a></div>
               </article>
             ))}

@@ -66,7 +66,7 @@ export default function NewsShowcase({ items }: NewsShowcaseProps) {
           onBlurCapture={() => setIsPaused(false)}
         >
           <div className="grid min-h-[590px] lg:grid-cols-[1.18fr_.82fr]">
-            <div className="relative min-h-[390px] overflow-hidden lg:min-h-[590px]">
+            <div className="photo-frame relative min-h-[390px] overflow-hidden lg:min-h-[590px]">
               <img
                 key={activeItem.id}
                 src={activeItem.imageUrl || "/LOGO HIMA.png"}

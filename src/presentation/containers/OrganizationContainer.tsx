@@ -102,7 +102,7 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
                     key={member.id}
                     className="group rounded-lg border border-primary/10 bg-white p-3 shadow-sm transition hover:-translate-y-1 hover:border-accent/50 hover:shadow-md"
                   >
-                    <div className="relative mb-3 aspect-[4/5] overflow-hidden rounded-md bg-sky-100">
+                    <div className={`relative mb-3 aspect-[4/5] overflow-hidden rounded-md bg-sky-100 ${member.imageUrl ? "photo-frame" : ""}`}>
                       {member.imageUrl ? (
                         <Image
                           src={member.imageUrl}

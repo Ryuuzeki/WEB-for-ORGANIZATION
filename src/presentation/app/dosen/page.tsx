@@ -69,7 +69,7 @@ export default function LecturersPage() {
                   "bottom-0 right-12 z-30 h-[48%] w-[42%] rotate-2 sm:right-20",
                 ];
                 return (
-                  <div key={lecturer.name} className={`absolute overflow-hidden rounded-[1.5rem] border-4 border-white bg-white shadow-2xl ${positions[index]}`}>
+                  <div key={lecturer.name} className={`photo-frame absolute overflow-hidden rounded-[1.5rem] bg-white shadow-2xl ${positions[index]}`}>
                     <Image src={lecturer.image} alt={`Foto ${lecturer.name}`} fill sizes="260px" className="object-cover object-top" priority />
                   </div>
                 );
