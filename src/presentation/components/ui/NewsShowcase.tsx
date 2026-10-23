@@ -42,7 +42,7 @@ export default function NewsShowcase({ items }: NewsShowcaseProps) {
   const showNext = () => setActiveIndex((current) => (current + 1) % publishedItems.length);
 
   return (
-    <section id="berita" className="scroll-mt-20 bg-background px-4 py-20 sm:px-8 lg:px-10 lg:py-28">
+    <section id="berita" className="scroll-mt-20 bg-white px-4 py-20 sm:px-8 lg:px-10 lg:py-28">
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-9 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
