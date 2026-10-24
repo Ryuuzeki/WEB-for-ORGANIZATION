@@ -1,5 +1,10 @@
+import "server-only";
+
+import { get as getBlob, put as putBlob } from "@vercel/blob";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import type { CalendarEvent } from "@/domain/entities/CalendarEvent";
+
+const CALENDAR_DATA_PATH = "hmtkba/data/calendar-events.json";
 
 interface CalendarEventRow {
   id: string;
@@ -33,6 +38,7 @@ type CalendarEventGlobals = typeof globalThis & {
 
 const localEvents = ((globalThis as CalendarEventGlobals).__hmtkbaCalendarEvents ??= new Map());
 const initializedDatabases = new WeakSet<object>();
+const hasBlobStorage = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 
 const CREATE_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS calendar_events (
@@ -99,7 +105,30 @@ function sortEvents(events: CalendarEvent[]): CalendarEvent[] {
   return [...events].sort((first, second) => first.startsAt.localeCompare(second.startsAt));
 }
 
+async function readBlobEvents(): Promise<CalendarEvent[]> {
+  try {
+    const result = await getBlob(CALENDAR_DATA_PATH, { access: "public", useCache: false });
+    if (!result?.stream) return [];
+    const parsed = (await new Response(result.stream).json()) as CalendarEvent[];
+    return Array.isArray(parsed) ? sortEvents(parsed) : [];
+  } catch {
+    return [];
+  }
+}
+
+async function writeBlobEvents(events: CalendarEvent[]): Promise<void> {
+  await putBlob(CALENDAR_DATA_PATH, JSON.stringify(sortEvents(events)), {
+    access: "public",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    cacheControlMaxAge: 30,
+    contentType: "application/json; charset=utf-8",
+  });
+}
+
 export async function listCalendarEvents(): Promise<CalendarEvent[]> {
+  if (hasBlobStorage()) return readBlobEvents();
+
   const database = await getDatabase();
   if (!database) return sortEvents(Array.from(localEvents.values()));
 
@@ -117,6 +146,12 @@ export async function listCalendarEvents(): Promise<CalendarEvent[]> {
 }
 
 export async function upsertCalendarEvent(event: CalendarEvent): Promise<void> {
+  if (hasBlobStorage()) {
+    const events = await readBlobEvents();
+    await writeBlobEvents([...events.filter((item) => item.id !== event.id), event]);
+    return;
+  }
+
   const database = await getDatabase();
   if (!database) {
     if (process.env.NODE_ENV === "production") {
@@ -154,6 +189,12 @@ export async function upsertCalendarEvent(event: CalendarEvent): Promise<void> {
 }
 
 export async function removeCalendarEvent(id: string): Promise<void> {
+  if (hasBlobStorage()) {
+    const events = await readBlobEvents();
+    await writeBlobEvents(events.filter((event) => event.id !== id));
+    return;
+  }
+
   const database = await getDatabase();
   if (!database) {
     if (process.env.NODE_ENV === "production") {
