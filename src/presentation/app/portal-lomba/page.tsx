@@ -13,14 +13,15 @@ export default async function StudentCompetitionPage() {
     timeZone: "Asia/Jakarta",
   }).format(new Date(feed.updatedAt));
   const openCount = feed.items.filter((item) => !item.isClosed).length;
+  const unavailableSources = feed.sources.filter((source) => !source.available);
 
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: "Portal Lomba Mahasiswa HMTKBA",
-    description: "Agregator informasi lomba yang menerima peserta mahasiswa, diperbarui dari InfoLomba.id.",
+    description: "Agregator informasi lomba yang menerima peserta mahasiswa, diperbarui dari InfoLomba.id dan SiLomba.id.",
     url: "https://hmtkba.vercel.app/portal-lomba",
-    isBasedOn: "https://www.infolomba.id/events?peserta=5",
+    isBasedOn: ["https://www.infolomba.id/events?peserta=5", "https://silomba.id/"],
   };
 
   return (
@@ -35,7 +36,7 @@ export default async function StudentCompetitionPage() {
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45"><Link href="/" className="hover:text-white">Beranda</Link><span>/</span><span>Portal Lomba</span></nav>
             <p className="mt-10 flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-cta"><Sparkles size={16} /> Peluang Prestasi Mahasiswa</p>
             <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight sm:text-6xl xl:text-7xl">Portal Lomba Mahasiswa</h1>
-            <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-white/68 sm:text-lg">Temukan kompetisi yang menerima peserta mahasiswa dalam satu ruang yang ringkas, mudah dicari, dan mengikuti pembaruan dari InfoLomba.id.</p>
+            <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-white/68 sm:text-lg">Temukan kompetisi yang menerima peserta mahasiswa dalam satu ruang yang ringkas, mudah dicari, dan mengikuti pembaruan dari InfoLomba.id serta SiLomba.id.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-xs font-black"><Trophy size={16} className="text-cta" /> {openCount} masih dibuka</span>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-xs font-black"><RefreshCw size={15} className="text-cta" /> Sinkron setiap 1 jam</span>
@@ -60,11 +61,14 @@ export default async function StudentCompetitionPage() {
               <h2 className="mt-4 text-3xl font-black leading-tight text-primary sm:text-5xl">Cari peluang, siapkan karya terbaik.</h2>
               <p className="mt-5 max-w-2xl text-sm font-medium leading-7 text-secondary/65 sm:text-base">Data terakhir disinkronkan {updatedAt} WIB. Status, biaya, dan jadwal akhir tetap perlu dikonfirmasi pada halaman sumber.</p>
             </div>
-            <a href="https://www.infolomba.id/events?peserta=5" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 text-sm font-black text-primary underline decoration-cta decoration-2 underline-offset-4">Buka sumber asli <ExternalLink size={15} /></a>
+            <div className="flex flex-wrap gap-4">
+              <a href="https://www.infolomba.id/events?peserta=5" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 text-sm font-black text-primary underline decoration-cta decoration-2 underline-offset-4">InfoLomba <ExternalLink size={15} /></a>
+              <a href="https://silomba.id/" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 text-sm font-black text-primary underline decoration-cta decoration-2 underline-offset-4">SiLomba <ExternalLink size={15} /></a>
+            </div>
           </div>
 
-          {!feed.sourceAvailable && (
-            <div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm font-semibold text-amber-800">Sumber sedang tidak dapat dihubungi. Silakan buka InfoLomba.id melalui tautan sumber asli.</div>
+          {unavailableSources.length > 0 && (
+            <div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm font-semibold text-amber-800">{unavailableSources.map((source) => source.name).join(" dan ")} sedang tidak dapat dihubungi. Data dari sumber lain tetap ditampilkan.</div>
           )}
 
           <div className="mt-12"><CompetitionPortal items={feed.items} /></div>
@@ -75,7 +79,7 @@ export default async function StudentCompetitionPage() {
         <div className="mx-auto grid max-w-[1400px] gap-5 md:grid-cols-3">
           {[
             { icon: RefreshCw, title: "Pembaruan berkala", text: "Daftar disinkronkan kembali maksimal setiap satu jam saat portal diakses." },
-            { icon: ShieldCheck, title: "Sumber transparan", text: "Setiap kartu mengarah ke InfoLomba.id untuk detail dan konfirmasi resmi." },
+            { icon: ShieldCheck, title: "Sumber transparan", text: "Setiap kartu mencantumkan sumber dan mengarah ke InfoLomba atau SiLomba untuk konfirmasi." },
             { icon: Waves, title: "Fokus mahasiswa", text: "Portal hanya memuat lomba yang mencantumkan mahasiswa sebagai peserta." },
           ].map((item) => {
             const Icon = item.icon;
@@ -85,7 +89,7 @@ export default async function StudentCompetitionPage() {
       </section>
 
       <footer className="bg-[var(--hmtkba-footer)] px-5 py-10 text-white/55 sm:px-8 lg:px-10">
-        <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-5 border-t border-white/10 pt-8 text-xs font-semibold sm:flex-row sm:items-center"><p>© 2026 HMTKBA · Portal Lomba Mahasiswa</p><p>Informasi bersumber dari <a href="https://www.infolomba.id/" target="_blank" rel="noopener noreferrer" className="text-white underline">InfoLomba.id</a>.</p></div>
+        <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-5 border-t border-white/10 pt-8 text-xs font-semibold sm:flex-row sm:items-center"><p>© 2026 HMTKBA · Portal Lomba Mahasiswa</p><p>Informasi bersumber dari <a href="https://www.infolomba.id/" target="_blank" rel="noopener noreferrer" className="text-white underline">InfoLomba.id</a> dan <a href="https://silomba.id/" target="_blank" rel="noopener noreferrer" className="text-white underline">SiLomba.id</a>.</p></div>
       </footer>
     </main>
   );

@@ -9,7 +9,7 @@ const securityHeaders = [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://images.unsplash.com https://*.public.blob.vercel-storage.com https://infolomba.id https://www.infolomba.id",
+      "img-src 'self' data: blob: https://images.unsplash.com https://*.public.blob.vercel-storage.com https://infolomba.id https://www.infolomba.id https://silomba.id https://www.silomba.id https://storage.silomba.id",
       "font-src 'self' data:",
       `connect-src 'self' https://data.bmkg.go.id${isDevelopment ? " ws: wss:" : ""}`,
       "base-uri 'self'",

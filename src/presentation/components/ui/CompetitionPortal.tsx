@@ -11,14 +11,17 @@ const filters = [
   { id: "online", label: "Online" },
 ] as const;
 
+const sourceFilters = ["Semua sumber", "InfoLomba", "SiLomba"] as const;
+
 export default function CompetitionPortal({ items }: { items: CompetitionListing[] }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]["id"]>("open");
+  const [sourceFilter, setSourceFilter] = useState<(typeof sourceFilters)[number]>("Semua sumber");
 
   const visibleItems = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
     return items.filter((item) => {
-      const matchesQuery = !normalizedQuery || [item.title, item.organizer, item.mode, item.fee]
+      const matchesQuery = !normalizedQuery || [item.title, item.organizer, item.mode, item.fee, item.sourceName]
         .join(" ")
         .toLowerCase()
         .includes(normalizedQuery);
@@ -27,9 +30,10 @@ export default function CompetitionPortal({ items }: { items: CompetitionListing
         (filter === "open" && !item.isClosed) ||
         (filter === "free" && /gratis|rp\s*0\b/i.test(item.fee)) ||
         (filter === "online" && /online/i.test(item.mode));
-      return matchesQuery && matchesFilter;
+      const matchesSource = sourceFilter === "Semua sumber" || item.sourceName === sourceFilter;
+      return matchesQuery && matchesFilter && matchesSource;
     });
-  }, [filter, items, query]);
+  }, [filter, items, query, sourceFilter]);
 
   return (
     <div>
@@ -55,6 +59,19 @@ export default function CompetitionPortal({ items }: { items: CompetitionListing
             </button>
           ))}
         </div>
+        <div className="flex flex-wrap items-center gap-2 border-t border-primary/10 pt-3 lg:col-span-2" role="group" aria-label="Filter sumber lomba">
+          <span className="mr-1 text-[10px] font-black uppercase tracking-[0.16em] text-secondary/45">Sumber</span>
+          {sourceFilters.map((source) => (
+            <button
+              type="button"
+              key={source}
+              onClick={() => setSourceFilter(source)}
+              className={`rounded-full px-3 py-2 text-[11px] font-black transition ${sourceFilter === source ? "bg-cta text-primary" : "bg-primary/5 text-primary hover:bg-primary/10"}`}
+            >
+              {source}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="mt-5 flex items-center justify-between gap-4 px-1">
@@ -75,6 +92,7 @@ export default function CompetitionPortal({ items }: { items: CompetitionListing
                 <span className={`absolute left-3 top-3 rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-wide shadow-lg ${item.isClosed ? "bg-slate-700 text-white" : "bg-cta text-primary"}`}>
                   {item.isClosed ? "Pendaftaran ditutup" : "Masih dibuka"}
                 </span>
+                <span className="absolute right-3 top-3 rounded-full border border-white/25 bg-primary/90 px-2.5 py-1.5 text-[9px] font-black uppercase tracking-wide text-white shadow-lg backdrop-blur-sm">{item.sourceName}</span>
                 <span className="absolute bottom-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-white text-xs font-black text-primary shadow-lg">{String(index + 1).padStart(2, "0")}</span>
               </div>
               <div className="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
@@ -89,7 +107,7 @@ export default function CompetitionPortal({ items }: { items: CompetitionListing
                   <div className="flex items-start gap-2"><CircleDollarSign size={16} className="mt-0.5 shrink-0 text-cta" /><div><dt className="sr-only">Biaya</dt><dd>{item.fee || "Lihat biaya di sumber"}</dd></div></div>
                 </dl>
                 <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-white transition hover:bg-secondary">
-                  Lihat detail di InfoLomba <ArrowUpRight size={16} />
+                  Lihat detail di {item.sourceName} <ArrowUpRight size={16} />
                 </a>
               </div>
             </article>
