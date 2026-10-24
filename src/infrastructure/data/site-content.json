@@ -72,6 +72,29 @@
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
       "exploreTitle": "Jelajahi",
       "quickAccessTitle": "Akses cepat",
+      "contactTitle": "Lokasi & Kontak",
+      "connectTitle": "Tetap Terhubung",
+      "campuses": [
+        {
+          "name": "Kampus 1",
+          "address": "Jl. Prof. Soedarto No. 15, Tembalang, Kota Semarang 50275",
+          "mapUrl": ""
+        },
+        {
+          "name": "Kampus 2",
+          "address": "Jl. Soekarno Hatta No. 100, Siwalan, Kec. Gayamsari, Kota Semarang, Jawa Tengah 50166",
+          "mapUrl": ""
+        }
+      ],
+      "phone": "087754750954",
+      "email": "",
+      "socialLinks": [
+        { "platform": "instagram", "label": "Instagram", "url": "" },
+        { "platform": "youtube", "label": "YouTube Channel", "url": "" },
+        { "platform": "tiktok", "label": "TikTok Official", "url": "" },
+        { "platform": "facebook", "label": "Facebook Page", "url": "" },
+        { "platform": "threads", "label": "Threads Page", "url": "" }
+      ],
       "copyright": "© 2026 Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air.",
       "closingText": "Mengalir kokoh, berkarya untuk negeri."
     }

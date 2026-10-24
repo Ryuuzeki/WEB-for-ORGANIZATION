@@ -57,6 +57,20 @@ export interface HomeFooterContent {
   description: string;
   exploreTitle: string;
   quickAccessTitle: string;
+  contactTitle: string;
+  connectTitle: string;
+  campuses: Array<{
+    name: string;
+    address: string;
+    mapUrl: string;
+  }>;
+  phone: string;
+  email: string;
+  socialLinks: Array<{
+    platform: "instagram" | "youtube" | "tiktok" | "facebook" | "threads";
+    label: string;
+    url: string;
+  }>;
   copyright: string;
   closingText: string;
 }

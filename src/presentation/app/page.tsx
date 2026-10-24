@@ -9,15 +9,31 @@ import { listNewsItems } from "@/lib/newsRepository";
 import { getSiteContent } from "@/lib/siteContentRepository";
 import Link from "next/link";
 import {
+  AtSign,
   ArrowUpRight,
   Building2,
+  ChevronRight,
+  Facebook,
   GraduationCap,
   Handshake,
+  Instagram,
+  Mail,
+  MapPin,
+  Music2,
+  PhoneCall,
   UsersRound,
   Waves,
+  Youtube,
 } from "lucide-react";
 
 const programIcons = [GraduationCap, Building2, Handshake];
+const socialIcons = {
+  instagram: Instagram,
+  youtube: Youtube,
+  tiktok: Music2,
+  facebook: Facebook,
+  threads: AtSign,
+};
 
 const getInitials = (name: string) =>
   name
@@ -160,14 +176,86 @@ export default async function Home() {
         <ServicesContainer documents={data.documents} content={siteContent.home.documents} />
       </div>
 
-      <footer id="contact" className="bg-[var(--hmtkba-footer)] px-5 pb-8 pt-14 text-white sm:px-8 lg:px-10">
+      <footer id="contact" className="bg-[var(--hmtkba-footer)] px-5 pb-8 pt-14 text-white sm:px-8 lg:px-10 lg:pt-20">
         <div className="mx-auto max-w-[1400px]">
-          <div className="grid gap-10 border-b border-white/10 pb-12 md:grid-cols-[1.4fr_1fr_1fr]">
-            <div className="max-w-md"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-primary"><Waves size={23} /></span><span className="text-xl font-black">{siteContent.home.footer.brandTitle}</span></div><p className="mt-5 text-sm leading-7 text-white/60">{siteContent.home.footer.description}</p></div>
-            <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">{siteContent.home.footer.exploreTitle}</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/#about" className="hover:text-white">Tentang Kami</Link><Link href="/#vision" className="hover:text-white">Visi & Misi</Link><Link href="/#struktur" className="hover:text-white">Struktur Organisasi</Link><Link href="/#program" className="hover:text-white">Program Kerja</Link></div></div>
-            <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">{siteContent.home.footer.quickAccessTitle}</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/dokumen" className="hover:text-white">Galeri kegiatan</Link><Link href="/#docs" className="hover:text-white">Pusat dokumen</Link><Link href="/admin/login" className="hover:text-white">Portal pengurus</Link><Link href="/data-center" className="hover:text-white">Wawasan keairan</Link></div></div>
+          <div className="mb-11 flex max-w-2xl items-start gap-4">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-cream text-primary shadow-lg shadow-black/10"><Waves size={24} /></span>
+            <div>
+              <p className="text-xl font-black">{siteContent.home.footer.brandTitle}</p>
+              <p className="mt-2 text-sm leading-7 text-white/60">{siteContent.home.footer.description}</p>
+            </div>
           </div>
-          <div className="flex flex-col gap-2 pt-7 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between"><p>{siteContent.home.footer.copyright}</p><p>{siteContent.home.footer.closingText}</p></div>
+
+          <div className="grid gap-12 border-b border-white/10 pb-12 lg:grid-cols-[1.15fr_.85fr] lg:gap-20">
+            <section aria-labelledby="footer-contact-title">
+              <h2 id="footer-contact-title" data-title-motion="off" className="flex items-center gap-3 text-lg font-black">
+                <span className="h-6 w-1 rounded-full bg-amber-400" />
+                {siteContent.home.footer.contactTitle}
+              </h2>
+
+              <div className="mt-7 grid gap-4 sm:grid-cols-2">
+                {siteContent.home.footer.campuses.map((campus, index) => {
+                  const card = (
+                    <>
+                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-400/12 text-amber-400"><MapPin size={19} /></span>
+                      <span className="min-w-0">
+                        <strong className="block text-sm font-extrabold text-white">{campus.name}</strong>
+                        <span className="mt-1 block text-sm leading-6 text-white/55">{campus.address}</span>
+                      </span>
+                      {campus.mapUrl && <ArrowUpRight size={16} className="ml-auto shrink-0 text-white/35" />}
+                    </>
+                  );
+
+                  return campus.mapUrl ? (
+                    <a key={`${campus.name}-${index}`} href={campus.mapUrl} target="_blank" rel="noreferrer" className="flex min-h-32 items-start gap-3 rounded-2xl border border-white/10 bg-white/[.035] p-5 transition hover:-translate-y-0.5 hover:border-amber-400/35 hover:bg-white/[.06]">{card}</a>
+                  ) : (
+                    <div key={`${campus.name}-${index}`} className="flex min-h-32 items-start gap-3 rounded-2xl border border-white/10 bg-white/[.035] p-5">{card}</div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <a href={`tel:${siteContent.home.footer.phone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.035] p-5 transition hover:border-amber-400/35 hover:bg-white/[.06]">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-400/12 text-amber-400"><PhoneCall size={19} /></span>
+                  <span><strong className="block text-sm font-extrabold">Hubungi Telepon & Chat</strong><span className="mt-1 block text-sm text-white/55">{siteContent.home.footer.phone}</span></span>
+                </a>
+                {siteContent.home.footer.email && (
+                  <a href={`mailto:${siteContent.home.footer.email}`} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.035] p-5 transition hover:border-amber-400/35 hover:bg-white/[.06]">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-400/12 text-amber-400"><Mail size={19} /></span>
+                    <span><strong className="block text-sm font-extrabold">Surat Elektronik Resmi</strong><span className="mt-1 block text-sm text-white/55">{siteContent.home.footer.email}</span></span>
+                  </a>
+                )}
+              </div>
+            </section>
+
+            <section aria-labelledby="footer-social-title">
+              <h2 id="footer-social-title" data-title-motion="off" className="flex items-center gap-3 text-lg font-black">
+                <span className="h-6 w-1 rounded-full bg-amber-400" />
+                {siteContent.home.footer.connectTitle}
+              </h2>
+              <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                {siteContent.home.footer.socialLinks.map((social) => {
+                  const Icon = socialIcons[social.platform];
+                  const content = <><Icon size={20} className="text-amber-400" /><span className="font-bold">{social.label}</span><ChevronRight size={18} className="ml-auto text-white/30" /></>;
+                  return social.url ? (
+                    <a key={social.platform} href={social.url} target="_blank" rel="noreferrer" className="flex min-h-14 items-center gap-4 rounded-2xl border border-white/10 bg-white/[.035] px-5 text-sm transition hover:translate-x-1 hover:border-amber-400/35 hover:bg-white/[.06]">{content}</a>
+                  ) : (
+                    <div key={social.platform} className="flex min-h-14 items-center gap-4 rounded-2xl border border-white/10 bg-white/[.025] px-5 text-sm text-white/75">{content}</div>
+                  );
+                })}
+              </div>
+            </section>
+          </div>
+
+          <nav aria-label="Tautan footer" className="flex flex-wrap gap-x-5 gap-y-3 pt-7 text-xs font-semibold text-white/55">
+            <Link href="/#about" className="transition hover:text-white">Tentang Kami</Link>
+            <Link href="/#struktur" className="transition hover:text-white">Struktur</Link>
+            <Link href="/dokumen" className="transition hover:text-white">Dokumentasi</Link>
+            <Link href="/portal-lomba" className="transition hover:text-white">Portal Lomba</Link>
+            <Link href="/data-center" className="transition hover:text-white">Data Center</Link>
+            <Link href="/admin/login" className="transition hover:text-white">Portal Pengurus</Link>
+          </nav>
+          <div className="mt-6 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between"><p>{siteContent.home.footer.copyright}</p><p>{siteContent.home.footer.closingText}</p></div>
         </div>
       </footer>
     </main>

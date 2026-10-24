@@ -249,12 +249,37 @@ export function WebsiteContentEditor({
         </div>
       </Section>
 
-      <Section title="10. Beranda · Footer" description="Identitas, keterangan, judul kelompok tautan, hak cipta, dan kalimat penutup.">
+      <Section title="10. Beranda · Footer" description="Atur identitas, alamat kampus, nomor telepon, email, dan tautan media sosial yang tampil pada footer.">
         <div className="grid gap-4 sm:grid-cols-2">
-          {(["brandTitle", "exploreTitle", "quickAccessTitle", "copyright", "closingText"] as const).map((key) => (
-            <Field key={key} label={{ brandTitle: "Nama di footer", exploreTitle: "Judul kolom jelajahi", quickAccessTitle: "Judul kolom akses cepat", copyright: "Teks hak cipta", closingText: "Kalimat penutup" }[key]}><input className={inputClass} value={site.home.footer[key]} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, [key]: e.target.value } } }))} /></Field>
+          {(["brandTitle", "contactTitle", "connectTitle", "copyright", "closingText"] as const).map((key) => (
+            <Field key={key} label={{ brandTitle: "Nama di footer", contactTitle: "Judul lokasi & kontak", connectTitle: "Judul media sosial", copyright: "Teks hak cipta", closingText: "Kalimat penutup" }[key]}><input className={inputClass} value={site.home.footer[key]} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, [key]: e.target.value } } }))} /></Field>
           ))}
           <div className="sm:col-span-2"><Field label="Deskripsi organisasi"><textarea rows={3} className={inputClass} value={site.home.footer.description} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, description: e.target.value } } }))} /></Field></div>
+          <Field label="Nomor telepon / WhatsApp"><input className={inputClass} value={site.home.footer.phone} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, phone: e.target.value } } }))} /></Field>
+          <Field label="Email resmi" hint="Boleh dikosongkan. Kolom email tidak akan tampil di website jika kosong."><input type="email" className={inputClass} value={site.home.footer.email} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, email: e.target.value } } }))} /></Field>
+
+          <div className="space-y-3 sm:col-span-2">
+            <p className="text-xs font-black uppercase tracking-wide text-primary">Lokasi kampus</p>
+            {site.home.footer.campuses.map((campus, index) => (
+              <div key={index} className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2">
+                <Field label={`Nama lokasi ${index + 1}`}><input className={inputClass} value={campus.name} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, campuses: c.home.footer.campuses.map((item, itemIndex) => itemIndex === index ? { ...item, name: e.target.value } : item) } } }))} /></Field>
+                <Field label="Tautan Google Maps" hint="Opsional"><input type="url" className={inputClass} value={campus.mapUrl} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, campuses: c.home.footer.campuses.map((item, itemIndex) => itemIndex === index ? { ...item, mapUrl: e.target.value } : item) } } }))} /></Field>
+                <div className="sm:col-span-2"><Field label="Alamat"><textarea rows={2} className={inputClass} value={campus.address} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, campuses: c.home.footer.campuses.map((item, itemIndex) => itemIndex === index ? { ...item, address: e.target.value } : item) } } }))} /></Field></div>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-3 sm:col-span-2">
+            <p className="text-xs font-black uppercase tracking-wide text-primary">Media sosial</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {site.home.footer.socialLinks.map((social, index) => (
+                <div key={social.platform} className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <Field label={`Nama ${social.platform}`}><input className={inputClass} value={social.label} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, socialLinks: c.home.footer.socialLinks.map((item, itemIndex) => itemIndex === index ? { ...item, label: e.target.value } : item) } } }))} /></Field>
+                  <Field label="Tautan profil" hint="Opsional"><input type="url" className={inputClass} value={social.url} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, socialLinks: c.home.footer.socialLinks.map((item, itemIndex) => itemIndex === index ? { ...item, url: e.target.value } : item) } } }))} /></Field>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </Section>
 
