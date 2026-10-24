@@ -26,7 +26,8 @@ import {
   BellRing,
   Newspaper,
   ImageIcon,
-  Palette
+  Palette,
+  Trophy
 } from "lucide-react";
 import {
   logoutAction,
@@ -54,7 +55,9 @@ import { CalendarEvent } from "@/domain/entities/CalendarEvent";
 import { NewsItem } from "@/domain/entities/NewsItem";
 import type { AdminSession } from "@/application/actions/adminActions";
 import type { SiteContent } from "@/domain/entities/SiteContent";
+import type { ManualCompetition } from "@/domain/entities/ManualCompetition";
 import { WebsiteContentEditor } from "@/presentation/components/ui/WebsiteContentEditor";
+import ManualCompetitionEditor from "@/presentation/components/ui/ManualCompetitionEditor";
 
 interface AdminDashboardPageProps {
   initialHero: HeroContent;
@@ -65,11 +68,12 @@ interface AdminDashboardPageProps {
   initialCalendarEvents: CalendarEvent[];
   initialNewsItems: NewsItem[];
   initialSiteContent: SiteContent;
+  initialManualCompetitions: ManualCompetition[];
   regions: string[];
   adminSession: AdminSession;
 }
 
-type TabType = "dashboard" | "website" | "hero" | "vision" | "members" | "documents" | "news" | "events" | "stats";
+type TabType = "dashboard" | "website" | "hero" | "vision" | "members" | "documents" | "news" | "competitions" | "events" | "stats";
 
 const DIVISIONS = [
   "BPH (Badan Pengurus Harian)",
@@ -149,6 +153,7 @@ export default function AdminDashboardPage({
   initialCalendarEvents,
   initialNewsItems,
   initialSiteContent,
+  initialManualCompetitions,
   regions,
   adminSession
 }: AdminDashboardPageProps) {
@@ -788,6 +793,19 @@ export default function AdminDashboardPage({
           )}
           {adminSession.isSuperAdmin && (
             <button
+              onClick={() => setActiveTab("competitions")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
+                activeTab === "competitions"
+                  ? "bg-cta text-primary shadow-md font-bold"
+                  : "text-cream/80 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <Trophy size={18} />
+              Lomba Manual
+            </button>
+          )}
+          {adminSession.isSuperAdmin && (
+            <button
               onClick={() => setActiveTab("events")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
                 activeTab === "events"
@@ -835,6 +853,7 @@ export default function AdminDashboardPage({
             {activeTab === "members" && "Pengurus Struktur Organisasi"}
             {activeTab === "documents" && "Pusat Dokumen & Regulasi"}
             {activeTab === "news" && "Berita & Prestasi"}
+            {activeTab === "competitions" && "Kelola Lomba Manual"}
             {activeTab === "events" && "Kalender Kegiatan & Pengingat"}
             {activeTab === "stats" && "Pusat Statistik Regional"}
           </h2>
@@ -1594,7 +1613,12 @@ export default function AdminDashboardPage({
             </div>
           )}
 
-          {/* TAB 7: CALENDAR EVENTS — SUPERADMIN ONLY */}
+          {/* TAB 7: MANUAL COMPETITIONS — SUPERADMIN ONLY */}
+          {activeTab === "competitions" && adminSession.isSuperAdmin && (
+            <ManualCompetitionEditor initialItems={initialManualCompetitions} />
+          )}
+
+          {/* TAB 8: CALENDAR EVENTS — SUPERADMIN ONLY */}
           {activeTab === "events" && adminSession.isSuperAdmin && (
             <div className="grid gap-6 xl:grid-cols-[.85fr_1.15fr] animate-fade-in">
               <form onSubmit={handleEventSubmit} className="h-fit rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
@@ -1768,7 +1792,7 @@ export default function AdminDashboardPage({
             </div>
           )}
 
-          {/* TAB 7: DATA CENTER (REGIONAL STATS) */}
+          {/* TAB 9: DATA CENTER (REGIONAL STATS) */}
           {activeTab === "stats" && (
             <div className="space-y-6 animate-fade-in">
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">

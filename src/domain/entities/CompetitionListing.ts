@@ -1,4 +1,4 @@
-export type CompetitionSourceName = "InfoLomba" | "SiLomba";
+export type CompetitionSourceName = "HMTKBA" | "InfoLomba" | "SiLomba";
 
 export interface CompetitionListing {
   id: string;

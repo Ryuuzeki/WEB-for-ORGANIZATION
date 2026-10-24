@@ -19,7 +19,7 @@ export default async function StudentCompetitionPage() {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: "Portal Lomba Mahasiswa HMTKBA",
-    description: "Agregator informasi lomba yang menerima peserta mahasiswa, diperbarui dari InfoLomba.id dan SiLomba.id.",
+    description: "Agregator informasi lomba mahasiswa dari HMTKBA, InfoLomba.id, dan SiLomba.id.",
     url: "https://hmtkba.vercel.app/portal-lomba",
     isBasedOn: ["https://www.infolomba.id/events?peserta=5", "https://silomba.id/"],
   };
@@ -36,7 +36,7 @@ export default async function StudentCompetitionPage() {
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45"><Link href="/" className="hover:text-white">Beranda</Link><span>/</span><span>Portal Lomba</span></nav>
             <p className="mt-10 flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-cta"><Sparkles size={16} /> Peluang Prestasi Mahasiswa</p>
             <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight sm:text-6xl xl:text-7xl">Portal Lomba Mahasiswa</h1>
-            <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-white/68 sm:text-lg">Temukan kompetisi yang menerima peserta mahasiswa dalam satu ruang yang ringkas, mudah dicari, dan mengikuti pembaruan dari InfoLomba.id serta SiLomba.id.</p>
+            <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-white/68 sm:text-lg">Temukan kompetisi yang menerima peserta mahasiswa dalam satu ruang yang ringkas, mudah dicari, dan memadukan pilihan HMTKBA dengan pembaruan InfoLomba.id serta SiLomba.id.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-xs font-black"><Trophy size={16} className="text-cta" /> {openCount} masih dibuka</span>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-xs font-black"><RefreshCw size={15} className="text-cta" /> Sinkron setiap 1 jam</span>
@@ -79,7 +79,7 @@ export default async function StudentCompetitionPage() {
         <div className="mx-auto grid max-w-[1400px] gap-5 md:grid-cols-3">
           {[
             { icon: RefreshCw, title: "Pembaruan berkala", text: "Daftar disinkronkan kembali maksimal setiap satu jam saat portal diakses." },
-            { icon: ShieldCheck, title: "Sumber transparan", text: "Setiap kartu mencantumkan sumber dan mengarah ke InfoLomba atau SiLomba untuk konfirmasi." },
+            { icon: ShieldCheck, title: "Sumber transparan", text: "Setiap kartu mencantumkan sumber HMTKBA, InfoLomba, atau SiLomba agar mudah dikonfirmasi." },
             { icon: Waves, title: "Fokus mahasiswa", text: "Portal hanya memuat lomba yang mencantumkan mahasiswa sebagai peserta." },
           ].map((item) => {
             const Icon = item.icon;

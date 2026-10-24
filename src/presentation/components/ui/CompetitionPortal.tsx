@@ -11,7 +11,7 @@ const filters = [
   { id: "online", label: "Online" },
 ] as const;
 
-const sourceFilters = ["Semua sumber", "InfoLomba", "SiLomba"] as const;
+const sourceFilters = ["Semua sumber", "HMTKBA", "InfoLomba", "SiLomba"] as const;
 
 export default function CompetitionPortal({ items }: { items: CompetitionListing[] }) {
   const [query, setQuery] = useState("");
@@ -106,9 +106,13 @@ export default function CompetitionPortal({ items }: { items: CompetitionListing
                   <div className="flex items-start gap-2"><MapPin size={16} className="mt-0.5 shrink-0 text-cta" /><div><dt className="sr-only">Pelaksanaan</dt><dd>{item.mode || "Lihat lokasi di sumber"}</dd></div></div>
                   <div className="flex items-start gap-2"><CircleDollarSign size={16} className="mt-0.5 shrink-0 text-cta" /><div><dt className="sr-only">Biaya</dt><dd>{item.fee || "Lihat biaya di sumber"}</dd></div></div>
                 </dl>
-                <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-white transition hover:bg-secondary">
-                  Lihat detail di {item.sourceName} <ArrowUpRight size={16} />
-                </a>
+                {item.sourceUrl ? (
+                  <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-white transition hover:bg-secondary">
+                    Lihat detail di {item.sourceName} <ArrowUpRight size={16} />
+                  </a>
+                ) : (
+                  <span className="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl border border-primary/10 bg-background/70 px-4 text-xs font-black text-primary">Informasi internal HMTKBA</span>
+                )}
               </div>
             </article>
           ))}

@@ -6,6 +6,7 @@ import type {
   CompetitionListing,
   CompetitionSourceName,
 } from "@/domain/entities/CompetitionListing";
+import { listManualCompetitions } from "@/lib/manualCompetitionRepository";
 
 const INFOMBA_ORIGIN = "https://www.infolomba.id";
 const INFOMBA_ENDPOINT = `${INFOMBA_ORIGIN}/load-event-2`;
@@ -160,6 +161,13 @@ function formatSiLombaDate(schedule: SiLombaCompetition["schedule"]) {
   return `${indonesiaDate.format(new Date(start))} – ${indonesiaDate.format(new Date(end))}`;
 }
 
+function formatManualCompetitionDate(start: string, end: string) {
+  if (!start && !end) return "Lihat jadwal di sumber";
+  const format = (value: string) => indonesiaDate.format(new Date(`${value}T00:00:00Z`));
+  if (!start || !end || start === end) return format(end || start);
+  return `${format(start)} – ${format(end)}`;
+}
+
 function formatSiLombaFee(fees: SiLombaCompetition["fees"]) {
   const amounts = (fees ?? [])
     .map((fee) => Number(fee.amount))
@@ -228,6 +236,30 @@ async function fetchSiLomba(): Promise<SourceResult> {
   }
 }
 
+async function fetchManualCompetitions(): Promise<SourceResult> {
+  try {
+    const storedItems = await listManualCompetitions();
+    const items: CompetitionListing[] = storedItems
+      .filter((item) => item.isPublished)
+      .map((item) => ({
+        id: `hmtkba-${item.id}`,
+        title: item.title,
+        audience: item.audience,
+        fee: item.fee,
+        mode: item.mode,
+        dateText: formatManualCompetitionDate(item.registrationStart, item.registrationEnd),
+        organizer: item.organizer,
+        sourceUrl: item.sourceUrl,
+        sourceName: "HMTKBA",
+        imageUrl: item.imageUrl,
+        isClosed: Boolean(item.registrationEnd && item.registrationEnd < dateOnlyInJakarta(new Date())),
+      }));
+    return { name: "HMTKBA", items, available: true };
+  } catch {
+    return { name: "HMTKBA", items: [], available: false };
+  }
+}
+
 function normalizeTitle(title: string) {
   return title
     .normalize("NFKD")
@@ -237,7 +269,7 @@ function normalizeTitle(title: string) {
 }
 
 async function fetchStudentCompetitions(): Promise<CompetitionFeed> {
-  const results = await Promise.all([fetchSiLomba(), fetchInfoLomba()]);
+  const results = await Promise.all([fetchManualCompetitions(), fetchSiLomba(), fetchInfoLomba()]);
   const unique = new Map<string, CompetitionListing>();
 
   for (const result of results) {
@@ -264,6 +296,6 @@ async function fetchStudentCompetitions(): Promise<CompetitionFeed> {
 
 export const getStudentCompetitions = unstable_cache(
   fetchStudentCompetitions,
-  ["student-competitions-multi-source-v2"],
+  ["student-competitions-multi-source-v3"],
   { revalidate: 3600, tags: ["student-competitions"] },
 );

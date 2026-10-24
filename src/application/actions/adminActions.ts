@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { put } from "@vercel/blob";
 import { di } from "@/lib/di";
@@ -12,6 +12,7 @@ import { Document } from "@/domain/entities/Document";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
 import { CalendarEvent, CalendarEventInput } from "@/domain/entities/CalendarEvent";
 import { NewsItem } from "@/domain/entities/NewsItem";
+import { ManualCompetition } from "@/domain/entities/ManualCompetition";
 import { SiteContent } from "@/domain/entities/SiteContent";
 import { AdminDivision, AdminDivisionSlug, getAdminDivisionBySlug } from "@/lib/adminDivisions";
 import {
@@ -26,6 +27,12 @@ import {
   uploadNewsImage,
 } from "@/lib/newsRepository";
 import { getSiteContent, saveSiteContent } from "@/lib/siteContentRepository";
+import {
+  deleteManualCompetitionImage,
+  listManualCompetitions,
+  saveManualCompetitions,
+  uploadManualCompetitionImage,
+} from "@/lib/manualCompetitionRepository";
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 8;
 const FALLBACK_SUPERADMIN_PASSWORD_HASH =
@@ -412,6 +419,104 @@ export async function deleteNewsItemAction(id: string): Promise<void> {
   await saveNewsItems(items.filter((item) => item.id !== normalizedId));
   await deleteNewsImage(existing.imageUrl);
   revalidatePath("/");
+  revalidatePath("/admin");
+}
+
+function parseOptionalCompetitionDate(value: FormDataEntryValue | null, fieldName: string): string {
+  const normalized = typeof value === "string" ? value.trim() : "";
+  if (!normalized) return "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized) || Number.isNaN(new Date(`${normalized}T00:00:00Z`).getTime())) {
+    throw new Error(`${fieldName} tidak valid.`);
+  }
+  return normalized;
+}
+
+// Superadmin-only manual competition management
+export async function saveManualCompetitionAction(formData: FormData): Promise<ManualCompetition> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+
+  const id = cleanEventText(String(formData.get("id") ?? ""), 80) || crypto.randomUUID();
+  const title = cleanEventText(String(formData.get("title") ?? ""), 180);
+  const audience = cleanEventText(String(formData.get("audience") ?? ""), 120) || "Mahasiswa";
+  const fee = cleanEventText(String(formData.get("fee") ?? ""), 120) || "Lihat detail biaya";
+  const mode = cleanEventText(String(formData.get("mode") ?? ""), 160) || "Lihat lokasi di sumber";
+  const organizer = cleanEventText(String(formData.get("organizer") ?? ""), 160) || "HMTKBA";
+  const registrationStart = parseOptionalCompetitionDate(formData.get("registrationStart"), "Tanggal mulai");
+  const registrationEnd = parseOptionalCompetitionDate(formData.get("registrationEnd"), "Batas pendaftaran");
+  const isPublished = formData.get("isPublished") === "true";
+
+  if (!title) throw new Error("Nama lomba wajib diisi.");
+  if (registrationStart && registrationEnd && registrationEnd < registrationStart) {
+    throw new Error("Batas pendaftaran tidak boleh lebih awal dari tanggal mulai.");
+  }
+
+  const currentItems = await listManualCompetitions();
+  const existing = currentItems.find((item) => item.id === id);
+  let imageUrl = normalizeOptionalUrl(formData.get("imageUrl"), "URL poster");
+  const sourceUrl = normalizeOptionalUrl(formData.get("sourceUrl"), "Tautan detail");
+  const image = formData.get("image");
+
+  if (image instanceof File && image.size > 0) {
+    if (!image.type.startsWith("image/")) throw new Error("Berkas poster harus berupa gambar.");
+    if (image.size > 4 * 1024 * 1024) throw new Error("Ukuran poster maksimal 4 MB.");
+    imageUrl = await uploadManualCompetitionImage(image);
+  }
+  if (!imageUrl) imageUrl = existing?.imageUrl || "/LOGO HIMA.png";
+
+  const now = new Date().toISOString();
+  const item: ManualCompetition = {
+    id,
+    title,
+    audience,
+    fee,
+    mode,
+    organizer,
+    sourceUrl,
+    imageUrl,
+    registrationStart,
+    registrationEnd,
+    isPublished,
+    createdAt: existing?.createdAt ?? now,
+    updatedAt: now,
+  };
+
+  await saveManualCompetitions([...currentItems.filter((competition) => competition.id !== id), item]);
+  if (existing?.imageUrl && existing.imageUrl !== imageUrl) await deleteManualCompetitionImage(existing.imageUrl);
+  updateTag("student-competitions");
+  revalidatePath("/portal-lomba");
+  revalidatePath("/admin");
+  return item;
+}
+
+export async function setManualCompetitionPublishedAction(
+  id: string,
+  isPublished: boolean,
+): Promise<ManualCompetition> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+  const items = await listManualCompetitions();
+  const existing = items.find((item) => item.id === id);
+  if (!existing) throw new Error("Lomba manual tidak ditemukan.");
+  const updated = { ...existing, isPublished, updatedAt: new Date().toISOString() };
+  await saveManualCompetitions([...items.filter((item) => item.id !== id), updated]);
+  updateTag("student-competitions");
+  revalidatePath("/portal-lomba");
+  revalidatePath("/admin");
+  return updated;
+}
+
+export async function deleteManualCompetitionAction(id: string): Promise<void> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+  const normalizedId = cleanEventText(id, 80);
+  const items = await listManualCompetitions();
+  const existing = items.find((item) => item.id === normalizedId);
+  if (!existing) throw new Error("Lomba manual tidak ditemukan.");
+  await saveManualCompetitions(items.filter((item) => item.id !== normalizedId));
+  await deleteManualCompetitionImage(existing.imageUrl);
+  updateTag("student-competitions");
+  revalidatePath("/portal-lomba");
   revalidatePath("/admin");
 }
 

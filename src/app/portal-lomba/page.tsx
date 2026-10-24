@@ -3,7 +3,7 @@ import StudentCompetitionPage from "@/presentation/app/portal-lomba/page";
 
 export const metadata: Metadata = {
   title: "Portal Lomba Mahasiswa",
-  description: "Temukan informasi lomba terbaru yang menerima peserta mahasiswa, diperbarui berkala dari InfoLomba.id dan SiLomba.id.",
+  description: "Temukan informasi lomba mahasiswa dari HMTKBA, InfoLomba.id, dan SiLomba.id dalam satu portal.",
   alternates: { canonical: "/portal-lomba" },
   openGraph: {
     title: "Portal Lomba Mahasiswa | HMTKBA",
