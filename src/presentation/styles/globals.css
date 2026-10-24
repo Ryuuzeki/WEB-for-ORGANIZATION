@@ -10,6 +10,7 @@
   --hmtkba-gold: #cea273;
   --hmtkba-cream: #fcedd3;
   --hmtkba-footer: #091d4b;
+  --site-content-max: 1400px;
 }
 
 @theme inline {
@@ -25,9 +26,53 @@
   --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 }
 
+html {
+  overflow-x: clip;
+  scroll-padding-top: 5rem;
+}
+
 body {
+  min-width: 320px;
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+[data-public-site-content] {
+  overflow: clip;
+}
+
+[data-public-site-content] h1,
+[data-public-site-content] h2,
+[data-public-site-content] h3 {
+  text-wrap: balance;
+}
+
+[data-public-site-content] p {
+  text-wrap: pretty;
+}
+
+* {
+  scrollbar-color: color-mix(in srgb, var(--hmtkba-navy) 35%, transparent) transparent;
+  scrollbar-width: thin;
 }
 
 ::selection {
@@ -127,6 +172,18 @@ body {
 
 .motion-title-visible:hover {
   text-shadow: 0 12px 34px color-mix(in srgb, currentColor 16%, transparent);
+}
+
+@media (max-width: 639px) {
+  .motion-title {
+    filter: blur(4px);
+    transform: translate3d(0, 18px, 0);
+  }
+
+  .motion-title-visible {
+    filter: blur(0);
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -51,7 +51,7 @@ export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-primary/10 bg-[#fbf7ee]/90 px-4 backdrop-blur-xl lg:hidden">
+      <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-primary/10 bg-background/90 px-4 shadow-sm backdrop-blur-xl lg:hidden">
         <Link href="/" className="flex items-center gap-2" aria-label="HMTKBA Beranda">
           <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-white shadow-sm">
             <Image src="/LOGO HIMA.png" alt="" width={36} height={36} className="h-full w-full object-contain" />
@@ -79,7 +79,7 @@ export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
 
       <aside
         style={{ "--sidebar-width": sidebarWidth } as React.CSSProperties}
-        className={`fixed inset-y-0 left-0 z-50 flex w-[var(--sidebar-width)] flex-col border-r border-white/10 bg-primary text-white shadow-2xl shadow-primary/15 transition-[width,transform] duration-300 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[min(var(--sidebar-width),86vw)] flex-col border-r border-white/10 bg-primary text-white shadow-2xl shadow-primary/15 transition-[width,transform] duration-300 lg:w-[var(--sidebar-width)] lg:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

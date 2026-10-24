@@ -19,18 +19,20 @@ interface DataCenterContainerProps {
 
 export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climate, stats }) => {
   return (
-    <main className="min-h-screen px-6 pb-20 pt-28 lg:pt-16 max-w-7xl mx-auto">
-      <div className="mb-12">
-        <Typography variant="h1" className="text-primary mb-4">Data Center HMTKBA</Typography>
-        <Typography variant="p" className="text-secondary">
-          Monitor real-time kondisi klimatologi dan statistik infrastruktur air nasional.
-        </Typography>
-      </div>
+    <main className="min-h-screen bg-background px-5 pb-20 pt-28 sm:px-8 lg:px-10 lg:pt-20">
+      <div className="mx-auto max-w-[1400px]">
+        <section className="mb-10 max-w-3xl sm:mb-12">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-cta">Data & Wawasan</p>
+          <Typography variant="h1" className="mb-4 mt-4 text-primary">Data Center HMTKBA</Typography>
+          <Typography variant="p" className="max-w-2xl font-medium text-secondary/70">
+            Monitor kondisi klimatologi dan statistik infrastruktur air nasional dalam tampilan yang ringkas.
+          </Typography>
+        </section>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
         {/* Climate Card */}
-        <div className="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-primary/5 overflow-hidden">
-          <div className="bg-primary p-6 text-cream">
+        <article className="overflow-hidden rounded-[2rem] border border-primary/8 bg-white shadow-[0_18px_55px_rgba(16,42,107,.07)] lg:col-span-1">
+          <div className="bg-primary p-6 text-cream sm:p-8">
             <div className="flex justify-between items-center mb-4">
               <Typography variant="h3">Cuaca Saat Ini</Typography>
               <Cloud size={24} className="text-accent" />
@@ -38,7 +40,7 @@ export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climat
             <Typography variant="p" className="text-sm opacity-80">{climate.region}</Typography>
           </div>
 
-          <div className="p-6">
+          <div className="p-6 sm:p-8">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-4">
                 <Thermometer className="text-cta" size={32} />
@@ -51,11 +53,11 @@ export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climat
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="flex items-center gap-2 p-3 bg-cream rounded-lg">
+              <div className="flex items-center gap-2 rounded-xl bg-cream p-3.5">
                 <Droplets className="text-accent" size={18} />
                 <Typography variant="span" className="text-sm font-medium">{climate.humidity}</Typography>
               </div>
-              <div className="flex items-center gap-2 p-3 bg-cream rounded-lg">
+              <div className="flex items-center gap-2 rounded-xl bg-cream p-3.5">
                 <Wind className="text-secondary" size={18} />
                 <Typography variant="span" className="text-sm font-medium">{climate.windSpeed}</Typography>
               </div>
@@ -65,12 +67,12 @@ export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climat
               Sumber: BMKG | Update: {new Date(climate.lastUpdated).toLocaleString('id-ID')}
             </Typography>
           </div>
-        </div>
+        </article>
 
         {/* Stats Grid */}
-        <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
+        <div className="grid gap-5 sm:grid-cols-2 lg:col-span-2">
           {stats.map((stat, index) => (
-            <div key={index} className="bg-white p-6 rounded-2xl shadow-sm border border-primary/5 flex flex-col justify-between">
+            <article key={index} className="flex min-h-64 flex-col justify-between rounded-[1.75rem] border border-primary/8 bg-white p-6 shadow-[0_14px_45px_rgba(16,42,107,.055)] transition hover:-translate-y-1 hover:border-cta/45 hover:shadow-[0_20px_55px_rgba(16,42,107,.1)] sm:p-7">
               <div>
                 <div className="flex justify-between items-start mb-6">
                   <div className="p-3 rounded-xl bg-sky-100 text-primary">
@@ -92,8 +94,9 @@ export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climat
                 </Typography>
               </div>
 
-            </div>
+            </article>
           ))}
+        </div>
         </div>
       </div>
     </main>

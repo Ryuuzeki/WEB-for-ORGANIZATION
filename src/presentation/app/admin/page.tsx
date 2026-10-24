@@ -27,7 +27,8 @@ import {
   Newspaper,
   ImageIcon,
   Palette,
-  Trophy
+  Trophy,
+  Menu
 } from "lucide-react";
 import {
   logoutAction,
@@ -158,6 +159,7 @@ export default function AdminDashboardPage({
   adminSession
 }: AdminDashboardPageProps) {
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+  const [adminMobileOpen, setAdminMobileOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -681,37 +683,45 @@ export default function AdminDashboardPage({
     d.category.toLowerCase().includes(documentSearch.toLowerCase())
   );
 
+  const selectTab = (tab: TabType) => {
+    setActiveTab(tab);
+    setAdminMobileOpen(false);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 flex text-slate-800 antialiased font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans lg:flex">
       {/* Toast Notifications */}
       {successMessage && (
-        <div className="fixed top-24 right-6 z-50 flex items-center gap-2 bg-emerald-500 text-white px-5 py-3.5 rounded-xl shadow-xl animate-slide-in font-semibold text-sm">
+        <div className="fixed left-4 right-4 top-20 z-[70] flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-3.5 text-sm font-semibold text-white shadow-xl animate-slide-in sm:left-auto sm:right-6 sm:top-24">
           <Check size={18} />
           {successMessage}
         </div>
       )}
       {errorMessage && (
-        <div className="fixed top-24 right-6 z-50 flex items-center gap-2 bg-red-500 text-white px-5 py-3.5 rounded-xl shadow-xl animate-slide-in font-semibold text-sm">
+        <div className="fixed left-4 right-4 top-20 z-[70] flex items-center gap-2 rounded-xl bg-red-500 px-5 py-3.5 text-sm font-semibold text-white shadow-xl animate-slide-in sm:left-auto sm:right-6 sm:top-24">
           <X size={18} />
           {errorMessage}
         </div>
       )}
 
+      {adminMobileOpen && <button type="button" aria-label="Tutup menu admin" onClick={() => setAdminMobileOpen(false)} className="fixed inset-0 z-40 bg-slate-950/45 backdrop-blur-sm lg:hidden" />}
+
       {/* Sidebar Navigation */}
-      <aside className="w-72 bg-primary text-cream flex flex-col shrink-0 border-r border-white/5 sticky top-0 h-screen z-20">
+      <aside className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[min(18rem,88vw)] shrink-0 flex-col border-r border-white/5 bg-primary text-cream shadow-2xl transition-transform duration-300 lg:sticky lg:top-0 lg:w-72 lg:translate-x-0 lg:shadow-none ${adminMobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="h-20 flex items-center px-6 gap-2.5 border-b border-white/5 bg-primary">
           <div className="p-2 bg-white/10 rounded-lg text-white">
             <Waves className="h-6 w-6" />
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <span className="text-lg font-black tracking-tight text-white block">HMTKBA Admin</span>
             <span className="text-[10px] uppercase font-bold text-accent tracking-widest leading-none block">Web Dashboard</span>
           </div>
+          <button type="button" onClick={() => setAdminMobileOpen(false)} className="grid h-9 w-9 place-items-center rounded-xl text-white/70 hover:bg-white/10 hover:text-white lg:hidden" aria-label="Tutup menu admin"><X size={19} /></button>
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
           <button
-            onClick={() => setActiveTab("dashboard")}
+            onClick={() => selectTab("dashboard")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
               activeTab === "dashboard"
                 ? "bg-cta text-primary shadow-md font-bold"
@@ -723,7 +733,7 @@ export default function AdminDashboardPage({
           </button>
           {adminSession.isSuperAdmin && (
             <button
-              onClick={() => setActiveTab("website")}
+              onClick={() => selectTab("website")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
                 activeTab === "website"
                   ? "bg-cta text-primary shadow-md font-bold"
@@ -735,7 +745,7 @@ export default function AdminDashboardPage({
             </button>
           )}
           <button
-            onClick={() => setActiveTab("hero")}
+            onClick={() => selectTab("hero")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
               activeTab === "hero"
                 ? "bg-cta text-primary shadow-md font-bold"
@@ -746,7 +756,7 @@ export default function AdminDashboardPage({
             Konten Hero
           </button>
           <button
-            onClick={() => setActiveTab("vision")}
+            onClick={() => selectTab("vision")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
               activeTab === "vision"
                 ? "bg-cta text-primary shadow-md font-bold"
@@ -757,7 +767,7 @@ export default function AdminDashboardPage({
             Visi & Misi
           </button>
           <button
-            onClick={() => setActiveTab("members")}
+            onClick={() => selectTab("members")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
               activeTab === "members"
                 ? "bg-cta text-primary shadow-md font-bold"
@@ -768,7 +778,7 @@ export default function AdminDashboardPage({
             Struktur Organisasi
           </button>
           <button
-            onClick={() => setActiveTab("documents")}
+            onClick={() => selectTab("documents")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
               activeTab === "documents"
                 ? "bg-cta text-primary shadow-md font-bold"
@@ -780,7 +790,7 @@ export default function AdminDashboardPage({
           </button>
           {adminSession.isSuperAdmin && (
             <button
-              onClick={() => setActiveTab("news")}
+              onClick={() => selectTab("news")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
                 activeTab === "news"
                   ? "bg-cta text-primary shadow-md font-bold"
@@ -793,7 +803,7 @@ export default function AdminDashboardPage({
           )}
           {adminSession.isSuperAdmin && (
             <button
-              onClick={() => setActiveTab("competitions")}
+              onClick={() => selectTab("competitions")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
                 activeTab === "competitions"
                   ? "bg-cta text-primary shadow-md font-bold"
@@ -806,7 +816,7 @@ export default function AdminDashboardPage({
           )}
           {adminSession.isSuperAdmin && (
             <button
-              onClick={() => setActiveTab("events")}
+              onClick={() => selectTab("events")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
                 activeTab === "events"
                   ? "bg-cta text-primary shadow-md font-bold"
@@ -818,7 +828,7 @@ export default function AdminDashboardPage({
             </button>
           )}
           <button
-            onClick={() => setActiveTab("stats")}
+            onClick={() => selectTab("stats")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
               activeTab === "stats"
                 ? "bg-cta text-primary shadow-md font-bold"
@@ -842,10 +852,12 @@ export default function AdminDashboardPage({
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col">
         {/* Top Header */}
-        <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-10">
-          <h2 className="text-xl font-bold text-primary flex items-center gap-2 capitalize">
+        <header className="sticky top-0 z-30 flex min-h-16 items-center justify-between gap-3 border-b border-slate-100 bg-white/95 px-4 py-3 backdrop-blur-xl sm:px-6 lg:min-h-20 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <button type="button" onClick={() => setAdminMobileOpen(true)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-slate-200 text-primary lg:hidden" aria-label="Buka menu admin"><Menu size={20} /></button>
+          <h2 className="truncate text-base font-black text-primary sm:text-lg lg:text-xl">
             {activeTab === "dashboard" && "Dashboard Ringkasan"}
             {activeTab === "website" && "Konten & Tampilan Website"}
             {activeTab === "hero" && "Edit Konten Hero"}
@@ -857,23 +869,24 @@ export default function AdminDashboardPage({
             {activeTab === "events" && "Kalender Kegiatan & Pengingat"}
             {activeTab === "stats" && "Pusat Statistik Regional"}
           </h2>
-          <div className="flex items-center gap-4">
+          </div>
+          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
             <a
               href="/"
               target="_blank"
-              className="flex items-center gap-1.5 px-4 py-2 border border-slate-200 hover:border-primary text-secondary hover:text-primary rounded-xl text-xs font-bold transition"
+              className="hidden items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-secondary transition hover:border-primary hover:text-primary md:flex"
             >
               <Eye size={14} />
               Lihat Website Utama
             </a>
-            <div className="h-8 w-px bg-slate-200" />
+            <div className="hidden h-8 w-px bg-slate-200 sm:block" />
             <div className="flex items-center gap-2.5">
               <div className="h-9 w-9 rounded-full bg-accent text-white flex items-center justify-center font-bold text-sm">
                 {adminSession.divisionName.slice(0, 2).toUpperCase()}
               </div>
-              <span className="text-xs font-bold text-primary">{adminSession.divisionName}</span>
+              <span className="hidden text-xs font-bold text-primary xl:inline">{adminSession.divisionName}</span>
               {adminSession.isSuperAdmin && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-amber-800">
+                <span className="hidden items-center gap-1 rounded-full bg-amber-100 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-amber-800 sm:inline-flex">
                   <Crown size={11} aria-hidden="true" /> Akses penuh
                 </span>
               )}
@@ -882,7 +895,7 @@ export default function AdminDashboardPage({
         </header>
 
         {/* Dynamic Panels */}
-        <main className="flex-1 p-8 overflow-y-auto max-w-7xl w-full mx-auto">
+        <main className="mx-auto w-full max-w-[1500px] flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {activeTab === "website" && adminSession.isSuperAdmin && (
             <WebsiteContentEditor
               initialHero={initialHero}

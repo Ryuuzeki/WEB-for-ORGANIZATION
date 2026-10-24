@@ -12,10 +12,10 @@ export const Typography: React.FC<TypographyProps> = ({
   className = ""
 }) => {
   const styles = {
-    h1: "text-4xl md:text-6xl font-extrabold tracking-tight",
-    h2: "text-3xl md:text-4xl font-bold tracking-tight",
-    h3: "text-xl md:text-2xl font-semibold",
-    p: "text-base md:text-lg leading-relaxed",
+    h1: "text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight",
+    h2: "text-3xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight",
+    h3: "text-lg sm:text-xl font-extrabold leading-snug",
+    p: "text-sm sm:text-base leading-7",
     span: "",
   };
 

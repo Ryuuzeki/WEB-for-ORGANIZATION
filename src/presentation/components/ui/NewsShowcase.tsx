@@ -42,8 +42,8 @@ export default function NewsShowcase({ items }: NewsShowcaseProps) {
   const showNext = () => setActiveIndex((current) => (current + 1) % publishedItems.length);
 
   return (
-    <section id="berita" className="scroll-mt-20 bg-white px-4 py-20 sm:px-8 lg:px-10 lg:py-28">
-      <div className="mx-auto max-w-[1480px]">
+    <section id="berita" className="scroll-mt-20 bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+      <div className="mx-auto max-w-[1400px]">
         <div className="mb-9 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-cta">
@@ -65,8 +65,8 @@ export default function NewsShowcase({ items }: NewsShowcaseProps) {
           onFocusCapture={() => setIsPaused(true)}
           onBlurCapture={() => setIsPaused(false)}
         >
-          <div className="grid min-h-[590px] lg:grid-cols-[1.18fr_.82fr]">
-            <div className="photo-frame relative min-h-[390px] overflow-hidden lg:min-h-[590px]">
+          <div className="grid lg:min-h-[590px] lg:grid-cols-[1.18fr_.82fr]">
+            <div className="photo-frame relative min-h-[320px] overflow-hidden sm:min-h-[390px] lg:min-h-[590px]">
               <img
                 key={activeItem.id}
                 src={activeItem.imageUrl || "/LOGO HIMA.png"}
@@ -98,7 +98,7 @@ export default function NewsShowcase({ items }: NewsShowcaseProps) {
               </div>
             </div>
 
-            <div className="relative flex min-h-[420px] flex-col justify-between overflow-hidden px-7 py-9 text-cream sm:px-10 sm:py-12 lg:px-14 lg:py-16">
+            <div className="relative flex min-h-[360px] flex-col justify-between overflow-hidden px-6 py-8 text-cream sm:min-h-[420px] sm:px-10 sm:py-12 lg:px-14 lg:py-16">
               <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full border-[46px] border-white/[0.055]" />
               <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full border border-white/10" />
 

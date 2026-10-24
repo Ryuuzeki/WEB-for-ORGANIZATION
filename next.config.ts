@@ -17,7 +17,7 @@ const securityHeaders = [
       "frame-ancestors 'none'",
       "object-src 'none'",
       "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
-      "upgrade-insecure-requests",
+      ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
     ].join("; "),
   },
   {

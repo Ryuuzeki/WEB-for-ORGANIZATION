@@ -6,7 +6,6 @@ import "@fontsource/montserrat/800.css";
 import "@fontsource/montserrat/900.css";
 import "../styles/globals.css";
 import { SiteShell } from "../components/ui/SiteShell";
-import { WaveLoadingScreen } from "../components/animations/WaveLoadingScreen";
 import { getSiteContent } from "@/lib/siteContentRepository";
 
 export const metadata: Metadata = {
@@ -61,7 +60,6 @@ export default async function RootLayout({
   return (
     <html lang="id" className="scroll-smooth">
       <body className="font-sans antialiased bg-background text-foreground">
-        <WaveLoadingScreen />
         <SiteShell siteContent={siteContent}>{children}</SiteShell>
       </body>
     </html>

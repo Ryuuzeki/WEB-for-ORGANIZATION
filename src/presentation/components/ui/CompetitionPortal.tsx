@@ -82,8 +82,8 @@ export default function CompetitionPortal({ items }: { items: CompetitionListing
       {visibleItems.length ? (
         <div className="mt-7 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {visibleItems.map((item, index) => (
-            <article key={item.id} className="group flex overflow-hidden rounded-[2rem] border border-primary/10 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/[.08] md:flex-col">
-              <div className="photo-frame relative min-h-44 w-32 shrink-0 overflow-hidden bg-primary sm:w-44 md:h-56 md:w-full">
+            <article key={item.id} className="group flex flex-col overflow-hidden rounded-[2rem] border border-primary/10 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/[.08]">
+              <div className="photo-frame relative h-56 w-full shrink-0 overflow-hidden bg-primary sm:h-64 md:h-56">
                 {item.imageUrl ? (
                   <img src={item.imageUrl} alt={`Poster ${item.title}`} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
                 ) : (
