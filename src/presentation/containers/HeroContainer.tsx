@@ -10,7 +10,14 @@ interface HeroContainerProps {
 }
 
 export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
-  const heroWords = ["Himpunan", "Mahasiswa", "Teknologi", "Konstruksi", "Bangunan", "Air"];
+  const heroWords = content.title.trim().split(/\s+/).filter(Boolean);
+  const stats = content.stats?.length
+    ? content.stats
+    : [
+        { value: "80+", label: "Anggota aktif" },
+        { value: "7", label: "Divisi kolaboratif" },
+        { value: "12+", label: "Agenda tahunan" },
+      ];
 
   return (
     <section className="relative overflow-hidden px-5 pb-16 pt-28 sm:px-8 lg:px-10 lg:py-14 xl:py-20">
@@ -18,11 +25,11 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
         <div className="relative z-10">
           <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/70 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary shadow-sm backdrop-blur">
             <Sparkles size={15} className="text-cta" />
-            Kabinet Amerta Abhinaya · 2024/2025
+            {content.eyebrow || "Kabinet Amerta Abhinaya · 2024/2025"}
           </div>
           <h1
             className="max-w-4xl text-4xl font-black leading-[1.06] tracking-[-0.045em] text-primary sm:text-5xl xl:text-7xl"
-            aria-label="Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air"
+            aria-label={content.title}
           >
             {heroWords.map((word, index) => (
               <span
@@ -44,18 +51,14 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
               <ArrowRight size={18} />
             </Link>
             <Link href="#about" className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-primary/15 bg-white/70 px-6 text-sm font-bold text-primary transition hover:bg-white">
-              Kenali HMTKBA
+              {content.secondaryCtaText || "Kenali HMTKBA"}
             </Link>
           </div>
           <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3 border-t border-primary/10 pt-6">
-            {[
-              ["80+", "Anggota aktif"],
-              ["7", "Divisi kolaboratif"],
-              ["12+", "Agenda tahunan"],
-            ].map(([value, label]) => (
-              <div key={label}>
-                <p className="text-2xl font-black text-primary sm:text-3xl">{value}</p>
-                <p className="mt-1 text-[11px] font-semibold leading-4 text-secondary/60 sm:text-xs">{label}</p>
+            {stats.slice(0, 3).map((stat) => (
+              <div key={`${stat.value}-${stat.label}`}>
+                <p className="text-2xl font-black text-primary sm:text-3xl">{stat.value}</p>
+                <p className="mt-1 text-[11px] font-semibold leading-4 text-secondary/60 sm:text-xs">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -72,7 +75,7 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
             className="w-full max-w-[380px] drop-shadow-[0_28px_45px_rgba(16,42,107,0.22)] sm:max-w-[430px] lg:max-w-[500px]"
           >
             <Image
-              src="/LOGO HIMA.png"
+              src={content.backgroundImageUrl || "/LOGO HIMA.png"}
               alt="Logo Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air"
               width={520}
               height={520}

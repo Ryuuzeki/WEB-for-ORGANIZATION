@@ -6,6 +6,7 @@ import WaterCalendar from "../components/ui/WaterCalendar";
 import NewsShowcase from "../components/ui/NewsShowcase";
 import { listCalendarEvents } from "@/lib/calendarEvents";
 import { listNewsItems } from "@/lib/newsRepository";
+import { getSiteContent } from "@/lib/siteContentRepository";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -16,26 +17,7 @@ import {
   Waves,
 } from "lucide-react";
 
-const programs = [
-  {
-    icon: GraduationCap,
-    label: "Akademik",
-    title: "Lorem Ipsum Dolor",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  },
-  {
-    icon: Building2,
-    label: "Keprofesian",
-    title: "Sit Amet Consectetur",
-    description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
-  },
-  {
-    icon: Handshake,
-    label: "Pengabdian",
-    title: "Adipiscing Elit Sed",
-    description: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam nisi ut aliquid.",
-  },
-];
+const programIcons = [GraduationCap, Building2, Handshake];
 
 const getInitials = (name: string) =>
   name
@@ -50,11 +32,12 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const getLandingPageData = di.getLandingPageData();
   const getOrganizationStructure = di.getOrganizationStructure();
-  const [data, members, calendarEvents, newsItems] = await Promise.all([
+  const [data, members, calendarEvents, newsItems, siteContent] = await Promise.all([
     getLandingPageData.execute(),
     getOrganizationStructure.execute(),
     listCalendarEvents(),
     listNewsItems(),
+    getSiteContent(),
   ]);
 
   const leadership = members
@@ -82,18 +65,17 @@ export default async function Home() {
       <section id="about" className="scroll-mt-20 bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
         <div className="mx-auto grid max-w-[1400px] gap-10 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">Tentang Kami</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">{siteContent.home.about.eyebrow}</p>
             <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">
-              Ruang tumbuh mahasiswa konstruksi bangunan air.
+              {siteContent.home.about.title}
             </h2>
           </div>
           <div className="grid gap-5 text-base leading-8 text-secondary/70 sm:text-lg">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            {siteContent.home.about.paragraphs.map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)}
             <div className="mt-2 grid grid-cols-3 gap-3 border-t border-primary/10 pt-6">
-              <div><strong className="block text-2xl font-black text-primary">{members.length}+</strong><span className="text-xs font-semibold">Pengurus</span></div>
-              <div><strong className="block text-2xl font-black text-primary">{divisions.length}</strong><span className="text-xs font-semibold">Divisi</span></div>
-              <div><strong className="block text-2xl font-black text-primary">12+</strong><span className="text-xs font-semibold">Program kerja</span></div>
+              <div><strong className="block text-2xl font-black text-primary">{members.length}+</strong><span className="text-xs font-semibold">{siteContent.home.about.memberLabel}</span></div>
+              <div><strong className="block text-2xl font-black text-primary">{divisions.length}</strong><span className="text-xs font-semibold">{siteContent.home.about.divisionLabel}</span></div>
+              <div><strong className="block text-2xl font-black text-primary">{siteContent.home.about.programValue}</strong><span className="text-xs font-semibold">{siteContent.home.about.programLabel}</span></div>
             </div>
           </div>
         </div>
@@ -107,14 +89,14 @@ export default async function Home() {
         <div className="mx-auto max-w-[1400px]">
           <div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">Kabinet Amerta Abhinaya</p>
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">Struktur Organisasi</h2>
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">{siteContent.home.structure.eyebrow}</p>
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">{siteContent.home.structure.title}</h2>
               <p className="mt-5 max-w-2xl text-base leading-8 text-secondary/70 sm:text-lg">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Susunan pengurus periode 2024/2025 ditampilkan berdasarkan peran dan divisi.
+                {siteContent.home.structure.description}
               </p>
             </div>
             <Link href="/struktur-organisasi" className="inline-flex min-h-12 w-fit items-center gap-2 rounded-2xl border border-primary/15 bg-cream px-6 text-sm font-bold text-primary transition hover:-translate-y-0.5 hover:bg-white">
-              Lihat Struktur Lengkap <ArrowUpRight size={18} />
+              {siteContent.home.structure.buttonText} <ArrowUpRight size={18} />
             </Link>
           </div>
 
@@ -146,16 +128,16 @@ export default async function Home() {
         <div className="mx-auto max-w-[1400px]">
           <div className="grid gap-8 lg:grid-cols-[.65fr_1.35fr] lg:items-end">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">Program Kerja</p>
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">Lorem ipsum dolor sit amet consectetur.</h2>
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-cta">{siteContent.home.program.eyebrow}</p>
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-primary sm:text-5xl">{siteContent.home.program.title}</h2>
             </div>
             <p className="max-w-2xl text-base leading-8 text-secondary/70 lg:justify-self-end lg:text-lg">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              {siteContent.home.program.description}
             </p>
           </div>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {programs.map((program, index) => {
-              const Icon = program.icon;
+            {siteContent.home.program.items.map((program, index) => {
+              const Icon = programIcons[index % programIcons.length];
               return (
                 <article key={program.title} className="group relative overflow-hidden rounded-[2rem] border border-primary/10 bg-white p-7 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8">
                   <span className="absolute right-6 top-5 text-5xl font-black text-primary/[.05]">0{index + 1}</span>
@@ -171,21 +153,21 @@ export default async function Home() {
       </section>
 
       <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <WaterCalendar events={calendarEvents} />
+        <WaterCalendar events={calendarEvents} content={siteContent.home.calendar} />
       </section>
 
       <div id="docs" className="bg-white">
-        <ServicesContainer documents={data.documents} />
+        <ServicesContainer documents={data.documents} content={siteContent.home.documents} />
       </div>
 
-      <footer id="contact" className="bg-[#091d4b] px-5 pb-8 pt-14 text-white sm:px-8 lg:px-10">
+      <footer id="contact" className="bg-[var(--hmtkba-footer)] px-5 pb-8 pt-14 text-white sm:px-8 lg:px-10">
         <div className="mx-auto max-w-[1400px]">
           <div className="grid gap-10 border-b border-white/10 pb-12 md:grid-cols-[1.4fr_1fr_1fr]">
-            <div className="max-w-md"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-primary"><Waves size={23} /></span><span className="text-xl font-black">HMTKBA</span></div><p className="mt-5 text-sm leading-7 text-white/60">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p></div>
-            <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">Jelajahi</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/#about" className="hover:text-white">Tentang Kami</Link><Link href="/#vision" className="hover:text-white">Visi & Misi</Link><Link href="/#struktur" className="hover:text-white">Struktur Organisasi</Link><Link href="/#program" className="hover:text-white">Program Kerja</Link></div></div>
-            <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">Akses cepat</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/dokumen" className="hover:text-white">Galeri kegiatan</Link><Link href="/#docs" className="hover:text-white">Pusat dokumen</Link><Link href="/admin/login" className="hover:text-white">Portal pengurus</Link><Link href="/data-center" className="hover:text-white">Wawasan keairan</Link></div></div>
+            <div className="max-w-md"><div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-cream text-primary"><Waves size={23} /></span><span className="text-xl font-black">{siteContent.home.footer.brandTitle}</span></div><p className="mt-5 text-sm leading-7 text-white/60">{siteContent.home.footer.description}</p></div>
+            <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">{siteContent.home.footer.exploreTitle}</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/#about" className="hover:text-white">Tentang Kami</Link><Link href="/#vision" className="hover:text-white">Visi & Misi</Link><Link href="/#struktur" className="hover:text-white">Struktur Organisasi</Link><Link href="/#program" className="hover:text-white">Program Kerja</Link></div></div>
+            <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-200">{siteContent.home.footer.quickAccessTitle}</p><div className="mt-5 grid gap-3 text-sm text-white/65"><Link href="/dokumen" className="hover:text-white">Galeri kegiatan</Link><Link href="/#docs" className="hover:text-white">Pusat dokumen</Link><Link href="/admin/login" className="hover:text-white">Portal pengurus</Link><Link href="/data-center" className="hover:text-white">Wawasan keairan</Link></div></div>
           </div>
-          <div className="flex flex-col gap-2 pt-7 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between"><p>© 2025 Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air.</p><p>Lorem ipsum dolor sit amet.</p></div>
+          <div className="flex flex-col gap-2 pt-7 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between"><p>{siteContent.home.footer.copyright}</p><p>{siteContent.home.footer.closingText}</p></div>
         </div>
       </footer>
     </main>

@@ -25,7 +25,8 @@ import {
   MapPin,
   BellRing,
   Newspaper,
-  ImageIcon
+  ImageIcon,
+  Palette
 } from "lucide-react";
 import {
   logoutAction,
@@ -52,6 +53,8 @@ import { RegionalStat } from "@/domain/entities/RegionalStat";
 import { CalendarEvent } from "@/domain/entities/CalendarEvent";
 import { NewsItem } from "@/domain/entities/NewsItem";
 import type { AdminSession } from "@/application/actions/adminActions";
+import type { SiteContent } from "@/domain/entities/SiteContent";
+import { WebsiteContentEditor } from "@/presentation/components/ui/WebsiteContentEditor";
 
 interface AdminDashboardPageProps {
   initialHero: HeroContent;
@@ -61,11 +64,12 @@ interface AdminDashboardPageProps {
   initialRegionalStats: Record<string, RegionalStat[]>;
   initialCalendarEvents: CalendarEvent[];
   initialNewsItems: NewsItem[];
+  initialSiteContent: SiteContent;
   regions: string[];
   adminSession: AdminSession;
 }
 
-type TabType = "dashboard" | "hero" | "vision" | "members" | "documents" | "news" | "events" | "stats";
+type TabType = "dashboard" | "website" | "hero" | "vision" | "members" | "documents" | "news" | "events" | "stats";
 
 const DIVISIONS = [
   "BPH (Badan Pengurus Harian)",
@@ -144,6 +148,7 @@ export default function AdminDashboardPage({
   initialRegionalStats,
   initialCalendarEvents,
   initialNewsItems,
+  initialSiteContent,
   regions,
   adminSession
 }: AdminDashboardPageProps) {
@@ -711,6 +716,19 @@ export default function AdminDashboardPage({
             <LayoutDashboard size={18} />
             Ringkasan
           </button>
+          {adminSession.isSuperAdmin && (
+            <button
+              onClick={() => setActiveTab("website")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
+                activeTab === "website"
+                  ? "bg-cta text-primary shadow-md font-bold"
+                  : "text-cream/80 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <Palette size={18} />
+              Konten & Tampilan
+            </button>
+          )}
           <button
             onClick={() => setActiveTab("hero")}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
@@ -811,6 +829,7 @@ export default function AdminDashboardPage({
         <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-10">
           <h2 className="text-xl font-bold text-primary flex items-center gap-2 capitalize">
             {activeTab === "dashboard" && "Dashboard Ringkasan"}
+            {activeTab === "website" && "Konten & Tampilan Website"}
             {activeTab === "hero" && "Edit Konten Hero"}
             {activeTab === "vision" && "Kelola Visi & Misi"}
             {activeTab === "members" && "Pengurus Struktur Organisasi"}
@@ -845,6 +864,14 @@ export default function AdminDashboardPage({
 
         {/* Dynamic Panels */}
         <main className="flex-1 p-8 overflow-y-auto max-w-7xl w-full mx-auto">
+          {activeTab === "website" && adminSession.isSuperAdmin && (
+            <WebsiteContentEditor
+              initialHero={initialHero}
+              initialVisionMission={initialVisionMission}
+              initialSiteContent={initialSiteContent}
+            />
+          )}
+
           {/* TAB 1: DASHBOARD */}
           {activeTab === "dashboard" && (
             <div className="space-y-8 animate-fade-in">

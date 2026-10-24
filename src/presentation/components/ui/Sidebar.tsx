@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { SiteContent } from "@/domain/entities/SiteContent";
 
 const navigation = [
   { label: "Beranda", href: "/", icon: Home },
@@ -32,7 +33,7 @@ const navigation = [
   { label: "Data Center", href: "/data-center", icon: BarChart3 },
 ];
 
-export function Sidebar() {
+export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -53,7 +54,7 @@ export function Sidebar() {
           <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-white shadow-sm">
             <Image src="/LOGO HIMA.png" alt="" width={36} height={36} className="h-full w-full object-contain" />
           </span>
-          <span className="font-extrabold tracking-tight text-primary">HMTKBA</span>
+          <span className="font-extrabold tracking-tight text-primary">{content.brandTitle}</span>
         </Link>
         <button
           type="button"
@@ -87,9 +88,9 @@ export function Sidebar() {
             </span>
             {!collapsed && (
               <span className="min-w-0">
-                <span className="block text-lg font-black tracking-tight">HMTKBA</span>
+                <span className="block text-lg font-black tracking-tight">{content.brandTitle}</span>
                 <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-sky-200">
-                  Teknologi Konstruksi Bangunan Air
+                  {content.brandSubtitle}
                 </span>
               </span>
             )}
@@ -136,14 +137,14 @@ export function Sidebar() {
         <div className="border-t border-white/10 p-3">
           <Link
             href="/admin/login"
-            title={collapsed ? "Portal Admin" : undefined}
+            title={collapsed ? content.adminTitle : undefined}
             className="flex min-h-12 items-center gap-3 rounded-2xl bg-white/8 px-3 text-sm font-semibold text-white/80 transition hover:bg-white/14 hover:text-white"
           >
             <CircleUserRound size={20} className="shrink-0" aria-hidden="true" />
             {!collapsed && (
               <span>
-                <span className="block">Portal Admin</span>
-                <span className="block text-[10px] font-medium text-sky-200/65">Kelola konten website</span>
+                <span className="block">{content.adminTitle}</span>
+                <span className="block text-[10px] font-medium text-sky-200/65">{content.adminSubtitle}</span>
               </span>
             )}
           </Link>

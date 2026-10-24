@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { CalendarEvent } from "@/domain/entities/CalendarEvent";
+import type { HomeCalendarContent } from "@/domain/entities/SiteContent";
 import styles from "./WaterCalendar.module.css";
 
 const weekDays = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
@@ -38,9 +39,10 @@ const formatEventDate = (value: string) =>
 
 interface WaterCalendarProps {
   events?: CalendarEvent[];
+  content?: HomeCalendarContent;
 }
 
-export default function WaterCalendar({ events = [] }: WaterCalendarProps) {
+export default function WaterCalendar({ events = [], content }: WaterCalendarProps) {
   const [today, setToday] = useState<Date | null>(null);
   const [now, setNow] = useState<Date | null>(null);
   const [visibleMonth, setVisibleMonth] = useState<Date | null>(null);
@@ -141,7 +143,7 @@ export default function WaterCalendar({ events = [] }: WaterCalendarProps) {
       <div className="relative z-10 grid gap-8 lg:grid-cols-[.78fr_1.22fr] lg:gap-12">
         <div className="flex flex-col rounded-[2rem] border border-cta/40 bg-primary/75 p-7 backdrop-blur-sm sm:p-9">
           <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.22em] text-cta">
-            <Droplets size={18} aria-hidden="true" /> Kalender HMTKBA
+            <Droplets size={18} aria-hidden="true" /> {content?.eyebrow || "Kalender HMTKBA"}
           </p>
           <div className="mt-8 flex items-end gap-5">
             <span className={`${styles.todayRing} grid h-24 w-24 shrink-0 place-items-center rounded-full bg-cta text-5xl font-black text-primary sm:h-28 sm:w-28 sm:text-6xl`}>
@@ -155,7 +157,7 @@ export default function WaterCalendar({ events = [] }: WaterCalendarProps) {
 
           <div className="mt-8 border-t border-cream/15 pt-7">
             <p className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-cta">
-              <BellRing size={16} aria-hidden="true" /> Pengingat terdekat
+              <BellRing size={16} aria-hidden="true" /> {content?.reminderLabel || "Pengingat terdekat"}
             </p>
             {featuredEvent && countdown ? (
               <div className="mt-4">
@@ -193,7 +195,7 @@ export default function WaterCalendar({ events = [] }: WaterCalendarProps) {
               </div>
             ) : (
               <p className="mt-4 rounded-2xl border border-dashed border-cream/25 p-4 text-sm leading-6 text-cream/65">
-                Belum ada kegiatan mendatang. Pengingat baru dari Superadmin akan tampil di sini.
+                {content?.emptyText || "Belum ada kegiatan mendatang. Pengingat baru dari Superadmin akan tampil di sini."}
               </p>
             )}
           </div>
@@ -207,7 +209,7 @@ export default function WaterCalendar({ events = [] }: WaterCalendarProps) {
             disabled={viewingCurrentMonth && selectedDate === dateKey(today)}
             className="mt-8 inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-cta bg-cta px-5 text-sm font-extrabold text-primary transition hover:bg-cream disabled:cursor-default disabled:border-cream/20 disabled:bg-cream/10 disabled:text-cream/50"
           >
-            <CalendarDays size={17} aria-hidden="true" /> Kembali ke hari ini
+            <CalendarDays size={17} aria-hidden="true" /> {content?.todayButtonText || "Kembali ke hari ini"}
           </button>
         </div>
 

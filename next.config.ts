@@ -78,7 +78,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
   experimental: {
     serverActions: {
-      bodySizeLimit: "4mb",
+      bodySizeLimit: "10mb",
     },
   },
   outputFileTracingExcludes: {

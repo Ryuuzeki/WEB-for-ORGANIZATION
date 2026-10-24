@@ -3,8 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 import { di } from "@/lib/di";
 import { HeroContent } from "@/domain/entities/HeroContent";
 import { VisionMission } from "@/domain/entities/VisionMission";
@@ -13,6 +12,7 @@ import { Document } from "@/domain/entities/Document";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
 import { CalendarEvent, CalendarEventInput } from "@/domain/entities/CalendarEvent";
 import { NewsItem } from "@/domain/entities/NewsItem";
+import { SiteContent } from "@/domain/entities/SiteContent";
 import { AdminDivision, AdminDivisionSlug, getAdminDivisionBySlug } from "@/lib/adminDivisions";
 import {
   listCalendarEvents,
@@ -25,6 +25,7 @@ import {
   saveNewsItems,
   uploadNewsImage,
 } from "@/lib/newsRepository";
+import { getSiteContent, saveSiteContent } from "@/lib/siteContentRepository";
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 8;
 const FALLBACK_SUPERADMIN_PASSWORD_HASH =
@@ -258,6 +259,29 @@ export async function getAdminSessionAction(): Promise<AdminSession | null> {
   return parseSession(cookieStore.get("admin_session")?.value);
 }
 
+export async function getSiteContentAction(): Promise<SiteContent> {
+  return getSiteContent();
+}
+
+export async function saveSiteContentAction(content: SiteContent): Promise<void> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+
+  const serialized = JSON.stringify(content);
+  if (serialized.length > 120_000) throw new Error("Konten website terlalu besar.");
+  const themeValues = Object.values(content.theme ?? {});
+  if (themeValues.length !== 7 || themeValues.some((value) => !/^#[0-9a-fA-F]{6}$/.test(value))) {
+    throw new Error("Warna tema harus memakai format heksadesimal, misalnya #102a6b.");
+  }
+  if (!content.home?.about?.title || !content.home?.program?.title || !content.home?.footer?.brandTitle) {
+    throw new Error("Judul pada setiap bagian utama tidak boleh kosong.");
+  }
+
+  await saveSiteContent(JSON.parse(serialized) as SiteContent);
+  revalidatePath("/", "layout");
+  revalidatePath("/admin");
+}
+
 // Public calendar reads and Superadmin-only calendar management
 export async function getCalendarEventsAction(): Promise<CalendarEvent[]> {
   return listCalendarEvents();
@@ -468,25 +492,43 @@ export async function uploadFileAction(formData: FormData): Promise<{ success: b
       return { success: false, error: "Tidak ada berkas yang diunggah" };
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    if (file.size > 10 * 1024 * 1024) {
+      return { success: false, error: "Ukuran berkas maksimal 10 MB" };
+    }
 
-    // Sanitize and generate unique name
-    const timestamp = Date.now();
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const filename = `${timestamp}_${sanitizedName}`;
-
-    // Path to public/uploads
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
-
-    const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
-
-    const fileUrl = `/uploads/${filename}`;
-    return { success: true, url: fileUrl };
+    const filename = `${Date.now()}_${crypto.randomUUID()}_${sanitizedName}`;
+    const uploaded = await put(`hmtkba/uploads/${filename}`, file, {
+      access: "public",
+      addRandomSuffix: false,
+      contentType: file.type || "application/octet-stream",
+      cacheControlMaxAge: 60 * 60 * 24 * 30,
+    });
+    return { success: true, url: uploaded.url };
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Gagal mengunggah berkas";
     return { success: false, error: message };
+  }
+}
+
+export async function uploadSiteAssetAction(formData: FormData): Promise<{ success: boolean; url?: string; error?: string }> {
+  try {
+    const session = await verifyAuth();
+    ensureSuperAdmin(session);
+    const file = formData.get("file");
+    if (!(file instanceof File) || file.size === 0) return { success: false, error: "Pilih foto terlebih dahulu." };
+    if (!file.type.startsWith("image/")) return { success: false, error: "Berkas harus berupa gambar." };
+    if (file.size > 6 * 1024 * 1024) return { success: false, error: "Ukuran gambar maksimal 6 MB." };
+
+    const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "jpg";
+    const uploaded = await put(`hmtkba/site-media/${Date.now()}-${crypto.randomUUID()}.${extension}`, file, {
+      access: "public",
+      addRandomSuffix: false,
+      contentType: file.type,
+      cacheControlMaxAge: 60 * 60 * 24 * 30,
+    });
+    return { success: true, url: uploaded.url };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : "Gagal mengunggah gambar." };
   }
 }

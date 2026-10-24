@@ -3,23 +3,25 @@ import { Document } from "@/domain/entities/Document";
 import { Typography } from "../components/ui/Typography";
 import { FileText, Download } from "lucide-react";
 import Link from "next/link";
+import type { HomeDocumentsContent } from "@/domain/entities/SiteContent";
 
 interface ServicesContainerProps {
   documents: Document[];
+  content?: HomeDocumentsContent;
 }
 
-export const ServicesContainer: React.FC<ServicesContainerProps> = ({ documents }) => {
+export const ServicesContainer: React.FC<ServicesContainerProps> = ({ documents, content }) => {
   return (
     <section className="py-24 px-6 bg-cream/50">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div className="max-w-2xl">
-            <Typography variant="h2" className="text-primary mb-4">Pusat Dokumen & Regulasi</Typography>
+            <Typography variant="h2" className="text-primary mb-4">{content?.title || "Pusat Dokumen & Regulasi"}</Typography>
             <Typography variant="p" className="text-secondary">
-              Akses cepat ke standar operasional, modul akademik, dan regulasi konstruksi bangunan air terbaru.
+              {content?.description || "Akses cepat ke standar operasional, modul akademik, dan regulasi konstruksi bangunan air terbaru."}
             </Typography>
           </div>
-          <Link href="/dokumen" className="text-primary font-bold hover:underline">Lihat Semua Dokumentasi →</Link>
+          <Link href="/dokumen" className="text-primary font-bold hover:underline">{content?.buttonText || "Lihat Semua Dokumentasi"} →</Link>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -36,7 +38,7 @@ export const ServicesContainer: React.FC<ServicesContainerProps> = ({ documents 
                   className="inline-flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary"
                 >
                   <Download size={16} />
-                  Unduh File
+                  {content?.downloadText || "Unduh File"}
                 </a>
               </div>
             </div>

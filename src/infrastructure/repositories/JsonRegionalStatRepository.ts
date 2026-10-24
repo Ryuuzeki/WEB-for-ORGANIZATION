@@ -4,15 +4,18 @@ import { BPSRepository } from "./BPSRepository";
 import { readFile, writeFile, mkdir } from "fs/promises";
 import path from "path";
 import regionalStatsSeed from "../data/regional_stats.json";
+import { get, put } from "@vercel/blob";
 
 const DATA_DIR = path.join(process.cwd(), "src", "infrastructure", "data");
 const DATA_FILE = path.join(DATA_DIR, "regional_stats.json");
+const BLOB_DATA_PATH = "hmtkba/data/regional-stats.json";
 
 interface RegionalStatsSchema {
   [region: string]: RegionalStat[];
 }
 
 let memoryData: RegionalStatsSchema | null = null;
+const hasBlobStorage = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 
 const cloneSeedData = (): RegionalStatsSchema =>
   JSON.parse(JSON.stringify(regionalStatsSeed)) as RegionalStatsSchema;
@@ -21,6 +24,21 @@ export class JsonRegionalStatRepository implements IRegionalStatRepository {
   private mockRepo = new BPSRepository();
 
   private async ensureDataInitialized(): Promise<RegionalStatsSchema> {
+    if (hasBlobStorage()) {
+      try {
+        const result = await get(BLOB_DATA_PATH, { access: "public", useCache: false });
+        if (result?.stream) {
+          const parsed = (await new Response(result.stream).json()) as RegionalStatsSchema;
+          memoryData = parsed;
+          return parsed;
+        }
+      } catch {
+        // Use the bundled seed until Superadmin saves the first change.
+      }
+      memoryData = cloneSeedData();
+      return memoryData;
+    }
+
     if (memoryData) return memoryData;
 
     try {
@@ -35,6 +53,16 @@ export class JsonRegionalStatRepository implements IRegionalStatRepository {
 
   private async persist(data: RegionalStatsSchema): Promise<void> {
     memoryData = data;
+    if (hasBlobStorage()) {
+      await put(BLOB_DATA_PATH, JSON.stringify(data), {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        cacheControlMaxAge: 30,
+        contentType: "application/json; charset=utf-8",
+      });
+      return;
+    }
     try {
       await mkdir(DATA_DIR, { recursive: true });
       await writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");

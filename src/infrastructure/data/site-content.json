@@ -1,0 +1,79 @@
+{
+  "theme": {
+    "primary": "#102a6b",
+    "secondary": "#015185",
+    "accent": "#5990c0",
+    "cta": "#cea273",
+    "background": "#fcedd3",
+    "cream": "#fcedd3",
+    "footer": "#091d4b"
+  },
+  "sidebar": {
+    "brandTitle": "HMTKBA",
+    "brandSubtitle": "Teknologi Konstruksi Bangunan Air",
+    "adminTitle": "Portal Admin",
+    "adminSubtitle": "Kelola konten website"
+  },
+  "home": {
+    "about": {
+      "eyebrow": "Tentang Kami",
+      "title": "Ruang tumbuh mahasiswa konstruksi bangunan air.",
+      "paragraphs": [
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+      ],
+      "memberLabel": "Pengurus",
+      "divisionLabel": "Divisi",
+      "programValue": "12+",
+      "programLabel": "Program kerja"
+    },
+    "structure": {
+      "eyebrow": "Kabinet Amerta Abhinaya",
+      "title": "Struktur Organisasi",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Susunan pengurus periode 2024/2025 ditampilkan berdasarkan peran dan divisi.",
+      "buttonText": "Lihat Struktur Lengkap"
+    },
+    "program": {
+      "eyebrow": "Program Kerja",
+      "title": "Lorem ipsum dolor sit amet consectetur.",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "items": [
+        {
+          "label": "Akademik",
+          "title": "Lorem Ipsum Dolor",
+          "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        },
+        {
+          "label": "Keprofesian",
+          "title": "Sit Amet Consectetur",
+          "description": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
+        },
+        {
+          "label": "Pengabdian",
+          "title": "Adipiscing Elit Sed",
+          "description": "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam nisi ut aliquid."
+        }
+      ]
+    },
+    "calendar": {
+      "eyebrow": "Kalender HMTKBA",
+      "reminderLabel": "Pengingat terdekat",
+      "emptyText": "Belum ada kegiatan mendatang. Pengingat baru dari Superadmin akan tampil di sini.",
+      "todayButtonText": "Kembali ke hari ini"
+    },
+    "documents": {
+      "title": "Pusat Dokumen & Regulasi",
+      "description": "Akses cepat ke standar operasional, modul akademik, dan regulasi konstruksi bangunan air terbaru.",
+      "buttonText": "Lihat Semua Dokumentasi",
+      "downloadText": "Unduh File"
+    },
+    "footer": {
+      "brandTitle": "HMTKBA",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+      "exploreTitle": "Jelajahi",
+      "quickAccessTitle": "Akses cepat",
+      "copyright": "© 2026 Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air.",
+      "closingText": "Mengalir kokoh, berkarya untuk negeri."
+    }
+  }
+}

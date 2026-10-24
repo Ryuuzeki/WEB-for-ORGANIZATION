@@ -3,8 +3,9 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
+import type { SiteContent } from "@/domain/entities/SiteContent";
 
-export function SiteShell({ children }: { children: React.ReactNode }) {
+export function SiteShell({ children, siteContent }: { children: React.ReactNode; siteContent: SiteContent }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
 
@@ -51,9 +52,20 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
 
   if (isAdmin) return <>{children}</>;
 
+  const themeStyle = {
+    "--hmtkba-navy": siteContent.theme.primary,
+    "--hmtkba-deep-blue": siteContent.theme.secondary,
+    "--hmtkba-sky-blue": siteContent.theme.accent,
+    "--hmtkba-gold": siteContent.theme.cta,
+    "--background": siteContent.theme.background,
+    "--foreground": siteContent.theme.primary,
+    "--hmtkba-cream": siteContent.theme.cream,
+    "--hmtkba-footer": siteContent.theme.footer,
+  } as React.CSSProperties;
+
   return (
-    <div className="min-h-screen bg-background lg:flex">
-      <Sidebar />
+    <div className="min-h-screen bg-background lg:flex" style={themeStyle}>
+      <Sidebar content={siteContent.sidebar} />
       <div data-public-site-content className="min-w-0 flex-1 lg:pl-[var(--sidebar-offset)]">
         {children}
       </div>

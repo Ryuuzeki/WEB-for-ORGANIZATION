@@ -1,10 +1,20 @@
 {
   "hero": {
-    "title": "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit",
+    "title": "Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air",
     "subtitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    "ctaText": "Jelajahi Program Kami"
+    "ctaText": "Jelajahi Program Kami",
+    "secondaryCtaText": "Kenali HMTKBA",
+    "eyebrow": "Kabinet Amerta Abhinaya · 2024/2025",
+    "backgroundImageUrl": "/LOGO HIMA.png",
+    "stats": [
+      { "value": "80+", "label": "Anggota aktif" },
+      { "value": "7", "label": "Divisi kolaboratif" },
+      { "value": "12+", "label": "Agenda tahunan" }
+    ]
   },
   "visionMission": {
+    "visionTitle": "Visi Kami",
+    "missionTitle": "Misi Kami",
     "vision": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     "mission": [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
