@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { upload } from "@vercel/blob/client";
 import {
   LayoutDashboard,
   Megaphone,
@@ -221,6 +222,7 @@ export default function AdminDashboardPage({
     adminSession.canManageAllDivisions ? "Semua" : adminSession.memberDivision
   );
   const [documentSearch, setDocumentSearch] = useState("");
+  const [documentUploadProgress, setDocumentUploadProgress] = useState<number | null>(null);
 
   // Helpers
   const triggerNotification = (message: string, isError = false) => {
@@ -420,28 +422,49 @@ export default function AdminDashboardPage({
   };
 
   const handleDocumentFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const input = e.currentTarget;
+    const file = input.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+    const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const allowedExtensions = new Set(["pdf", "doc", "docx", "xls", "xlsx", "zip"]);
+    if (!allowedExtensions.has(extension)) {
+      triggerNotification("Jenis berkas tidak didukung. Gunakan PDF, DOC, DOCX, XLS, XLSX, atau ZIP.", true);
+      input.value = "";
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      triggerNotification("Ukuran berkas maksimal 25 MB.", true);
+      input.value = "";
+      return;
+    }
+
+    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+    const pathname = `hmtkba/uploads/${Date.now()}_${crypto.randomUUID()}_${sanitizedName}`;
 
     setIsSubmitting(true);
+    setDocumentUploadProgress(0);
     try {
-      const res = await uploadFileAction(formData);
-      if (res.success && res.url) {
-        setDocumentModal({
-          ...documentModal,
-          data: { ...documentModal.data, downloadUrl: res.url }
-        });
-        triggerNotification("File dokumen berhasil diupload!");
-      } else {
-        triggerNotification(res.error || "Gagal mengupload dokumen", true);
-      }
+      const uploaded = await upload(pathname, file, {
+        access: "public",
+        handleUploadUrl: "/api/documents/upload",
+        multipart: true,
+        contentType: file.type || "application/octet-stream",
+        onUploadProgress: ({ percentage }) => setDocumentUploadProgress(Math.round(percentage)),
+      });
+
+      setDocumentModal((current) => ({
+        ...current,
+        data: { ...current.data, downloadUrl: uploaded.downloadUrl || uploaded.url },
+      }));
+      setDocumentUploadProgress(100);
+      triggerNotification("Berkas berhasil diunggah. Klik Simpan Dokumen untuk menampilkannya.");
     } catch (err: unknown) {
       triggerNotification(getErrorMessage(err, "Gagal mengupload dokumen"), true);
+      setDocumentUploadProgress(null);
     } finally {
       setIsSubmitting(false);
+      input.value = "";
     }
   };
 
@@ -2127,15 +2150,24 @@ export default function AdminDashboardPage({
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white text-sm mb-1"
                   />
                   <label className="flex items-center justify-center gap-1.5 w-full py-3 border-2 border-dashed border-slate-200 hover:border-primary bg-slate-50 hover:bg-slate-100 rounded-xl cursor-pointer text-slate-500 hover:text-primary transition font-bold text-xs">
-                    <Upload size={14} />
-                    Unggah Berkas Baru
+                    {documentUploadProgress !== null && documentUploadProgress < 100 ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                    {documentUploadProgress !== null && documentUploadProgress < 100
+                      ? `Mengunggah... ${documentUploadProgress}%`
+                      : documentModal.data.downloadUrl
+                        ? "Ganti Berkas"
+                        : "Unggah Berkas Baru"}
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx,.xls,.xlsx,.zip"
                       onChange={handleDocumentFileUpload}
+                      disabled={isSubmitting}
                       className="hidden"
                     />
                   </label>
+                  <div className="flex items-center justify-between gap-3 text-[11px] text-slate-400">
+                    <span>PDF, Word, Excel, atau ZIP · Maksimal 25 MB</span>
+                    {documentModal.data.downloadUrl && <span className="font-bold text-emerald-600">Berkas siap disimpan</span>}
+                  </div>
                 </div>
               </div>
 
