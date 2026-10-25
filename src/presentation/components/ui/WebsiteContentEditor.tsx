@@ -112,6 +112,22 @@ export function WebsiteContentEditor({
     setUploading(false);
   };
 
+  const updateOrganizationPage = (
+    key: keyof SiteContent["pages"]["organization"],
+    value: string,
+  ) => {
+    setSite((current) => ({
+      ...current,
+      pages: {
+        ...current.pages,
+        organization: {
+          ...current.pages.organization,
+          [key]: value,
+        },
+      },
+    }));
+  };
+
   return (
     <form onSubmit={saveAll} className="space-y-4">
       <div className="rounded-2xl border border-primary/10 bg-primary px-5 py-5 text-white">
@@ -280,6 +296,47 @@ export function WebsiteContentEditor({
               ))}
             </div>
           </div>
+        </div>
+      </Section>
+
+      <Section
+        open
+        title="11. Halaman · Struktur Organisasi"
+        description="Mengatur seluruh teks tetap pada halaman struktur. Nilai periode berlaku serentak pada header halaman, setiap divisi, kartu pengurus, dan ringkasan pengurus di beranda."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Tahun periode" hint="Contoh: 2026 atau 2026/2027. Cukup ubah satu kali untuk seluruh tampilan struktur.">
+            <input className={inputClass} value={site.pages.organization.period} onChange={(event) => updateOrganizationPage("period", event.target.value)} />
+          </Field>
+          <Field label="Label kecil halaman" hint="Gunakan {period} untuk menampilkan periode secara otomatis.">
+            <input className={inputClass} value={site.pages.organization.eyebrow} onChange={(event) => updateOrganizationPage("eyebrow", event.target.value)} />
+          </Field>
+          <Field label="Judul halaman">
+            <input className={inputClass} value={site.pages.organization.title} onChange={(event) => updateOrganizationPage("title", event.target.value)} />
+          </Field>
+          <Field label="Label periode per divisi" hint="Gunakan {period} agar mengikuti tahun periode di atas.">
+            <input className={inputClass} value={site.pages.organization.divisionPeriodLabel} onChange={(event) => updateOrganizationPage("divisionPeriodLabel", event.target.value)} />
+          </Field>
+          <div className="sm:col-span-2">
+            <Field label="Deskripsi halaman" hint="Gunakan {period} agar tahun di dalam kalimat ikut berubah otomatis.">
+              <textarea rows={3} className={inputClass} value={site.pages.organization.description} onChange={(event) => updateOrganizationPage("description", event.target.value)} />
+            </Field>
+          </div>
+          <Field label="Label statistik anggota">
+            <input className={inputClass} value={site.pages.organization.memberStatLabel} onChange={(event) => updateOrganizationPage("memberStatLabel", event.target.value)} />
+          </Field>
+          <Field label="Label statistik divisi">
+            <input className={inputClass} value={site.pages.organization.divisionStatLabel} onChange={(event) => updateOrganizationPage("divisionStatLabel", event.target.value)} />
+          </Field>
+          <Field label="Label statistik foto">
+            <input className={inputClass} value={site.pages.organization.photoStatLabel} onChange={(event) => updateOrganizationPage("photoStatLabel", event.target.value)} />
+          </Field>
+          <Field label="Keterangan jumlah anggota" hint="Gunakan {count} untuk angka jumlah anggota setiap divisi.">
+            <input className={inputClass} value={site.pages.organization.divisionMemberLabel} onChange={(event) => updateOrganizationPage("divisionMemberLabel", event.target.value)} />
+          </Field>
+          <Field label="Teks pengganti foto" hint="Tampil jika pengurus belum memiliki foto.">
+            <input className={inputClass} value={site.pages.organization.photoFallbackLabel} onChange={(event) => updateOrganizationPage("photoFallbackLabel", event.target.value)} />
+          </Field>
         </div>
       </Section>
 

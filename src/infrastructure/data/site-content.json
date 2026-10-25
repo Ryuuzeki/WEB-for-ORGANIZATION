@@ -96,5 +96,19 @@
       "copyright": "© 2026 Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air.",
       "closingText": "Mengalir kokoh, berkarya untuk negeri."
     }
+  },
+  "pages": {
+    "organization": {
+      "period": "2024/2025",
+      "eyebrow": "HMTKBA {period}",
+      "title": "Struktur Organisasi",
+      "description": "Susunan lengkap pengurus HMTKBA periode {period} berdasarkan divisi dan jabatan.",
+      "memberStatLabel": "Anggota",
+      "divisionStatLabel": "Divisi",
+      "photoStatLabel": "Foto",
+      "divisionMemberLabel": "{count} anggota",
+      "divisionPeriodLabel": "Periode {period}",
+      "photoFallbackLabel": "Foto"
+    }
   }
 }

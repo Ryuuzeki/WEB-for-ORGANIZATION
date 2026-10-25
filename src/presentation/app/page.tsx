@@ -125,7 +125,9 @@ export default async function Home() {
                 </div>
                 <h3 className="mt-6 text-lg font-extrabold text-primary">{member.name}</h3>
                 <p className="mt-1 text-sm font-semibold text-cta">{member.role}</p>
-                <p className="mt-3 text-xs text-secondary/55">Periode {member.period}</p>
+                <p className="mt-3 text-xs text-secondary/55">
+                  {siteContent.pages.organization.divisionPeriodLabel.replaceAll("{period}", siteContent.pages.organization.period)}
+                </p>
               </article>
             ))}
           </div>

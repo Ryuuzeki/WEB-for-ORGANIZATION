@@ -1,11 +1,13 @@
 import React from "react";
 import Image from "next/image";
 import { Member } from "@/domain/entities/Member";
+import type { OrganizationPageContent } from "@/domain/entities/SiteContent";
 import { Typography } from "../components/ui/Typography";
 import { Camera, UsersRound } from "lucide-react";
 
 interface OrganizationContainerProps {
   members: Member[];
+  content: OrganizationPageContent;
 }
 
 const getGroupedMembers = (members: Member[]) => {
@@ -25,7 +27,12 @@ const getInitials = (name: string) => {
     .toUpperCase();
 };
 
-export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ members }) => {
+const formatContent = (value: string, period: string, count?: number) =>
+  value
+    .replaceAll("{period}", period)
+    .replaceAll("{count}", count === undefined ? "" : String(count));
+
+export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ members, content }) => {
   const groupedMembers = getGroupedMembers(members);
   const divisions = Object.entries(groupedMembers);
 
@@ -36,13 +43,13 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <Typography variant="span" className="text-sm font-bold uppercase tracking-widest text-cta">
-                HMTKBA 2024/2025
+                {formatContent(content.eyebrow, content.period)}
               </Typography>
               <Typography variant="h1" className="text-primary mt-3 mb-4">
-                Struktur Organisasi
+                {content.title}
               </Typography>
               <Typography variant="p" className="text-secondary max-w-2xl">
-                Susunan lengkap pengurus HMTKBA periode 2024/2025 berdasarkan divisi dan jabatan.
+                {formatContent(content.description, content.period)}
               </Typography>
             </div>
 
@@ -52,7 +59,7 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
                   {members.length}
                 </Typography>
                 <Typography variant="p" className="text-sm text-secondary">
-                  Anggota
+                  {content.memberStatLabel}
                 </Typography>
               </div>
               <div className="rounded-2xl border border-primary/8 bg-background px-3 py-4 sm:px-5">
@@ -60,7 +67,7 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
                   {divisions.length}
                 </Typography>
                 <Typography variant="p" className="text-sm text-secondary">
-                  Divisi
+                  {content.divisionStatLabel}
                 </Typography>
               </div>
               <div className="rounded-2xl border border-primary/8 bg-background px-3 py-4 sm:px-5">
@@ -68,7 +75,7 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
                   {members.length}
                 </Typography>
                 <Typography variant="p" className="text-sm text-secondary">
-                  Foto
+                  {content.photoStatLabel}
                 </Typography>
               </div>
             </div>
@@ -84,14 +91,14 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
                     {division}
                   </Typography>
                   <Typography variant="p" className="mt-6 text-sm text-secondary">
-                    {divisionMembers.length} anggota
+                    {formatContent(content.divisionMemberLabel, content.period, divisionMembers.length)}
                   </Typography>
                 </div>
 
                 <div className="flex items-center gap-2 text-secondary">
                   <UsersRound size={18} />
                   <Typography variant="span" className="text-sm font-semibold">
-                    Periode 2024/2025
+                    {formatContent(content.divisionPeriodLabel, content.period)}
                   </Typography>
                 </div>
               </div>
@@ -118,7 +125,7 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
                           </div>
                           <div className="flex items-center gap-1 text-xs font-semibold uppercase tracking-widest text-secondary/70">
                             <Camera size={14} />
-                            Foto {member.id}
+                            {content.photoFallbackLabel} {member.id}
                           </div>
                         </div>
                       )}
@@ -131,7 +138,7 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
                       {member.role}
                     </Typography>
                     <Typography variant="span" className="mt-2 block text-xs font-semibold text-cta">
-                      {member.period}
+                      {content.period || member.period}
                     </Typography>
                   </article>
                 ))}

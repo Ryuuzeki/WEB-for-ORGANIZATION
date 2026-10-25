@@ -19,6 +19,14 @@ function normalizeSiteContent(value: SiteContent): SiteContent {
     ...value,
     theme: { ...fallback.theme, ...value?.theme },
     sidebar: { ...fallback.sidebar, ...value?.sidebar },
+    pages: {
+      ...fallback.pages,
+      ...value?.pages,
+      organization: {
+        ...fallback.pages.organization,
+        ...value?.pages?.organization,
+      },
+    },
     home: {
       ...fallback.home,
       ...value?.home,

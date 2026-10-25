@@ -52,6 +52,19 @@ export interface HomeDocumentsContent {
   downloadText: string;
 }
 
+export interface OrganizationPageContent {
+  period: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  memberStatLabel: string;
+  divisionStatLabel: string;
+  photoStatLabel: string;
+  divisionMemberLabel: string;
+  divisionPeriodLabel: string;
+  photoFallbackLabel: string;
+}
+
 export interface HomeFooterContent {
   brandTitle: string;
   description: string;
@@ -90,5 +103,8 @@ export interface SiteContent {
     calendar: HomeCalendarContent;
     documents: HomeDocumentsContent;
     footer: HomeFooterContent;
+  };
+  pages: {
+    organization: OrganizationPageContent;
   };
 }
