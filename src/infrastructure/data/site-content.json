@@ -89,11 +89,9 @@
       "phone": "087754750954",
       "email": "",
       "socialLinks": [
-        { "platform": "instagram", "label": "Instagram", "url": "" },
-        { "platform": "youtube", "label": "YouTube Channel", "url": "" },
-        { "platform": "tiktok", "label": "TikTok Official", "url": "" },
-        { "platform": "facebook", "label": "Facebook Page", "url": "" },
-        { "platform": "threads", "label": "Threads Page", "url": "" }
+        { "platform": "instagram", "label": "Instagram", "url": "https://www.instagram.com/hmtkba?psln=eW1qOXhxNXhxMGc2" },
+        { "platform": "youtube", "label": "YouTube Channel", "url": "https://youtube.com/@hmtkba_ppu?si=ST8dISjGr-QDuv8y" },
+        { "platform": "tiktok", "label": "TikTok Official", "url": "https://www.tiktok.com/@hmtkba_ppu?_r=1&_t=ZS-9Aq2i5UdlUA" }
       ],
       "copyright": "© 2026 Himpunan Mahasiswa Teknologi Konstruksi Bangunan Air.",
       "closingText": "Mengalir kokoh, berkarya untuk negeri."
