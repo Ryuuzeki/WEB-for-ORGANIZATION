@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import ProgramProfileTabs from "@/presentation/components/ui/ProgramProfileTabs";
 import { listNewsItems } from "@/lib/newsRepository";
+import { getSiteContent } from "@/lib/siteContentRepository";
 
 const competencies = [
   {
@@ -79,7 +80,12 @@ const leaders = [
 export const dynamic = "force-dynamic";
 
 export default async function TechnologyConstructionWaterBuildingPage() {
-  const newsItems = (await listNewsItems()).filter((item) => item.isPublished).slice(0, 3);
+  const [allNewsItems, siteContent] = await Promise.all([
+    listNewsItems(),
+    getSiteContent(),
+  ]);
+  const newsItems = allNewsItems.filter((item) => item.isPublished).slice(0, 3);
+  const pageContent = siteContent.pages.profile;
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "EducationalOccupationalProgram",
@@ -109,12 +115,12 @@ export default async function TechnologyConstructionWaterBuildingPage() {
               <span>/</span>
               <span>Profil Program Studi</span>
             </nav>
-            <p className="mt-10 text-xs font-black uppercase tracking-[0.22em] text-cta">Program Studi D-III</p>
+            <p className="mt-10 text-xs font-black uppercase tracking-[0.22em] text-cta">{pageContent.eyebrow}</p>
             <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl xl:text-7xl">
-              Teknologi Konstruksi Bangunan Air
+              {pageContent.title}
             </h1>
             <p className="mt-7 max-w-3xl text-base font-medium leading-8 text-white/72 sm:text-lg">
-              Program vokasi yang membekali mahasiswa dengan pengetahuan dan keterampilan praktis untuk merancang, membangun, serta mengelola infrastruktur sumber daya air.
+              {pageContent.description}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-bold backdrop-blur-sm"><GraduationCap size={16} /> Program D-III</span>
@@ -123,10 +129,10 @@ export default async function TechnologyConstructionWaterBuildingPage() {
             </div>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <a href="#profil" className="inline-flex items-center justify-center gap-2 rounded-full bg-cta px-6 py-3.5 text-sm font-black text-primary shadow-xl transition hover:-translate-y-0.5 hover:bg-cream">
-                Jelajahi program studi <ArrowRight size={17} />
+                {pageContent.primaryActionText} <ArrowRight size={17} />
               </a>
               <Link href="/" className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3.5 text-sm font-black text-white transition hover:bg-white/10">
-                Kembali ke HMTKBA
+                {pageContent.secondaryActionText}
               </Link>
             </div>
           </div>

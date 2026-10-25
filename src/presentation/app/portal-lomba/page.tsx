@@ -2,11 +2,16 @@ import Link from "next/link";
 import { ArrowRight, ExternalLink, RefreshCw, ShieldCheck, Sparkles, Trophy, Waves } from "lucide-react";
 import CompetitionPortal from "@/presentation/components/ui/CompetitionPortal";
 import { getStudentCompetitions } from "@/lib/competitionRepository";
+import { getSiteContent } from "@/lib/siteContentRepository";
 
 export const revalidate = 3600;
 
 export default async function StudentCompetitionPage() {
-  const feed = await getStudentCompetitions();
+  const [feed, siteContent] = await Promise.all([
+    getStudentCompetitions(),
+    getSiteContent(),
+  ]);
+  const pageContent = siteContent.pages.competitions;
   const updatedAt = new Intl.DateTimeFormat("id-ID", {
     dateStyle: "long",
     timeStyle: "short",
@@ -34,14 +39,14 @@ export default async function StudentCompetitionPage() {
         <div className="relative mx-auto grid max-w-[1400px] items-center gap-12 lg:grid-cols-[1.1fr_.9fr] lg:gap-20">
           <div>
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45"><Link href="/" className="hover:text-white">Beranda</Link><span>/</span><span>Portal Lomba</span></nav>
-            <p className="mt-10 flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-cta"><Sparkles size={16} /> Peluang Prestasi Mahasiswa</p>
-            <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight sm:text-6xl xl:text-7xl">Portal Lomba Mahasiswa</h1>
-            <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-white/68 sm:text-lg">Temukan kompetisi yang menerima peserta mahasiswa dalam satu ruang yang ringkas, mudah dicari, dan memadukan pilihan HMTKBA dengan pembaruan InfoLomba.id serta SiLomba.id.</p>
+            <p className="mt-10 flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-cta"><Sparkles size={16} /> {pageContent.eyebrow}</p>
+            <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight sm:text-6xl xl:text-7xl">{pageContent.title}</h1>
+            <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-white/68 sm:text-lg">{pageContent.description}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-xs font-black"><Trophy size={16} className="text-cta" /> {openCount} masih dibuka</span>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2.5 text-xs font-black"><RefreshCw size={15} className="text-cta" /> Sinkron setiap 1 jam</span>
             </div>
-            <a href="#daftar-lomba" className="mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-cta px-6 py-3.5 text-sm font-black text-primary transition hover:bg-cream">Jelajahi lomba <ArrowRight size={17} /></a>
+            <a href="#daftar-lomba" className="mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-cta px-6 py-3.5 text-sm font-black text-primary transition hover:bg-cream">{pageContent.primaryActionText} <ArrowRight size={17} /></a>
           </div>
 
           <div className="relative mx-auto grid min-h-[390px] w-full max-w-[520px] place-items-center">

@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import type { SiteContent } from "@/domain/entities/SiteContent";
+
+const SiteContentContext = createContext<SiteContent | null>(null);
+
+export function useSiteContent() {
+  const content = useContext(SiteContentContext);
+  if (!content) throw new Error("Konten website hanya tersedia pada halaman publik.");
+  return content;
+}
 
 export function SiteShell({ children, siteContent }: { children: React.ReactNode; siteContent: SiteContent }) {
   const pathname = usePathname();
@@ -64,14 +72,16 @@ export function SiteShell({ children, siteContent }: { children: React.ReactNode
   } as React.CSSProperties;
 
   return (
-    <div className="min-h-screen bg-background lg:flex" style={themeStyle}>
-      <Sidebar content={siteContent.sidebar} />
-      <div
-        data-public-site-content
-        className="min-w-0 flex-1 transition-[padding] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none lg:pl-[var(--sidebar-offset)]"
-      >
-        {children}
+    <SiteContentContext.Provider value={siteContent}>
+      <div className="min-h-screen bg-background lg:flex" style={themeStyle}>
+        <Sidebar content={siteContent.sidebar} />
+        <div
+          data-public-site-content
+          className="min-w-0 flex-1 transition-[padding] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none lg:pl-[var(--sidebar-offset)]"
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </SiteContentContext.Provider>
   );
 }

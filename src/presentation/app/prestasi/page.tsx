@@ -3,12 +3,15 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Award, ExternalLink, Medal, Sparkles, Trophy, UsersRound } from "lucide-react";
 import AchievementGallery from "@/presentation/components/ui/AchievementGallery";
 import { achievements, achievementStories } from "@/lib/achievements";
+import { getSiteContent } from "@/lib/siteContentRepository";
 
 const individualCount = achievements.filter((item) => item.type === "Individu").length;
 const teamCount = achievements.filter((item) => item.type === "Kelompok").length;
 const internationalCount = achievements.filter((item) => item.level === "Internasional").length;
 
-export default function AchievementPage() {
+export default async function AchievementPage() {
+  const siteContent = await getSiteContent();
+  const pageContent = siteContent.pages.achievements;
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -38,15 +41,15 @@ export default function AchievementPage() {
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200/70">
               <Link href="/" className="transition hover:text-white">Beranda</Link><span>/</span><span>Prestasi</span>
             </nav>
-            <p className="mt-10 text-xs font-black uppercase tracking-[0.22em] text-cta">Ruang Apresiasi Mahasiswa</p>
-            <h1 className="mt-5 max-w-3xl text-4xl font-black leading-[1.01] tracking-tight text-white sm:text-6xl xl:text-7xl">Setiap capaian layak dirayakan.</h1>
-            <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-white/68 sm:text-lg">Sebuah ruang untuk mengenali keberanian berkompetisi, kerja keras, dan pencapaian mahasiswa di bidang akademik maupun nonakademik.</p>
+            <p className="mt-10 text-xs font-black uppercase tracking-[0.22em] text-cta">{pageContent.eyebrow}</p>
+            <h1 className="mt-5 max-w-3xl text-4xl font-black leading-[1.01] tracking-tight text-white sm:text-6xl xl:text-7xl">{pageContent.title}</h1>
+            <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-white/68 sm:text-lg">{pageContent.description}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black"><Trophy size={16} className="text-cta" /> {achievements.length} prestasi</span>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-black"><UsersRound size={16} className="text-cta" /> Individu & kelompok</span>
               <span className="inline-flex items-center gap-2 rounded-full border border-cta/30 bg-cta/15 px-4 py-2.5 text-xs font-black text-cream"><Award size={16} /> Nasional & internasional</span>
             </div>
-            <a href="#galeri" className="mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-cta px-6 py-3.5 text-sm font-black text-primary shadow-xl transition hover:-translate-y-0.5 hover:bg-cream">Jelajahi prestasi <ArrowRight size={17} /></a>
+            <a href="#galeri" className="mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-cta px-6 py-3.5 text-sm font-black text-primary shadow-xl transition hover:-translate-y-0.5 hover:bg-cream">{pageContent.primaryActionText} <ArrowRight size={17} /></a>
           </div>
 
           <div className="relative min-h-[510px] sm:min-h-[570px]">
@@ -119,7 +122,7 @@ export default function AchievementPage() {
       <section className="bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
         <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-8 overflow-hidden rounded-[2.25rem] bg-primary px-7 py-10 text-white shadow-[0_28px_75px_rgba(16,42,107,.18)] sm:px-10 sm:py-12 lg:flex-row lg:items-center">
           <div><p className="text-xs font-black uppercase tracking-[0.2em] text-cta">Terus Bertumbuh</p><h2 className="mt-3 max-w-3xl text-3xl font-black leading-tight sm:text-4xl">Prestasi berikutnya bisa dimulai dari satu keberanian untuk mencoba.</h2></div>
-          <Link href="/#program" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-cta px-6 py-3.5 text-sm font-black text-primary transition hover:bg-cream">Lihat program HMTKBA <ArrowRight size={17} /></Link>
+          <Link href="/#program" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-cta px-6 py-3.5 text-sm font-black text-primary transition hover:bg-cream">{pageContent.secondaryActionText} <ArrowRight size={17} /></Link>
         </div>
       </section>
 

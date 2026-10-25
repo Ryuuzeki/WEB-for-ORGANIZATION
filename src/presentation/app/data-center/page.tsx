@@ -1,4 +1,5 @@
 import { di } from "@/lib/di";
+import { getSiteContent } from "@/lib/siteContentRepository";
 import { DataCenterContainer } from "@/presentation/containers/DataCenterContainer";
 
 export const metadata = {
@@ -16,12 +17,16 @@ export default async function DataCenterPage() {
   const getRegionalAnalysis = di.getRegionalAnalysis();
 
   // Default to Indonesia as a whole or a major region supported by BMKG XML
-  const data = await getRegionalAnalysis.execute("Indonesia");
+  const [data, siteContent] = await Promise.all([
+    getRegionalAnalysis.execute("Indonesia"),
+    getSiteContent(),
+  ]);
 
   return (
     <DataCenterContainer
       climate={data.climate}
       stats={data.stats}
+      content={siteContent.pages.dataCenter}
     />
   );
 }

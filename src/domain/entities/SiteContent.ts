@@ -65,6 +65,14 @@ export interface OrganizationPageContent {
   photoFallbackLabel: string;
 }
 
+export interface PublicPageContent {
+  eyebrow: string;
+  title: string;
+  description: string;
+  primaryActionText: string;
+  secondaryActionText: string;
+}
+
 export interface HomeFooterContent {
   brandTitle: string;
   description: string;
@@ -106,5 +114,11 @@ export interface SiteContent {
   };
   pages: {
     organization: OrganizationPageContent;
+    profile: PublicPageContent;
+    lecturers: PublicPageContent;
+    achievements: PublicPageContent;
+    competitions: PublicPageContent;
+    documents: PublicPageContent;
+    dataCenter: PublicPageContent;
   };
 }

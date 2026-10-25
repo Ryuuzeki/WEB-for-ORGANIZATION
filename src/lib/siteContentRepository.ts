@@ -26,6 +26,12 @@ function normalizeSiteContent(value: SiteContent): SiteContent {
         ...fallback.pages.organization,
         ...value?.pages?.organization,
       },
+      profile: { ...fallback.pages.profile, ...value?.pages?.profile },
+      lecturers: { ...fallback.pages.lecturers, ...value?.pages?.lecturers },
+      achievements: { ...fallback.pages.achievements, ...value?.pages?.achievements },
+      competitions: { ...fallback.pages.competitions, ...value?.pages?.competitions },
+      documents: { ...fallback.pages.documents, ...value?.pages?.documents },
+      dataCenter: { ...fallback.pages.dataCenter, ...value?.pages?.dataCenter },
     },
     home: {
       ...fallback.home,

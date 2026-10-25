@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Camera, Video, Play, Image as ImageIcon } from "lucide-react";
+import { useSiteContent } from "@/presentation/components/ui/SiteShell";
 
 const mediaItems = [
   {
@@ -63,6 +64,8 @@ const mediaItems = [
 ];
 
 export default function DokumenPage() {
+  const siteContent = useSiteContent();
+  const pageContent = siteContent.pages.documents;
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [activeVideoModal, setActiveVideoModal] = useState<string | null>(null);
 
@@ -79,13 +82,13 @@ export default function DokumenPage() {
           <div className="min-w-0">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-xs uppercase tracking-wider mb-4">
             <Camera className="w-4 h-4" />
-            Galeri Foto & Video HMTKBA
+            {pageContent.eyebrow}
           </span>
           <h1 className="mb-5 max-w-full break-words text-3xl font-black leading-[1.05] tracking-tight text-primary min-[380px]:text-4xl sm:text-5xl lg:text-6xl">
-            Dokumentasi Kegiatan & Proyek
+            {pageContent.title}
           </h1>
           <p className="max-w-2xl break-words text-base font-medium leading-8 text-secondary/75 md:text-lg">
-            Kumpulan momen bersejarah, dokumentasi lapangan, video kilas balik, dan rekaman jejak prestasi mahasiswa Teknologi Konstruksi Bangunan Air.
+            {pageContent.description}
           </p>
           </div>
           <div className="grid h-72 min-w-0 grid-cols-2 grid-rows-2 gap-3 sm:h-[430px]">
@@ -110,10 +113,10 @@ export default function DokumenPage() {
           <div>
             <h2 className="flex items-center gap-3 text-2xl font-black text-primary md:text-3xl">
               <Video className="w-8 h-8 text-sky-600" />
-              Koleksi Media HMTKBA
+              {pageContent.primaryActionText}
             </h2>
             <p className="text-secondary/70 text-sm mt-1">
-              Telusuri dokumentasi foto dan video berdasarkan kategori kegiatan.
+              {pageContent.secondaryActionText}
             </p>
           </div>
 

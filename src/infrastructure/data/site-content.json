@@ -109,6 +109,48 @@
       "divisionMemberLabel": "{count} anggota",
       "divisionPeriodLabel": "Periode {period}",
       "photoFallbackLabel": "Foto"
+    },
+    "profile": {
+      "eyebrow": "Program Studi D-III",
+      "title": "Teknologi Konstruksi Bangunan Air",
+      "description": "Program vokasi yang membekali mahasiswa dengan pengetahuan dan keterampilan praktis untuk merancang, membangun, serta mengelola infrastruktur sumber daya air.",
+      "primaryActionText": "Jelajahi program studi",
+      "secondaryActionText": "Kembali ke HMTKBA"
+    },
+    "lecturers": {
+      "eyebrow": "Tim Pengajar Program Studi",
+      "title": "Dosen Teknologi Konstruksi Bangunan Air",
+      "description": "Kenali para pengajar yang mendampingi proses belajar mahasiswa TKBA—dari pemahaman dasar rekayasa hingga praktik konstruksi sumber daya air.",
+      "primaryActionText": "Lihat direktori dosen",
+      "secondaryActionText": "Buka profil prodi"
+    },
+    "achievements": {
+      "eyebrow": "Ruang Apresiasi Mahasiswa",
+      "title": "Setiap capaian layak dirayakan.",
+      "description": "Sebuah ruang untuk mengenali keberanian berkompetisi, kerja keras, dan pencapaian mahasiswa di bidang akademik maupun nonakademik.",
+      "primaryActionText": "Jelajahi prestasi",
+      "secondaryActionText": "Lihat program HMTKBA"
+    },
+    "competitions": {
+      "eyebrow": "Peluang Prestasi Mahasiswa",
+      "title": "Portal Lomba Mahasiswa",
+      "description": "Temukan kompetisi yang menerima peserta mahasiswa dalam satu ruang yang ringkas, mudah dicari, dan memadukan pilihan HMTKBA dengan pembaruan InfoLomba.id serta SiLomba.id.",
+      "primaryActionText": "Jelajahi lomba",
+      "secondaryActionText": ""
+    },
+    "documents": {
+      "eyebrow": "Galeri Foto & Video HMTKBA",
+      "title": "Dokumentasi Kegiatan & Proyek",
+      "description": "Kumpulan momen bersejarah, dokumentasi lapangan, video kilas balik, dan rekaman jejak prestasi mahasiswa Teknologi Konstruksi Bangunan Air.",
+      "primaryActionText": "Koleksi Media HMTKBA",
+      "secondaryActionText": "Telusuri dokumentasi foto dan video berdasarkan kategori kegiatan."
+    },
+    "dataCenter": {
+      "eyebrow": "Data & Wawasan",
+      "title": "Data Center HMTKBA",
+      "description": "Monitor kondisi klimatologi dan statistik infrastruktur air nasional dalam tampilan yang ringkas.",
+      "primaryActionText": "Cuaca Saat Ini",
+      "secondaryActionText": ""
     }
   }
 }

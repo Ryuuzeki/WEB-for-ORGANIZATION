@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import LecturersPage from "@/presentation/app/dosen/page";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Dosen Teknologi Konstruksi Bangunan Air",
   description: "Direktori dosen Program Studi Teknologi Konstruksi Bangunan Air Politeknik Pekerjaan Umum dengan pencarian nama dan NUPTK.",

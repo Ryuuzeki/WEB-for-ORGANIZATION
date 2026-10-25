@@ -11,21 +11,23 @@ import {
 } from "lucide-react";
 import { ClimateData } from "@/domain/entities/ClimateData";
 import { RegionalStat } from "@/domain/entities/RegionalStat";
+import type { PublicPageContent } from "@/domain/entities/SiteContent";
 
 interface DataCenterContainerProps {
   climate: ClimateData;
   stats: RegionalStat[];
+  content: PublicPageContent;
 }
 
-export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climate, stats }) => {
+export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climate, stats, content }) => {
   return (
     <main className="min-h-screen bg-background px-5 pb-20 pt-28 sm:px-8 lg:px-10 lg:pt-20">
       <div className="mx-auto max-w-[1400px]">
         <section className="mb-10 max-w-3xl sm:mb-12">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-cta">Data & Wawasan</p>
-          <Typography variant="h1" className="mb-4 mt-4 text-primary">Data Center HMTKBA</Typography>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-cta">{content.eyebrow}</p>
+          <Typography variant="h1" className="mb-4 mt-4 text-primary">{content.title}</Typography>
           <Typography variant="p" className="max-w-2xl font-medium text-secondary/70">
-            Monitor kondisi klimatologi dan statistik infrastruktur air nasional dalam tampilan yang ringkas.
+            {content.description}
           </Typography>
         </section>
 
@@ -34,7 +36,7 @@ export const DataCenterContainer: React.FC<DataCenterContainerProps> = ({ climat
         <article className="overflow-hidden rounded-[2rem] border border-primary/8 bg-white shadow-[0_18px_55px_rgba(16,42,107,.07)] lg:col-span-1">
           <div className="bg-primary p-6 text-cream sm:p-8">
             <div className="flex justify-between items-center mb-4">
-              <Typography variant="h3">Cuaca Saat Ini</Typography>
+              <Typography variant="h3">{content.primaryActionText}</Typography>
               <Cloud size={24} className="text-accent" />
             </div>
             <Typography variant="p" className="text-sm opacity-80">{climate.region}</Typography>

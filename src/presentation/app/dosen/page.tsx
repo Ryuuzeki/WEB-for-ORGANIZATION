@@ -3,10 +3,13 @@ import Link from "next/link";
 import { ArrowRight, BookOpenCheck, ExternalLink, GraduationCap, Microscope, UsersRound, Waves } from "lucide-react";
 import LecturerDirectory from "@/presentation/components/ui/LecturerDirectory";
 import { lecturers } from "@/lib/lecturers";
+import { getSiteContent } from "@/lib/siteContentRepository";
 
 const featuredLecturers = [lecturers[0], lecturers[1], lecturers[10]];
 
-export default function LecturersPage() {
+export default async function LecturersPage() {
+  const siteContent = await getSiteContent();
+  const pageContent = siteContent.pages.lecturers;
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -41,12 +44,12 @@ export default function LecturersPage() {
               <span>/</span>
               <span>Dosen</span>
             </nav>
-            <p className="mt-10 text-xs font-black uppercase tracking-[0.22em] text-cta">Tim Pengajar Program Studi</p>
+            <p className="mt-10 text-xs font-black uppercase tracking-[0.22em] text-cta">{pageContent.eyebrow}</p>
             <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight text-primary sm:text-6xl xl:text-7xl">
-              Dosen Teknologi Konstruksi Bangunan Air
+              {pageContent.title}
             </h1>
             <p className="mt-7 max-w-2xl text-base font-medium leading-8 text-secondary/68 sm:text-lg">
-              Kenali para pengajar yang mendampingi proses belajar mahasiswa TKBA—dari pemahaman dasar rekayasa hingga praktik konstruksi sumber daya air.
+              {pageContent.description}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white px-4 py-2.5 text-xs font-black text-primary shadow-sm"><UsersRound size={16} /> {lecturers.length} dosen</span>
@@ -54,7 +57,7 @@ export default function LecturersPage() {
               <span className="inline-flex items-center gap-2 rounded-full border border-cta/35 bg-cta/15 px-4 py-2.5 text-xs font-black text-primary"><Waves size={16} /> TKBA</span>
             </div>
             <a href="#direktori" className="mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-black text-white shadow-xl shadow-primary/15 transition hover:-translate-y-0.5 hover:bg-[#173a8b]">
-              Lihat direktori dosen <ArrowRight size={17} />
+              {pageContent.primaryActionText} <ArrowRight size={17} />
             </a>
           </div>
 
@@ -131,7 +134,7 @@ export default function LecturersPage() {
             <h2 className="mt-3 max-w-3xl text-3xl font-black leading-tight sm:text-4xl">Lihat kompetensi, visi, misi, dan ruang belajar TKBA.</h2>
           </div>
           <Link href="/teknologi-konstruksi-bangunan-air" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-cta px-6 py-3.5 text-sm font-black text-primary transition hover:bg-cream">
-            Buka profil prodi <ArrowRight size={17} />
+            {pageContent.secondaryActionText} <ArrowRight size={17} />
           </Link>
         </div>
       </section>

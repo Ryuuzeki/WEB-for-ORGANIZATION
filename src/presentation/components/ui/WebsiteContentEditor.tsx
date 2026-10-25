@@ -15,6 +15,22 @@ import {
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10";
 
+type EditablePublicPageKey = Exclude<keyof SiteContent["pages"], "organization">;
+
+const editablePublicPages: Array<{
+  key: EditablePublicPageKey;
+  title: string;
+  description: string;
+  secondaryLabel?: string;
+}> = [
+  { key: "profile", title: "12. Halaman · Profil Program Studi", description: "Hero halaman profil TKBA dan teks dua tombol utamanya.", secondaryLabel: "Teks tombol kembali" },
+  { key: "lecturers", title: "13. Halaman · Dosen TKBA", description: "Hero direktori dosen dan tombol menuju direktori serta profil program studi.", secondaryLabel: "Teks tombol profil prodi" },
+  { key: "achievements", title: "14. Halaman · Prestasi", description: "Hero ruang apresiasi dan tombol navigasi utama halaman prestasi.", secondaryLabel: "Teks tombol program HMTKBA" },
+  { key: "competitions", title: "15. Portal · Lomba Mahasiswa", description: "Hero portal lomba yang menggabungkan lomba manual dan sumber eksternal." },
+  { key: "documents", title: "16. Halaman · Dokumentasi", description: "Hero galeri dokumentasi serta judul dan pengantar koleksi media.", secondaryLabel: "Deskripsi koleksi media" },
+  { key: "dataCenter", title: "17. Halaman · Data Center", description: "Hero Data Center dan judul kartu kondisi cuaca." },
+];
+
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <label className="block space-y-1.5">
@@ -122,6 +138,23 @@ export function WebsiteContentEditor({
         ...current.pages,
         organization: {
           ...current.pages.organization,
+          [key]: value,
+        },
+      },
+    }));
+  };
+
+  const updatePublicPage = (
+    page: EditablePublicPageKey,
+    key: keyof SiteContent["pages"][EditablePublicPageKey],
+    value: string,
+  ) => {
+    setSite((current) => ({
+      ...current,
+      pages: {
+        ...current.pages,
+        [page]: {
+          ...current.pages[page],
           [key]: value,
         },
       },
@@ -339,6 +372,35 @@ export function WebsiteContentEditor({
           </Field>
         </div>
       </Section>
+
+      {editablePublicPages.map((page) => {
+        const content = site.pages[page.key];
+        return (
+          <Section key={page.key} title={page.title} description={page.description}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Label kecil / eyebrow">
+                <input className={inputClass} value={content.eyebrow} onChange={(event) => updatePublicPage(page.key, "eyebrow", event.target.value)} />
+              </Field>
+              <Field label="Judul utama halaman">
+                <input className={inputClass} value={content.title} onChange={(event) => updatePublicPage(page.key, "title", event.target.value)} />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Deskripsi utama">
+                  <textarea rows={3} className={inputClass} value={content.description} onChange={(event) => updatePublicPage(page.key, "description", event.target.value)} />
+                </Field>
+              </div>
+              <Field label={page.key === "dataCenter" ? "Judul kartu cuaca" : page.key === "documents" ? "Judul koleksi media" : "Teks tombol utama"}>
+                <input className={inputClass} value={content.primaryActionText} onChange={(event) => updatePublicPage(page.key, "primaryActionText", event.target.value)} />
+              </Field>
+              {page.secondaryLabel && (
+                <Field label={page.secondaryLabel}>
+                  <input className={inputClass} value={content.secondaryActionText} onChange={(event) => updatePublicPage(page.key, "secondaryActionText", event.target.value)} />
+                </Field>
+              )}
+            </div>
+          </Section>
+        );
+      })}
 
       <div className="sticky bottom-4 z-20 flex items-center justify-between gap-4 rounded-2xl border border-primary/10 bg-white/95 p-4 shadow-2xl backdrop-blur">
         <p className="hidden text-xs leading-5 text-slate-500 sm:block">Simpan setelah selesai mengubah satu atau beberapa bagian.</p>
