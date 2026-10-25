@@ -66,7 +66,10 @@ export function SiteShell({ children, siteContent }: { children: React.ReactNode
   return (
     <div className="min-h-screen bg-background lg:flex" style={themeStyle}>
       <Sidebar content={siteContent.sidebar} />
-      <div data-public-site-content className="min-w-0 flex-1 transition-[padding] duration-300 lg:pl-[var(--sidebar-offset)]">
+      <div
+        data-public-site-content
+        className="min-w-0 flex-1 transition-[padding] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none lg:pl-[var(--sidebar-offset)]"
+      >
         {children}
       </div>
     </div>

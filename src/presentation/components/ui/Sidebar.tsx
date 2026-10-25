@@ -19,7 +19,7 @@ import {
   Waves,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import type { SiteContent } from "@/domain/entities/SiteContent";
 
 const navigation = [
@@ -42,7 +42,7 @@ export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
 
   const sidebarWidth = collapsed ? "88px" : "272px";
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.documentElement.style.setProperty("--sidebar-offset", sidebarWidth);
     return () => {
       document.documentElement.style.removeProperty("--sidebar-offset");
@@ -79,23 +79,38 @@ export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
 
       <aside
         style={{ "--sidebar-width": sidebarWidth } as React.CSSProperties}
-        className={`fixed inset-y-0 left-0 z-50 flex w-[min(var(--sidebar-width),86vw)] flex-col border-r border-white/10 bg-primary text-white shadow-2xl shadow-primary/15 transition-[width,transform] duration-300 lg:w-[var(--sidebar-width)] lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[min(272px,86vw)] flex-col overflow-x-hidden border-r border-white/10 bg-primary text-white shadow-2xl shadow-primary/15 transition-[width,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none lg:w-[var(--sidebar-width)] lg:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-20 items-center gap-3 border-b border-white/10 px-5">
-          <Link href="/" className="flex min-w-0 flex-1 items-center gap-3" aria-label="HMTKBA Beranda">
+        <div
+          className={`flex h-20 items-center border-b border-white/10 transition-[padding,gap] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            collapsed ? "gap-0 px-5 lg:px-[22px]" : "gap-3 px-5"
+          }`}
+        >
+          <Link
+            href="/"
+            className={`flex min-w-0 flex-1 items-center transition-[gap] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+              collapsed ? "gap-3 lg:gap-0" : "gap-3"
+            }`}
+            aria-label="HMTKBA Beranda"
+          >
             <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white shadow-lg shadow-black/10">
               <Image src="/LOGO HIMA.png" alt="" width={44} height={44} className="h-full w-full object-contain" priority />
             </span>
-            {!collapsed && (
-              <span className="min-w-0">
-                <span className="block text-lg font-black tracking-tight">{content.brandTitle}</span>
-                <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-sky-200">
-                  {content.brandSubtitle}
-                </span>
+            <span
+              aria-hidden={collapsed}
+              className={`min-w-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+                collapsed
+                  ? "max-w-52 opacity-100 lg:max-w-0 lg:-translate-x-2 lg:opacity-0"
+                  : "max-w-52 translate-x-0 opacity-100 delay-150"
+              }`}
+            >
+              <span className="block text-lg font-black tracking-tight">{content.brandTitle}</span>
+              <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-sky-200">
+                {content.brandSubtitle}
               </span>
-            )}
+            </span>
           </Link>
           <button
             type="button"
@@ -107,8 +122,17 @@ export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Navigasi utama">
-          {!collapsed && <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.22em] text-sky-200/65">Navigasi</p>}
+        <nav className="flex-1 overflow-x-hidden overflow-y-auto px-3 py-4" aria-label="Navigasi utama">
+          <p
+            aria-hidden={collapsed}
+            className={`overflow-hidden whitespace-nowrap px-3 text-[10px] font-bold uppercase tracking-[0.22em] text-sky-200/65 transition-[max-height,margin,opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+              collapsed
+                ? "mb-3 max-h-5 opacity-100 lg:mb-0 lg:max-h-0 lg:-translate-x-2 lg:opacity-0"
+                : "mb-3 max-h-5 translate-x-0 opacity-100 delay-150"
+            }`}
+          >
+            Navigasi
+          </p>
           <ul className="space-y-1">
             {navigation.map((item) => {
               const Icon = item.icon;
@@ -123,12 +147,23 @@ export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
                     title={collapsed ? item.label : undefined}
-                    className={`group flex min-h-11 items-center gap-3 rounded-2xl px-3 text-sm font-semibold transition-colors ${
+                    className={`group flex min-h-11 items-center overflow-hidden rounded-2xl text-sm font-semibold transition-[padding,gap,color,background-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                      collapsed ? "gap-3 px-3 lg:gap-0 lg:px-[22px]" : "gap-3 px-3"
+                    } ${
                       active ? "bg-white text-primary shadow-lg shadow-black/10" : "text-white/75 hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     <Icon size={20} className="shrink-0" aria-hidden="true" />
-                    {!collapsed && <span>{item.label}</span>}
+                    <span
+                      aria-hidden={collapsed}
+                      className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+                        collapsed
+                          ? "max-w-44 opacity-100 lg:max-w-0 lg:-translate-x-2 lg:opacity-0"
+                          : "max-w-44 translate-x-0 opacity-100 delay-150"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
                   </Link>
                 </li>
               );
@@ -140,24 +175,46 @@ export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
           <Link
             href="/admin/login"
             title={collapsed ? content.adminTitle : undefined}
-            className="flex min-h-12 items-center gap-3 rounded-2xl bg-white/8 px-3 text-sm font-semibold text-white/80 transition hover:bg-white/14 hover:text-white"
+            className={`flex min-h-12 items-center overflow-hidden rounded-2xl bg-white/8 text-sm font-semibold text-white/80 transition-[padding,gap,color,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none hover:bg-white/14 hover:text-white ${
+              collapsed ? "gap-3 px-3 lg:gap-0 lg:px-[22px]" : "gap-3 px-3"
+            }`}
           >
             <CircleUserRound size={20} className="shrink-0" aria-hidden="true" />
-            {!collapsed && (
-              <span>
-                <span className="block">{content.adminTitle}</span>
-                <span className="block text-[10px] font-medium text-sky-200/65">{content.adminSubtitle}</span>
-              </span>
-            )}
+            <span
+              aria-hidden={collapsed}
+              className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+                collapsed
+                  ? "max-w-44 opacity-100 lg:max-w-0 lg:-translate-x-2 lg:opacity-0"
+                  : "max-w-44 translate-x-0 opacity-100 delay-150"
+              }`}
+            >
+              <span className="block">{content.adminTitle}</span>
+              <span className="block text-[10px] font-medium text-sky-200/65">{content.adminSubtitle}</span>
+            </span>
           </Link>
           <button
             type="button"
             onClick={() => setCollapsed((value) => !value)}
-            className="mt-3 hidden min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 text-xs font-semibold text-white/60 hover:bg-white/10 hover:text-white lg:flex"
+            className={`mt-3 hidden min-h-10 w-full items-center justify-center overflow-hidden rounded-xl border border-white/10 text-xs font-semibold text-white/60 transition-[gap,color,background-color] duration-300 ease-out motion-reduce:transition-none hover:bg-white/10 hover:text-white lg:flex ${
+              collapsed ? "gap-0" : "gap-2"
+            }`}
             aria-label={collapsed ? "Perlebar sidebar" : "Perkecil sidebar"}
+            aria-expanded={!collapsed}
           >
-            <ChevronLeft className={`transition-transform ${collapsed ? "rotate-180" : ""}`} size={17} />
-            {!collapsed && <span>Perkecil menu</span>}
+            <ChevronLeft
+              className={`shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                collapsed ? "rotate-180" : ""
+              }`}
+              size={17}
+            />
+            <span
+              aria-hidden={collapsed}
+              className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+                collapsed ? "max-w-0 -translate-x-2 opacity-0" : "max-w-28 translate-x-0 opacity-100 delay-150"
+              }`}
+            >
+              Perkecil menu
+            </span>
           </button>
         </div>
       </aside>
