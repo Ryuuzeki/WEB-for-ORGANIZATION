@@ -83,7 +83,7 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
                   <Typography variant="h2" className="text-2xl text-primary md:text-3xl">
                     {division}
                   </Typography>
-                  <Typography variant="p" className="text-sm text-secondary">
+                  <Typography variant="p" className="mt-6 text-sm text-secondary">
                     {divisionMembers.length} anggota
                   </Typography>
                 </div>
