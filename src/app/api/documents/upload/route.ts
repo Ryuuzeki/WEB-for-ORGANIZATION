@@ -3,17 +3,13 @@ import { NextResponse } from "next/server";
 import { getAdminSessionAction } from "@/application/actions/adminActions";
 
 const MAX_DOCUMENT_SIZE = 25 * 1024 * 1024;
-const ALLOWED_EXTENSIONS = new Set(["pdf", "doc", "docx", "xls", "xlsx", "zip"]);
+const ALLOWED_EXTENSIONS = new Set(["pdf", "docx", "xlsx"]);
 const ALLOWED_CONTENT_TYPES = [
   "application/pdf",
-  "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.ms-excel",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  "application/zip",
-  "application/x-zip-compressed",
 ];
-const SAFE_PATHNAME = /^hmtkba\/uploads\/[a-zA-Z0-9._-]{1,180}\.(pdf|doc|docx|xls|xlsx|zip)$/i;
+const SAFE_PATHNAME = /^hmtkba\/uploads\/[a-zA-Z0-9._-]{1,180}\.(pdf|docx|xlsx)$/i;
 const TOKEN_WINDOW_MS = 10 * 60 * 1000;
 const MAX_TOKENS_PER_WINDOW = 30;
 

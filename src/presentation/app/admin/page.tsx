@@ -427,9 +427,9 @@ export default function AdminDashboardPage({
     if (!file) return;
 
     const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
-    const allowedExtensions = new Set(["pdf", "doc", "docx", "xls", "xlsx", "zip"]);
+    const allowedExtensions = new Set(["pdf", "docx", "xlsx"]);
     if (!allowedExtensions.has(extension)) {
-      triggerNotification("Jenis berkas tidak didukung. Gunakan PDF, DOC, DOCX, XLS, XLSX, atau ZIP.", true);
+      triggerNotification("Jenis berkas tidak didukung. Gunakan PDF, DOCX, atau XLSX.", true);
       input.value = "";
       return;
     }
@@ -2158,7 +2158,7 @@ export default function AdminDashboardPage({
                         : "Unggah Berkas Baru"}
                     <input
                       type="file"
-                      accept=".pdf,.doc,.docx,.xls,.xlsx,.zip"
+                      accept=".pdf,.docx,.xlsx"
                       onChange={handleDocumentFileUpload}
                       disabled={isSubmitting}
                       className="hidden"
