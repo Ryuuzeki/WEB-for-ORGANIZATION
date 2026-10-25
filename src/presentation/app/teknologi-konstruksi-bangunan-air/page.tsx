@@ -19,6 +19,7 @@ import {
 import ProgramProfileTabs from "@/presentation/components/ui/ProgramProfileTabs";
 import { listNewsItems } from "@/lib/newsRepository";
 import { getSiteContent } from "@/lib/siteContentRepository";
+import { serializeStructuredData } from "@/lib/structuredData";
 
 const competencies = [
   {
@@ -101,7 +102,7 @@ export default async function TechnologyConstructionWaterBuildingPage() {
 
   return (
     <main className="overflow-hidden bg-white pt-16 lg:pt-0">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeStructuredData(structuredData) }} />
 
       <section className="relative overflow-hidden bg-primary px-5 pb-16 pt-12 text-white sm:px-8 sm:pb-20 sm:pt-16 lg:min-h-[720px] lg:px-10 lg:py-20">
         <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full border-[64px] border-white/[0.035]" />

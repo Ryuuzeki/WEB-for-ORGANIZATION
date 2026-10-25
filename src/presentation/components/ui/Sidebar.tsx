@@ -19,7 +19,7 @@ import {
   Waves,
   X,
 } from "lucide-react";
-import { useLayoutEffect, useState } from "react";
+import { useState } from "react";
 import type { SiteContent } from "@/domain/entities/SiteContent";
 
 const navigation = [
@@ -35,19 +35,19 @@ const navigation = [
   { label: "Data Center", href: "/data-center", icon: BarChart3 },
 ];
 
-export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
+export function Sidebar({
+  content,
+  collapsed,
+  onCollapsedChange,
+}: {
+  content: SiteContent["sidebar"];
+  collapsed: boolean;
+  onCollapsedChange: (collapsed: boolean) => void;
+}) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const sidebarWidth = collapsed ? "88px" : "272px";
-
-  useLayoutEffect(() => {
-    document.documentElement.style.setProperty("--sidebar-offset", sidebarWidth);
-    return () => {
-      document.documentElement.style.removeProperty("--sidebar-offset");
-    };
-  }, [sidebarWidth]);
 
   return (
     <>
@@ -194,7 +194,7 @@ export function Sidebar({ content }: { content: SiteContent["sidebar"] }) {
           </Link>
           <button
             type="button"
-            onClick={() => setCollapsed((value) => !value)}
+            onClick={() => onCollapsedChange(!collapsed)}
             className={`mt-3 hidden min-h-10 w-full items-center justify-center overflow-hidden rounded-xl border border-white/10 text-xs font-semibold text-white/60 transition-[gap,color,background-color] duration-300 ease-out motion-reduce:transition-none hover:bg-white/10 hover:text-white lg:flex ${
               collapsed ? "gap-0" : "gap-2"
             }`}

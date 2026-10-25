@@ -17,6 +17,9 @@ const securityHeaders = [
       "frame-ancestors 'none'",
       "object-src 'none'",
       "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
+      "manifest-src 'self'",
+      "media-src 'self' blob: https://*.public.blob.vercel-storage.com",
+      "worker-src 'self' blob:",
       ...(isDevelopment ? [] : ["upgrade-insecure-requests"]),
     ].join("; "),
   },
@@ -27,18 +30,6 @@ const securityHeaders = [
   {
     key: "Cross-Origin-Resource-Policy",
     value: "same-origin",
-  },
-  {
-    key: "Access-Control-Allow-Origin",
-    value: "https://hmtkba.vercel.app",
-  },
-  {
-    key: "Access-Control-Allow-Methods",
-    value: "GET, HEAD, OPTIONS",
-  },
-  {
-    key: "Access-Control-Allow-Headers",
-    value: "Content-Type",
   },
   {
     key: "Origin-Agent-Cluster",
@@ -76,6 +67,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  poweredByHeader: false,
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
@@ -105,6 +97,20 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: securityHeaders,
+      },
+      {
+        source: "/admin/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store, max-age=0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+        ],
+      },
+      {
+        source: "/api/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store, max-age=0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+        ],
       },
     ];
   },

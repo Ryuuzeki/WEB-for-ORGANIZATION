@@ -7,6 +7,7 @@ import NewsShowcase from "../components/ui/NewsShowcase";
 import { listCalendarEvents } from "@/lib/calendarEvents";
 import { listNewsItems } from "@/lib/newsRepository";
 import { getSiteContent } from "@/lib/siteContentRepository";
+import { serializeStructuredData } from "@/lib/structuredData";
 import Link from "next/link";
 import {
   AtSign,
@@ -74,7 +75,7 @@ export default async function Home() {
 
   return (
     <main className="overflow-hidden pt-16 lg:pt-0">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeStructuredData(structuredData) }} />
       <HeroContainer content={data.hero} />
       <NewsShowcase items={newsItems} />
 

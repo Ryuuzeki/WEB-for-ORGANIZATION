@@ -3,6 +3,7 @@ import { ArrowRight, ExternalLink, RefreshCw, ShieldCheck, Sparkles, Trophy, Wav
 import CompetitionPortal from "@/presentation/components/ui/CompetitionPortal";
 import { getStudentCompetitions } from "@/lib/competitionRepository";
 import { getSiteContent } from "@/lib/siteContentRepository";
+import { serializeStructuredData } from "@/lib/structuredData";
 
 export const revalidate = 3600;
 
@@ -31,7 +32,7 @@ export default async function StudentCompetitionPage() {
 
   return (
     <main className="overflow-hidden bg-background pt-16 lg:pt-0">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeStructuredData(structuredData) }} />
 
       <section className="relative overflow-hidden bg-primary px-5 pb-20 pt-14 text-white sm:px-8 lg:px-10 lg:py-24">
         <div className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle at center, white 1px, transparent 1px)", backgroundSize: "28px 28px" }} />

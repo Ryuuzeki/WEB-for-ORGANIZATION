@@ -2,6 +2,7 @@ import "server-only";
 
 import { del, get, put } from "@vercel/blob";
 import type { ManualCompetition } from "@/domain/entities/ManualCompetition";
+import { safeImageExtension, validateImageFile } from "@/lib/uploadSecurity";
 
 const DATA_PATH = "hmtkba/data/manual-competitions.json";
 const MEDIA_PREFIX = "hmtkba/competition-media";
@@ -43,7 +44,8 @@ export async function saveManualCompetitions(items: ManualCompetition[]): Promis
 
 export async function uploadManualCompetitionImage(file: File): Promise<string> {
   if (!hasBlobStorage()) throw new Error("Penyimpanan poster lomba belum terhubung.");
-  const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "jpg";
+  await validateImageFile(file, 4 * 1024 * 1024);
+  const extension = safeImageExtension(file.type.toLowerCase());
   const uploaded = await put(`${MEDIA_PREFIX}/${Date.now()}-${crypto.randomUUID()}.${extension}`, file, {
     access: "public",
     addRandomSuffix: false,

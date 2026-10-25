@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUpRight, Award, ExternalLink, Medal, Sparkles, Trophy,
 import AchievementGallery from "@/presentation/components/ui/AchievementGallery";
 import { achievements, achievementStories } from "@/lib/achievements";
 import { getSiteContent } from "@/lib/siteContentRepository";
+import { serializeStructuredData } from "@/lib/structuredData";
 
 const individualCount = achievements.filter((item) => item.type === "Individu").length;
 const teamCount = achievements.filter((item) => item.type === "Kelompok").length;
@@ -30,7 +31,7 @@ export default async function AchievementPage() {
 
   return (
     <main className="overflow-hidden bg-white pt-16 lg:pt-0">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeStructuredData(structuredData) }} />
 
       <section className="relative overflow-hidden bg-primary px-5 pb-20 pt-12 text-white sm:px-8 sm:pt-16 lg:min-h-[730px] lg:px-10 lg:py-20">
         <div className="pointer-events-none absolute inset-0 opacity-[0.045]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.7) 1px, transparent 1px)", backgroundSize: "48px 48px" }} />

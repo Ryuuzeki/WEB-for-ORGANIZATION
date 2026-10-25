@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { revalidatePath, updateTag } from "next/cache";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { put } from "@vercel/blob";
@@ -33,12 +33,27 @@ import {
   saveManualCompetitions,
   uploadManualCompetitionImage,
 } from "@/lib/manualCompetitionRepository";
+import { validateImageFile } from "@/lib/uploadSecurity";
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 8;
-const FALLBACK_SUPERADMIN_PASSWORD_HASH =
-  "d8cf06b416bbf480f0d17e439812f578f9916538c69cf82e4c80dd74d06ee557";
-const FALLBACK_SESSION_SECRET =
-  "10b256aebe1585db74f7fca9b0122866168e698767c83a39390af16109f7fb809e4c9cf4fbc1b8cab7778d8fceb03132";
+const SESSION_COOKIE_NAME = process.env.NODE_ENV === "production"
+  ? "__Host-hmtkba_admin_session"
+  : "hmtkba_admin_session";
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_LOCK_MS = 15 * 60 * 1000;
+const MAX_LOGIN_FAILURES = 5;
+
+interface LoginAttempt {
+  failures: number;
+  windowStartedAt: number;
+  lockedUntil: number;
+}
+
+type LoginAttemptGlobals = typeof globalThis & {
+  __hmtkbaLoginAttempts?: Map<string, LoginAttempt>;
+};
+
+const loginAttempts = ((globalThis as LoginAttemptGlobals).__hmtkbaLoginAttempts ??= new Map());
 
 export interface AdminSession {
   divisionSlug: AdminDivisionSlug;
@@ -78,7 +93,7 @@ async function getRuntimeSecret(key: string): Promise<string | null> {
 
 async function getSessionSecret(): Promise<string | null> {
   const secret = await getRuntimeSecret("ADMIN_SESSION_SECRET");
-  return secret && secret.length >= 32 ? secret : FALLBACK_SESSION_SECRET;
+  return secret && secret.length >= 32 ? secret : null;
 }
 
 function constantTimeEqual(first: Uint8Array, second: Uint8Array): boolean {
@@ -91,18 +106,14 @@ function constantTimeEqual(first: Uint8Array, second: Uint8Array): boolean {
 }
 
 async function passwordMatches(
-  divisionSlug: AdminDivisionSlug,
   suppliedPassword: string,
   configuredPassword: string | null,
 ): Promise<boolean> {
-  const supplied = new TextEncoder().encode(suppliedPassword);
-  if (configuredPassword) {
-    return constantTimeEqual(supplied, new TextEncoder().encode(configuredPassword));
-  }
-
-  if (divisionSlug !== "superadmin") return false;
-  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", supplied));
-  return constantTimeEqual(digest, Buffer.from(FALLBACK_SUPERADMIN_PASSWORD_HASH, "hex"));
+  if (!configuredPassword) return false;
+  return constantTimeEqual(
+    new TextEncoder().encode(suppliedPassword),
+    new TextEncoder().encode(configuredPassword),
+  );
 }
 
 async function getDivisionPassword(divisionSlug: AdminDivisionSlug): Promise<string | null> {
@@ -172,11 +183,43 @@ async function parseSession(value: string | undefined): Promise<AdminSession | n
 
 async function verifyAuth(): Promise<AdminSession> {
   const cookieStore = await cookies();
-  const session = await parseSession(cookieStore.get("admin_session")?.value);
+  const session = await parseSession(cookieStore.get(SESSION_COOKIE_NAME)?.value);
   if (!session) {
     throw new Error("Unauthorized");
   }
   return session;
+}
+
+async function getLoginAttemptKey(divisionSlug: string): Promise<string> {
+  const requestHeaders = await headers();
+  const forwarded = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const address = forwarded || requestHeaders.get("x-real-ip") || "unknown";
+  return `${address}:${divisionSlug}`;
+}
+
+function pruneLoginAttempts(now: number): void {
+  if (loginAttempts.size < 1_000) return;
+  for (const [key, attempt] of loginAttempts) {
+    if (attempt.lockedUntil <= now && now - attempt.windowStartedAt > LOGIN_WINDOW_MS) {
+      loginAttempts.delete(key);
+    }
+  }
+}
+
+function secondsUntilLoginAllowed(key: string, now: number): number {
+  const attempt = loginAttempts.get(key);
+  if (!attempt || attempt.lockedUntil <= now) return 0;
+  return Math.ceil((attempt.lockedUntil - now) / 1000);
+}
+
+function recordLoginFailure(key: string, now: number): void {
+  const existing = loginAttempts.get(key);
+  const current = !existing || now - existing.windowStartedAt > LOGIN_WINDOW_MS
+    ? { failures: 0, windowStartedAt: now, lockedUntil: 0 }
+    : existing;
+  current.failures += 1;
+  if (current.failures >= MAX_LOGIN_FAILURES) current.lockedUntil = now + LOGIN_LOCK_MS;
+  loginAttempts.set(key, current);
 }
 
 function ensureCanManageMember(session: AdminSession, member?: Member) {
@@ -194,6 +237,42 @@ function ensureSuperAdmin(session: AdminSession): void {
 
 function cleanEventText(value: string | undefined, maximumLength: number): string {
   return (value ?? "").trim().slice(0, maximumLength);
+}
+
+function normalizeStoredUrl(
+  value: unknown,
+  fieldName: string,
+  options: { allowRelative?: boolean; required?: boolean } = {},
+): string {
+  const normalized = typeof value === "string" ? value.trim().slice(0, 1_000) : "";
+  if (!normalized) {
+    if (options.required) throw new Error(`${fieldName} wajib diisi.`);
+    return "";
+  }
+
+  if (options.allowRelative && normalized.startsWith("/") && !normalized.startsWith("//")) {
+    return normalized;
+  }
+
+  try {
+    const parsed = new URL(normalized);
+    if (parsed.protocol !== "https:" && !(process.env.NODE_ENV !== "production" && parsed.protocol === "http:")) {
+      throw new Error();
+    }
+    parsed.username = "";
+    parsed.password = "";
+    return parsed.toString();
+  } catch {
+    throw new Error(`${fieldName} harus berupa alamat HTTPS yang valid.`);
+  }
+}
+
+function normalizeSafeId(value: unknown, fieldName: string): string {
+  const normalized = cleanEventText(typeof value === "string" ? value : "", 80);
+  if (!/^[a-zA-Z0-9_-]{1,80}$/.test(normalized)) {
+    throw new Error(`${fieldName} tidak valid.`);
+  }
+  return normalized;
 }
 
 function normalizeEventInput(input: CalendarEventInput): CalendarEvent {
@@ -227,43 +306,59 @@ export async function loginAction(
   divisionSlug: AdminDivisionSlug,
   password: string
 ): Promise<{ success: boolean; error?: string }> {
+  const now = Date.now();
+  pruneLoginAttempts(now);
+  const attemptKey = await getLoginAttemptKey(String(divisionSlug));
+  const retryAfter = secondsUntilLoginAllowed(attemptKey, now);
+  if (retryAfter > 0) {
+    return {
+      success: false,
+      error: `Terlalu banyak percobaan masuk. Coba lagi dalam ${Math.ceil(retryAfter / 60)} menit.`,
+    };
+  }
+
   const division = getAdminDivisionBySlug(divisionSlug);
   if (!division) {
-    return { success: false, error: "Divisi tidak ditemukan!" };
+    recordLoginFailure(attemptKey, now);
+    return { success: false, error: "Kredensial tidak valid." };
   }
 
   const expectedPassword = await getDivisionPassword(division.slug);
-  if (!expectedPassword && division.slug !== "superadmin") {
-    return { success: false, error: "Akses ini belum dikonfigurasi oleh Superadmin." };
+  const sessionSecret = await getSessionSecret();
+  if (!expectedPassword || !sessionSecret) {
+    return { success: false, error: "Konfigurasi keamanan admin belum lengkap." };
   }
 
-  if (await passwordMatches(division.slug, password, expectedPassword)) {
+  if (await passwordMatches(password.slice(0, 256), expectedPassword)) {
+    loginAttempts.delete(attemptKey);
     const cookieStore = await cookies();
-    cookieStore.set("admin_session", await createSignedSession(division.slug), {
+    cookieStore.set(SESSION_COOKIE_NAME, await createSignedSession(division.slug), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: SESSION_DURATION_SECONDS,
       path: "/",
+      priority: "high",
     });
     return { success: true };
   }
-  return { success: false, error: "Password salah!" };
+  recordLoginFailure(attemptKey, now);
+  return { success: false, error: "Kredensial tidak valid." };
 }
 
 export async function logoutAction(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete("admin_session");
+  cookieStore.delete(SESSION_COOKIE_NAME);
 }
 
 export async function checkAuthAction(): Promise<boolean> {
   const cookieStore = await cookies();
-  return Boolean(await parseSession(cookieStore.get("admin_session")?.value));
+  return Boolean(await parseSession(cookieStore.get(SESSION_COOKIE_NAME)?.value));
 }
 
 export async function getAdminSessionAction(): Promise<AdminSession | null> {
   const cookieStore = await cookies();
-  return parseSession(cookieStore.get("admin_session")?.value);
+  return parseSession(cookieStore.get(SESSION_COOKIE_NAME)?.value);
 }
 
 export async function getSiteContentAction(): Promise<SiteContent> {
@@ -284,7 +379,32 @@ export async function saveSiteContentAction(content: SiteContent): Promise<void>
     throw new Error("Judul pada setiap bagian utama tidak boleh kosong.");
   }
 
-  await saveSiteContent(JSON.parse(serialized) as SiteContent);
+  const sanitized = JSON.parse(serialized) as SiteContent;
+  const campuses = sanitized.home.footer.campuses;
+  const socialLinks = sanitized.home.footer.socialLinks;
+  if (!Array.isArray(campuses) || campuses.length > 6) throw new Error("Data lokasi tidak valid.");
+  if (!Array.isArray(socialLinks) || socialLinks.length > 5) throw new Error("Data media sosial tidak valid.");
+  const allowedPlatforms = new Set(["instagram", "youtube", "tiktok", "facebook", "threads"]);
+  sanitized.home.footer.campuses = campuses.map((campus) => ({
+    name: cleanEventText(campus?.name, 80),
+    address: cleanEventText(campus?.address, 300),
+    mapUrl: normalizeStoredUrl(campus?.mapUrl, "Tautan lokasi", { allowRelative: true }),
+  }));
+  sanitized.home.footer.socialLinks = socialLinks.map((social) => {
+    if (!allowedPlatforms.has(social?.platform)) throw new Error("Jenis media sosial tidak valid.");
+    return {
+      platform: social.platform,
+      label: cleanEventText(social.label, 80),
+      url: normalizeStoredUrl(social.url, `Tautan ${social.label || "media sosial"}`, { allowRelative: true }),
+    };
+  });
+  sanitized.home.footer.phone = cleanEventText(sanitized.home.footer.phone, 40);
+  sanitized.home.footer.email = cleanEventText(sanitized.home.footer.email, 254);
+  if (sanitized.home.footer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitized.home.footer.email)) {
+    throw new Error("Alamat email footer tidak valid.");
+  }
+
+  await saveSiteContent(sanitized);
   revalidatePath("/", "layout");
   revalidatePath("/admin");
 }
@@ -322,16 +442,7 @@ export async function deleteCalendarEventAction(id: string): Promise<void> {
 }
 
 function normalizeOptionalUrl(value: FormDataEntryValue | null, fieldName: string): string {
-  const normalized = typeof value === "string" ? value.trim().slice(0, 1000) : "";
-  if (!normalized) return "";
-  if (normalized.startsWith("/")) return normalized;
-  try {
-    const parsed = new URL(normalized);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error();
-    return parsed.toString();
-  } catch {
-    throw new Error(`${fieldName} harus berupa alamat http(s) yang valid.`);
-  }
+  return normalizeStoredUrl(value, fieldName, { allowRelative: true });
 }
 
 function parseNewsDate(value: FormDataEntryValue | null): string {
@@ -368,8 +479,7 @@ export async function saveNewsItemAction(formData: FormData): Promise<NewsItem> 
   const image = formData.get("image");
 
   if (image instanceof File && image.size > 0) {
-    if (!image.type.startsWith("image/")) throw new Error("Berkas foto harus berupa gambar.");
-    if (image.size > 4 * 1024 * 1024) throw new Error("Ukuran foto maksimal 4 MB.");
+    await validateImageFile(image, 4 * 1024 * 1024);
     imageUrl = await uploadNewsImage(image);
   }
   if (!imageUrl) imageUrl = existing?.imageUrl || "/LOGO HIMA.png";
@@ -458,8 +568,7 @@ export async function saveManualCompetitionAction(formData: FormData): Promise<M
   const image = formData.get("image");
 
   if (image instanceof File && image.size > 0) {
-    if (!image.type.startsWith("image/")) throw new Error("Berkas poster harus berupa gambar.");
-    if (image.size > 4 * 1024 * 1024) throw new Error("Ukuran poster maksimal 4 MB.");
+    await validateImageFile(image, 4 * 1024 * 1024);
     imageUrl = await uploadManualCompetitionImage(image);
   }
   if (!imageUrl) imageUrl = existing?.imageUrl || "/LOGO HIMA.png";
@@ -523,25 +632,60 @@ export async function deleteManualCompetitionAction(id: string): Promise<void> {
 // Hero actions
 export async function updateHeroAction(content: HeroContent): Promise<void> {
   await verifyAuth();
+  const sanitized: HeroContent = {
+    title: cleanEventText(content.title, 180),
+    subtitle: cleanEventText(content.subtitle, 600),
+    ctaText: cleanEventText(content.ctaText, 80),
+    eyebrow: cleanEventText(content.eyebrow, 80),
+    secondaryCtaText: cleanEventText(content.secondaryCtaText, 80),
+    backgroundImageUrl: normalizeStoredUrl(content.backgroundImageUrl, "URL gambar hero", { allowRelative: true }),
+    stats: Array.isArray(content.stats)
+      ? content.stats.slice(0, 6).map((stat) => ({
+          value: cleanEventText(stat?.value, 30),
+          label: cleanEventText(stat?.label, 80),
+        }))
+      : [],
+  };
+  if (!sanitized.title || !sanitized.subtitle || !sanitized.ctaText) throw new Error("Konten hero belum lengkap.");
   const landingRepo = di.getLandingRepository();
-  await landingRepo.updateHeroContent(content);
+  await landingRepo.updateHeroContent(sanitized);
   revalidatePath("/");
 }
 
 // Vision & Mission actions
 export async function updateVisionMissionAction(data: VisionMission): Promise<void> {
   await verifyAuth();
+  const sanitized: VisionMission = {
+    vision: cleanEventText(data.vision, 1_500),
+    mission: Array.isArray(data.mission) ? data.mission.slice(0, 20).map((item) => cleanEventText(item, 600)).filter(Boolean) : [],
+    visionTitle: cleanEventText(data.visionTitle, 80),
+    missionTitle: cleanEventText(data.missionTitle, 80),
+  };
+  if (!sanitized.vision || sanitized.mission.length === 0) throw new Error("Visi dan misi wajib diisi.");
   const landingRepo = di.getLandingRepository();
-  await landingRepo.updateVisionMission(data);
+  await landingRepo.updateVisionMission(sanitized);
   revalidatePath("/");
 }
 
 // Member actions
 export async function saveMemberAction(member: Member): Promise<void> {
   const session = await verifyAuth();
-  ensureCanManageMember(session, member);
+  const sanitized: Member = {
+    id: normalizeSafeId(member.id, "ID anggota"),
+    name: cleanEventText(member.name, 120),
+    role: cleanEventText(member.role, 120),
+    division: cleanEventText(member.division, 120),
+    imageUrl: normalizeStoredUrl(member.imageUrl, "URL foto anggota", { allowRelative: true }),
+    period: cleanEventText(member.period, 40),
+  };
+  if (!sanitized.name || !sanitized.role || !sanitized.division || !sanitized.period) {
+    throw new Error("Data anggota belum lengkap.");
+  }
+  const existingMembers = await di.getOrganizationStructure().execute();
+  ensureCanManageMember(session, existingMembers.find((item) => item.id === sanitized.id));
+  ensureCanManageMember(session, sanitized);
   const landingRepo = di.getLandingRepository();
-  await landingRepo.saveMember(member);
+  await landingRepo.saveMember(sanitized);
   revalidatePath("/struktur-organisasi");
   revalidatePath("/");
 }
@@ -561,8 +705,15 @@ export async function deleteMemberAction(id: string): Promise<void> {
 // Document actions
 export async function saveDocumentAction(document: Document): Promise<void> {
   await verifyAuth();
+  const sanitized: Document = {
+    id: normalizeSafeId(document.id, "ID dokumen"),
+    title: cleanEventText(document.title, 180),
+    category: cleanEventText(document.category, 80),
+    downloadUrl: normalizeStoredUrl(document.downloadUrl, "Tautan dokumen", { allowRelative: true, required: true }),
+  };
+  if (!sanitized.title || !sanitized.category) throw new Error("Data dokumen belum lengkap.");
   const landingRepo = di.getLandingRepository();
-  await landingRepo.saveDocument(document);
+  await landingRepo.saveDocument(sanitized);
   revalidatePath("/");
 }
 
@@ -576,15 +727,33 @@ export async function deleteDocumentAction(id: string): Promise<void> {
 // Regional Stat actions
 export async function saveStatAction(region: string, category: string, stat: RegionalStat): Promise<void> {
   await verifyAuth();
+  const safeRegion = cleanEventText(region, 80);
+  const safeCategory = cleanEventText(category, 100);
+  if (!safeRegion || !safeCategory || ["__proto__", "prototype", "constructor"].includes(safeRegion.toLowerCase())) {
+    throw new Error("Wilayah atau kategori tidak valid.");
+  }
+  const sanitized: RegionalStat = {
+    category: cleanEventText(stat.category, 100),
+    value: cleanEventText(stat.value, 40),
+    unit: cleanEventText(stat.unit, 60),
+    year: cleanEventText(stat.year, 10),
+    description: cleanEventText(stat.description, 500),
+  };
+  if (!sanitized.category || !sanitized.value || !sanitized.year) throw new Error("Data statistik belum lengkap.");
   const statRepo = di.getRegionalStatRepository();
-  await statRepo.saveStat(region, category, stat);
+  await statRepo.saveStat(safeRegion, safeCategory, sanitized);
   revalidatePath("/data-center");
 }
 
 export async function deleteStatAction(region: string, category: string): Promise<void> {
   await verifyAuth();
+  const safeRegion = cleanEventText(region, 80);
+  const safeCategory = cleanEventText(category, 100);
+  if (!safeRegion || !safeCategory || ["__proto__", "prototype", "constructor"].includes(safeRegion.toLowerCase())) {
+    throw new Error("Wilayah atau kategori tidak valid.");
+  }
   const statRepo = di.getRegionalStatRepository();
-  await statRepo.deleteStat(region, category);
+  await statRepo.deleteStat(safeRegion, safeCategory);
   revalidatePath("/data-center");
 }
 
@@ -601,12 +770,13 @@ export async function uploadFileAction(formData: FormData): Promise<{ success: b
       return { success: false, error: "Ukuran berkas maksimal 10 MB" };
     }
 
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const filename = `${Date.now()}_${crypto.randomUUID()}_${sanitizedName}`;
+    const imageMetadata = await validateImageFile(file, 6 * 1024 * 1024);
+
+    const filename = `${Date.now()}_${crypto.randomUUID()}.${imageMetadata.extension}`;
     const uploaded = await put(`hmtkba/uploads/${filename}`, file, {
       access: "public",
       addRandomSuffix: false,
-      contentType: file.type || "application/octet-stream",
+      contentType: imageMetadata.contentType,
       cacheControlMaxAge: 60 * 60 * 24 * 30,
     });
     return { success: true, url: uploaded.url };
@@ -622,14 +792,12 @@ export async function uploadSiteAssetAction(formData: FormData): Promise<{ succe
     ensureSuperAdmin(session);
     const file = formData.get("file");
     if (!(file instanceof File) || file.size === 0) return { success: false, error: "Pilih foto terlebih dahulu." };
-    if (!file.type.startsWith("image/")) return { success: false, error: "Berkas harus berupa gambar." };
-    if (file.size > 6 * 1024 * 1024) return { success: false, error: "Ukuran gambar maksimal 6 MB." };
+    const imageMetadata = await validateImageFile(file, 6 * 1024 * 1024);
 
-    const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "jpg";
-    const uploaded = await put(`hmtkba/site-media/${Date.now()}-${crypto.randomUUID()}.${extension}`, file, {
+    const uploaded = await put(`hmtkba/site-media/${Date.now()}-${crypto.randomUUID()}.${imageMetadata.extension}`, file, {
       access: "public",
       addRandomSuffix: false,
-      contentType: file.type,
+      contentType: imageMetadata.contentType,
       cacheControlMaxAge: 60 * 60 * 24 * 30,
     });
     return { success: true, url: uploaded.url };

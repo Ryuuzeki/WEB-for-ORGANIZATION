@@ -3,6 +3,7 @@ import "server-only";
 import { del, get, put } from "@vercel/blob";
 import type { NewsItem } from "@/domain/entities/NewsItem";
 import seedNews from "@/infrastructure/data/news.json";
+import { safeImageExtension, validateImageFile } from "@/lib/uploadSecurity";
 
 const NEWS_DATA_PATH = "hmtkba/data/news.json";
 const NEWS_MEDIA_PREFIX = "hmtkba/news-media";
@@ -49,7 +50,8 @@ export async function uploadNewsImage(file: File): Promise<string> {
     throw new Error("Penyimpanan gambar berita belum terhubung.");
   }
 
-  const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "jpg";
+  await validateImageFile(file, 4 * 1024 * 1024);
+  const extension = safeImageExtension(file.type.toLowerCase());
   const filename = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
   const uploaded = await put(`${NEWS_MEDIA_PREFIX}/${filename}`, file, {
     access: "public",

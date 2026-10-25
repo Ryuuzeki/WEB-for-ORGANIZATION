@@ -4,6 +4,7 @@ import { ArrowRight, BookOpenCheck, ExternalLink, GraduationCap, Microscope, Use
 import LecturerDirectory from "@/presentation/components/ui/LecturerDirectory";
 import { lecturers } from "@/lib/lecturers";
 import { getSiteContent } from "@/lib/siteContentRepository";
+import { serializeStructuredData } from "@/lib/structuredData";
 
 const featuredLecturers = [lecturers[0], lecturers[1], lecturers[10]];
 
@@ -30,12 +31,12 @@ export default async function LecturersPage() {
 
   return (
     <main className="overflow-hidden bg-white pt-16 lg:pt-0">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeStructuredData(structuredData) }} />
 
       <section className="relative overflow-hidden bg-background px-5 pb-20 pt-12 sm:px-8 sm:pt-16 lg:min-h-[700px] lg:px-10 lg:py-20">
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[43%] bg-primary lg:block" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[43%] bg-primary xl:block" />
         <div className="pointer-events-none absolute -left-40 -top-40 h-[440px] w-[440px] rounded-full border-[70px] border-primary/[0.025]" />
-        <div className="relative mx-auto grid max-w-[1440px] items-center gap-14 lg:grid-cols-[1.05fr_.95fr] lg:gap-20">
+        <div className="relative mx-auto grid max-w-[1440px] items-center gap-14 xl:grid-cols-[1.05fr_.95fr] xl:gap-20">
           <div className="relative z-10">
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-primary/45">
               <Link href="/" className="transition hover:text-primary">Beranda</Link>
@@ -61,23 +62,18 @@ export default async function LecturersPage() {
             </a>
           </div>
 
-          <div className="relative min-h-[500px] overflow-hidden rounded-[2.5rem] bg-primary p-5 shadow-[0_34px_90px_rgba(16,42,107,.25)] sm:p-8 lg:min-h-[540px] lg:rounded-none lg:bg-transparent lg:p-0 lg:shadow-none">
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-primary p-5 shadow-[0_34px_90px_rgba(16,42,107,.25)] sm:p-8 xl:rounded-none xl:bg-transparent xl:p-0 xl:shadow-none">
             <div className="pointer-events-none absolute inset-0 opacity-[0.055]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.7) 1px, transparent 1px)", backgroundSize: "42px 42px" }} />
             <div className="pointer-events-none absolute -right-24 top-14 h-72 w-72 rounded-full border-[46px] border-sky-300/[0.08]" />
-            <div className="relative mx-auto h-[440px] max-w-[540px] sm:h-[500px]">
-              {featuredLecturers.map((lecturer, index) => {
-                const positions = [
-                  "left-0 top-8 z-20 h-[72%] w-[48%] -rotate-3",
-                  "right-0 top-0 z-10 h-[62%] w-[45%] rotate-3",
-                  "bottom-0 right-12 z-30 h-[48%] w-[42%] rotate-2 sm:right-20",
-                ];
-                return (
-                  <div key={lecturer.name} className={`photo-frame absolute overflow-hidden rounded-[1.5rem] bg-white shadow-2xl ${positions[index]}`}>
-                    <Image src={lecturer.image} alt={`Foto ${lecturer.name}`} fill sizes="260px" className="object-cover object-top" priority />
+            <div className="relative mx-auto max-w-[620px]">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+                {featuredLecturers.map((lecturer) => (
+                  <div key={lecturer.name} className="photo-frame relative aspect-[3/4] overflow-hidden rounded-[1.5rem] bg-white shadow-2xl">
+                    <Image src={lecturer.image} alt={`Foto ${lecturer.name}`} fill sizes="(max-width: 640px) 45vw, 210px" className="object-contain object-bottom" priority />
                   </div>
-                );
-              })}
-              <div className="absolute bottom-3 left-1 z-40 max-w-[230px] rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-white backdrop-blur-xl">
+                ))}
+              </div>
+              <div className="relative z-10 mt-4 max-w-md rounded-2xl border border-white/15 bg-[#0b2866] px-5 py-4 text-white shadow-xl">
                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-cta">Satu tim, satu arah</p>
                 <p className="mt-1 text-sm font-black">Mendampingi pembelajaran vokasi yang dekat dengan lapangan.</p>
               </div>

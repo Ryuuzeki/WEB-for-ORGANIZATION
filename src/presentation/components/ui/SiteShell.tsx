@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import type { SiteContent } from "@/domain/entities/SiteContent";
@@ -16,6 +16,7 @@ export function useSiteContent() {
 export function SiteShell({ children, siteContent }: { children: React.ReactNode; siteContent: SiteContent }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     if (isAdmin) return;
@@ -74,10 +75,15 @@ export function SiteShell({ children, siteContent }: { children: React.ReactNode
   return (
     <SiteContentContext.Provider value={siteContent}>
       <div className="min-h-screen bg-background lg:flex" style={themeStyle}>
-        <Sidebar content={siteContent.sidebar} />
+        <Sidebar
+          content={siteContent.sidebar}
+          collapsed={sidebarCollapsed}
+          onCollapsedChange={setSidebarCollapsed}
+        />
         <div
           data-public-site-content
-          className="min-w-0 flex-1 transition-[padding] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none lg:pl-[var(--sidebar-offset)]"
+          style={{ "--sidebar-offset": sidebarCollapsed ? "88px" : "272px" } as React.CSSProperties}
+          className="min-w-0 flex-1 will-change-[padding-left] transition-[padding-left] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none lg:pl-[var(--sidebar-offset)]"
         >
           {children}
         </div>
