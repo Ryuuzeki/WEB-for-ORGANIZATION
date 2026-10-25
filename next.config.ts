@@ -11,7 +11,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://images.unsplash.com https://*.public.blob.vercel-storage.com https://infolomba.id https://www.infolomba.id https://silomba.id https://www.silomba.id https://storage.silomba.id",
       "font-src 'self' data:",
-      `connect-src 'self' https://data.bmkg.go.id https://*.public.blob.vercel-storage.com${isDevelopment ? " ws: wss:" : ""}`,
+      `connect-src 'self' https://data.bmkg.go.id https://vercel.com https://*.public.blob.vercel-storage.com${isDevelopment ? " ws: wss:" : ""}`,
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
