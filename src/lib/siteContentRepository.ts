@@ -14,6 +14,7 @@ function normalizeSiteContent(value: SiteContent): SiteContent {
   const fallback = cloneFallback();
   const footer = value?.home?.footer;
   const logoMeaning = value?.home?.logoMeaning;
+  const program = value?.home?.program;
   const storedLogoItems = Array.isArray(logoMeaning?.items) ? logoMeaning.items : [];
 
   return {
@@ -38,6 +39,14 @@ function normalizeSiteContent(value: SiteContent): SiteContent {
     home: {
       ...fallback.home,
       ...value?.home,
+      program: {
+        ...fallback.home.program,
+        ...program,
+        items:
+          Array.isArray(program?.items) && program.items.length > 0
+            ? program.items
+            : fallback.home.program.items,
+      },
       logoMeaning: {
         ...fallback.home.logoMeaning,
         ...logoMeaning,

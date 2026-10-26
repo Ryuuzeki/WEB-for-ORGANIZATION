@@ -380,6 +380,48 @@ export async function saveSiteContentAction(content: SiteContent): Promise<void>
   }
 
   const sanitized = JSON.parse(serialized) as SiteContent;
+  const program = sanitized.home.program;
+  const maximumProgramItems = 12;
+  if (!program || !Array.isArray(program.items) || program.items.length === 0) {
+    throw new Error("Tambahkan minimal satu program kerja.");
+  }
+  if (program.items.length > maximumProgramItems) {
+    throw new Error(`Program kerja maksimal ${maximumProgramItems} kartu.`);
+  }
+  const sanitizedProgramTitle = cleanEventText(
+    typeof program.title === "string" ? program.title : undefined,
+    160,
+  );
+  if (!sanitizedProgramTitle) throw new Error("Judul bagian program kerja wajib diisi.");
+  sanitized.home.program = {
+    eyebrow: cleanEventText(
+      typeof program.eyebrow === "string" ? program.eyebrow : undefined,
+      80,
+    ),
+    title: sanitizedProgramTitle,
+    description: cleanEventText(
+      typeof program.description === "string" ? program.description : undefined,
+      800,
+    ),
+    items: program.items.map((item, index) => {
+      const title = cleanEventText(
+        typeof item?.title === "string" ? item.title : undefined,
+        160,
+      );
+      if (!title) throw new Error(`Judul program kerja ke-${index + 1} wajib diisi.`);
+      return {
+        label: cleanEventText(
+          typeof item?.label === "string" ? item.label : undefined,
+          80,
+        ),
+        title,
+        description: cleanEventText(
+          typeof item?.description === "string" ? item.description : undefined,
+          800,
+        ),
+      };
+    }),
+  };
   const logoMeaning = sanitized.home.logoMeaning;
   const allowedLogoKeys = ["twoChannels", "fiveTips", "flowDirection", "whirlpool"] as const;
   if (!logoMeaning || !Array.isArray(logoMeaning.items) || logoMeaning.items.length !== allowedLogoKeys.length) {

@@ -157,12 +157,12 @@ export default async function Home() {
               {siteContent.home.program.description}
             </p>
           </div>
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
+          <div className={siteContent.home.program.items.length > 3 ? "mt-12 flex flex-wrap justify-center gap-5" : "mt-12 grid gap-5 md:grid-cols-3"}>
             {siteContent.home.program.items.map((program, index) => {
               const Icon = programIcons[index % programIcons.length];
               return (
-                <article key={program.title} className="group relative overflow-hidden rounded-[2rem] border border-primary/10 bg-white p-7 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8">
-                  <span className="absolute right-6 top-5 text-5xl font-black text-primary/[.05]">0{index + 1}</span>
+                <article key={`${index}-${program.title}`} className={`group relative min-w-0 overflow-hidden rounded-[2rem] border border-primary/10 bg-white p-7 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8 ${siteContent.home.program.items.length > 3 ? "w-full sm:w-[calc(50%-0.625rem)] xl:w-[calc(25%-0.9375rem)]" : ""}`}>
+                  <span className="absolute right-6 top-5 text-5xl font-black text-primary/[.05]">{String(index + 1).padStart(2, "0")}</span>
                   <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary text-cream"><Icon size={23} /></span>
                   <p className="mt-7 text-xs font-bold uppercase tracking-[0.18em] text-cta">{program.label}</p>
                   <h3 className="mt-2 text-xl font-extrabold text-primary">{program.title}</h3>

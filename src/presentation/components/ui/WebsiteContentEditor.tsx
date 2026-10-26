@@ -14,6 +14,7 @@ import {
 } from "@/application/actions/adminActions";
 
 const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10";
+const maximumProgramItems = 12;
 
 type EditablePublicPageKey = Exclude<keyof SiteContent["pages"], "organization">;
 
@@ -280,14 +281,39 @@ export function WebsiteContentEditor({
         </div>
       </Section>
 
-      <Section title="8. Beranda · Program Kerja" description="Pengantar dan tiga kartu fokus program yang tampil di beranda.">
+      <Section title="8. Beranda · Program Kerja" description="Pengantar dan daftar kartu program yang dapat ditambah atau dihapus sesuai kebutuhan.">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Label bagian"><input className={inputClass} value={site.home.program.eyebrow} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, program: { ...c.home.program, eyebrow: e.target.value } } }))} /></Field>
           <Field label="Judul bagian"><input className={inputClass} value={site.home.program.title} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, program: { ...c.home.program, title: e.target.value } } }))} /></Field>
           <div className="sm:col-span-2"><Field label="Deskripsi bagian"><textarea rows={3} className={inputClass} value={site.home.program.description} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, program: { ...c.home.program, description: e.target.value } } }))} /></Field></div>
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-primary/10 bg-primary/[.035] px-4 py-3 text-xs font-semibold text-slate-500 sm:col-span-2">
+            <span>{site.home.program.items.length} kartu program</span>
+            <span>Maksimal {maximumProgramItems}</span>
+          </div>
           {site.home.program.items.map((item, index) => (
             <div key={index} className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:col-span-2">
-              <p className="text-xs font-black uppercase tracking-wide text-primary">Kartu {index + 1}</p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-black uppercase tracking-wide text-primary">Kartu {index + 1}</p>
+                <button
+                  type="button"
+                  disabled={site.home.program.items.length <= 1}
+                  onClick={() => setSite((current) => ({
+                    ...current,
+                    home: {
+                      ...current.home,
+                      program: {
+                        ...current.home.program,
+                        items: current.home.program.items.filter((_, itemIndex) => itemIndex !== index),
+                      },
+                    },
+                  }))}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-red-100 bg-white px-3 text-xs font-bold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-35"
+                  aria-label={`Hapus kartu program ${index + 1}`}
+                  title={site.home.program.items.length <= 1 ? "Minimal satu kartu program" : undefined}
+                >
+                  <Trash2 size={15} /> Hapus
+                </button>
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Kategori"><input className={inputClass} value={item.label} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, program: { ...c.home.program, items: c.home.program.items.map((current, itemIndex) => itemIndex === index ? { ...current, label: e.target.value } : current) } } }))} /></Field>
                 <Field label="Judul"><input className={inputClass} value={item.title} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, program: { ...c.home.program, items: c.home.program.items.map((current, itemIndex) => itemIndex === index ? { ...current, title: e.target.value } : current) } } }))} /></Field>
@@ -295,6 +321,32 @@ export function WebsiteContentEditor({
               <Field label="Deskripsi"><textarea rows={2} className={inputClass} value={item.description} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, program: { ...c.home.program, items: c.home.program.items.map((current, itemIndex) => itemIndex === index ? { ...current, description: e.target.value } : current) } } }))} /></Field>
             </div>
           ))}
+          <div className="sm:col-span-2">
+            <button
+              type="button"
+              disabled={site.home.program.items.length >= maximumProgramItems}
+              onClick={() => setSite((current) => ({
+                ...current,
+                home: {
+                  ...current.home,
+                  program: {
+                    ...current.home.program,
+                    items: [
+                      ...current.home.program.items,
+                      {
+                        label: "Kategori",
+                        title: `Program baru ${current.home.program.items.length + 1}`,
+                        description: "Tuliskan deskripsi program kerja.",
+                      },
+                    ],
+                  },
+                },
+              }))}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/15 bg-white px-4 text-xs font-bold text-primary transition hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Plus size={16} /> Tambah program kerja
+            </button>
+          </div>
         </div>
       </Section>
 
