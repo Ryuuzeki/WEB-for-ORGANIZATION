@@ -13,6 +13,8 @@ const hasBlobStorage = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN || proces
 function normalizeSiteContent(value: SiteContent): SiteContent {
   const fallback = cloneFallback();
   const footer = value?.home?.footer;
+  const logoMeaning = value?.home?.logoMeaning;
+  const storedLogoItems = Array.isArray(logoMeaning?.items) ? logoMeaning.items : [];
 
   return {
     ...fallback,
@@ -36,6 +38,15 @@ function normalizeSiteContent(value: SiteContent): SiteContent {
     home: {
       ...fallback.home,
       ...value?.home,
+      logoMeaning: {
+        ...fallback.home.logoMeaning,
+        ...logoMeaning,
+        items: fallback.home.logoMeaning.items.map((fallbackItem) => ({
+          ...fallbackItem,
+          ...storedLogoItems.find((item) => item?.key === fallbackItem.key),
+          key: fallbackItem.key,
+        })),
+      },
       footer: {
         ...fallback.home.footer,
         ...footer,

@@ -375,11 +375,36 @@ export async function saveSiteContentAction(content: SiteContent): Promise<void>
   if (themeValues.length !== 7 || themeValues.some((value) => !/^#[0-9a-fA-F]{6}$/.test(value))) {
     throw new Error("Warna tema harus memakai format heksadesimal, misalnya #102a6b.");
   }
-  if (!content.home?.about?.title || !content.home?.program?.title || !content.home?.footer?.brandTitle) {
+  if (!content.home?.about?.title || !content.home?.logoMeaning?.title || !content.home?.program?.title || !content.home?.footer?.brandTitle) {
     throw new Error("Judul pada setiap bagian utama tidak boleh kosong.");
   }
 
   const sanitized = JSON.parse(serialized) as SiteContent;
+  const logoMeaning = sanitized.home.logoMeaning;
+  const allowedLogoKeys = ["twoChannels", "fiveTips", "flowDirection", "whirlpool"] as const;
+  if (!logoMeaning || !Array.isArray(logoMeaning.items) || logoMeaning.items.length !== allowedLogoKeys.length) {
+    throw new Error("Data makna logo tidak lengkap.");
+  }
+  const logoItemsByKey = new Map(logoMeaning.items.map((item) => [item?.key, item]));
+  if (logoItemsByKey.size !== allowedLogoKeys.length || allowedLogoKeys.some((key) => !logoItemsByKey.has(key))) {
+    throw new Error("Urutan bagian makna logo tidak valid.");
+  }
+  sanitized.home.logoMeaning = {
+    eyebrow: cleanEventText(logoMeaning.eyebrow, 80),
+    title: cleanEventText(logoMeaning.title, 160),
+    description: cleanEventText(logoMeaning.description, 600),
+    instruction: cleanEventText(logoMeaning.instruction, 240),
+    overviewTitle: cleanEventText(logoMeaning.overviewTitle, 160),
+    overviewDescription: cleanEventText(logoMeaning.overviewDescription, 600),
+    items: allowedLogoKeys.map((key) => {
+      const item = logoItemsByKey.get(key)!;
+      return {
+        key,
+        title: cleanEventText(item.title, 120),
+        description: cleanEventText(item.description, 600),
+      };
+    }),
+  };
   const campuses = sanitized.home.footer.campuses;
   const socialLinks = sanitized.home.footer.socialLinks;
   if (!Array.isArray(campuses) || campuses.length > 6) throw new Error("Data lokasi tidak valid.");

@@ -27,6 +27,36 @@
       "programValue": "12+",
       "programLabel": "Program kerja"
     },
+    "logoMeaning": {
+      "eyebrow": "Filosofi Identitas",
+      "title": "Makna di balik setiap arus",
+      "description": "Logo ini memadukan salur, arah, ujung arus, dan pusaran menjadi satu gerak bersama yang mencerminkan karakter HMTKBA.",
+      "instruction": "Arahkan kursor, fokuskan dengan Tab, atau ketuk titik bernomor pada logo.",
+      "overviewTitle": "Empat elemen, satu identitas",
+      "overviewDescription": "Setiap bentuk membawa cerita tentang cara HMTKBA berpikir, bergerak, dan tumbuh bersama.",
+      "items": [
+        {
+          "key": "twoChannels",
+          "title": "Dua Salur Air",
+          "description": "Dua salur dengan arah berbeda melambangkan kebiasaan kabinet mempertimbangkan dua arah pandang sebelum mengambil keputusan."
+        },
+        {
+          "key": "fiveTips",
+          "title": "Lima Ujung Arus",
+          "description": "Lima ujung arus mewakili lima divisi HMTKBA periode 2026 yang bergerak sebagai satu kesatuan."
+        },
+        {
+          "key": "flowDirection",
+          "title": "Arah Arus",
+          "description": "Seluruh arus menuju satu pusaran, melambangkan berbagai langkah yang bertemu pada satu tujuan bersama."
+        },
+        {
+          "key": "whirlpool",
+          "title": "Pusaran Air",
+          "description": "Pusaran air melambangkan sinergi dan solidaritas—energi bersama yang terus bergerak dan saling menguatkan."
+        }
+      ]
+    },
     "structure": {
       "eyebrow": "Kabinet Amerta Abhinaya",
       "title": "Struktur Organisasi",

@@ -18,6 +18,28 @@ export interface HomeAboutContent {
   programLabel: string;
 }
 
+export type LogoMeaningKey =
+  | "twoChannels"
+  | "fiveTips"
+  | "flowDirection"
+  | "whirlpool";
+
+export interface LogoMeaningItem {
+  key: LogoMeaningKey;
+  title: string;
+  description: string;
+}
+
+export interface HomeLogoMeaningContent {
+  eyebrow: string;
+  title: string;
+  description: string;
+  instruction: string;
+  overviewTitle: string;
+  overviewDescription: string;
+  items: LogoMeaningItem[];
+}
+
 export interface HomeStructureContent {
   eyebrow: string;
   title: string;
@@ -106,6 +128,7 @@ export interface SiteContent {
   };
   home: {
     about: HomeAboutContent;
+    logoMeaning: HomeLogoMeaningContent;
     structure: HomeStructureContent;
     program: HomeProgramContent;
     calendar: HomeCalendarContent;

@@ -4,6 +4,7 @@ import { VisionMissionContainer } from "../containers/VisionMissionContainer";
 import { ServicesContainer } from "../containers/ServicesContainer";
 import WaterCalendar from "../components/ui/WaterCalendar";
 import NewsShowcase from "../components/ui/NewsShowcase";
+import LogoMeaningExplorer from "../components/ui/LogoMeaningExplorer";
 import { listCalendarEvents } from "@/lib/calendarEvents";
 import { listNewsItems } from "@/lib/newsRepository";
 import { getSiteContent } from "@/lib/siteContentRepository";
@@ -97,6 +98,8 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <LogoMeaningExplorer content={siteContent.home.logoMeaning} />
 
       <div id="vision" className="scroll-mt-20 bg-cream">
         <VisionMissionContainer data={data.visionMission} />

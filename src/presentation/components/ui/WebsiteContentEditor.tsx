@@ -23,12 +23,12 @@ const editablePublicPages: Array<{
   description: string;
   secondaryLabel?: string;
 }> = [
-  { key: "profile", title: "12. Halaman · Profil Program Studi", description: "Hero halaman profil TKBA dan teks dua tombol utamanya.", secondaryLabel: "Teks tombol kembali" },
-  { key: "lecturers", title: "13. Halaman · Dosen TKBA", description: "Hero direktori dosen dan tombol menuju direktori serta profil program studi.", secondaryLabel: "Teks tombol profil prodi" },
-  { key: "achievements", title: "14. Halaman · Prestasi", description: "Hero ruang apresiasi dan tombol navigasi utama halaman prestasi.", secondaryLabel: "Teks tombol program HMTKBA" },
-  { key: "competitions", title: "15. Portal · Lomba Mahasiswa", description: "Hero portal lomba yang menggabungkan lomba manual dan sumber eksternal." },
-  { key: "documents", title: "16. Halaman · Dokumentasi", description: "Hero galeri dokumentasi serta judul dan pengantar koleksi media.", secondaryLabel: "Deskripsi koleksi media" },
-  { key: "dataCenter", title: "17. Halaman · Data Center", description: "Hero Data Center dan judul kartu kondisi cuaca." },
+  { key: "profile", title: "13. Halaman · Profil Program Studi", description: "Hero halaman profil TKBA dan teks dua tombol utamanya.", secondaryLabel: "Teks tombol kembali" },
+  { key: "lecturers", title: "14. Halaman · Dosen TKBA", description: "Hero direktori dosen dan tombol menuju direktori serta profil program studi.", secondaryLabel: "Teks tombol profil prodi" },
+  { key: "achievements", title: "15. Halaman · Prestasi", description: "Hero ruang apresiasi dan tombol navigasi utama halaman prestasi.", secondaryLabel: "Teks tombol program HMTKBA" },
+  { key: "competitions", title: "16. Portal · Lomba Mahasiswa", description: "Hero portal lomba yang menggabungkan lomba manual dan sumber eksternal." },
+  { key: "documents", title: "17. Halaman · Dokumentasi", description: "Hero galeri dokumentasi serta judul dan pengantar koleksi media.", secondaryLabel: "Deskripsi koleksi media" },
+  { key: "dataCenter", title: "18. Halaman · Data Center", description: "Hero Data Center dan judul kartu kondisi cuaca." },
 ];
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
@@ -236,7 +236,25 @@ export function WebsiteContentEditor({
         </div>
       </Section>
 
-      <Section title="5. Beranda · Visi & Misi" description="Judul dan isi visi-misi. Daftar misi dapat ditambah atau dihapus.">
+      <Section title="5. Beranda · Makna Logo" description="Seluruh judul dan penjelasan pada section interaktif logo. Posisi titik dan gambar sorotan dijaga tetap agar maknanya tidak tertukar.">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Label bagian"><input className={inputClass} value={site.home.logoMeaning.eyebrow} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, logoMeaning: { ...c.home.logoMeaning, eyebrow: e.target.value } } }))} /></Field>
+          <Field label="Judul bagian"><input className={inputClass} value={site.home.logoMeaning.title} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, logoMeaning: { ...c.home.logoMeaning, title: e.target.value } } }))} /></Field>
+          <div className="sm:col-span-2"><Field label="Pengantar"><textarea rows={3} className={inputClass} value={site.home.logoMeaning.description} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, logoMeaning: { ...c.home.logoMeaning, description: e.target.value } } }))} /></Field></div>
+          <div className="sm:col-span-2"><Field label="Petunjuk interaksi"><input className={inputClass} value={site.home.logoMeaning.instruction} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, logoMeaning: { ...c.home.logoMeaning, instruction: e.target.value } } }))} /></Field></div>
+          <Field label="Judul sebelum bagian dipilih"><input className={inputClass} value={site.home.logoMeaning.overviewTitle} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, logoMeaning: { ...c.home.logoMeaning, overviewTitle: e.target.value } } }))} /></Field>
+          <Field label="Penjelasan awal"><textarea rows={3} className={inputClass} value={site.home.logoMeaning.overviewDescription} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, logoMeaning: { ...c.home.logoMeaning, overviewDescription: e.target.value } } }))} /></Field>
+          {site.home.logoMeaning.items.map((item, index) => (
+            <div key={item.key} className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:col-span-2">
+              <p className="text-xs font-black uppercase tracking-wide text-primary">Bagian logo {index + 1}</p>
+              <Field label="Nama bagian"><input className={inputClass} value={item.title} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, logoMeaning: { ...c.home.logoMeaning, items: c.home.logoMeaning.items.map((current) => current.key === item.key ? { ...current, title: e.target.value } : current) } } }))} /></Field>
+              <Field label="Makna bagian"><textarea rows={3} className={inputClass} value={item.description} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, logoMeaning: { ...c.home.logoMeaning, items: c.home.logoMeaning.items.map((current) => current.key === item.key ? { ...current, description: e.target.value } : current) } } }))} /></Field>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="6. Beranda · Visi & Misi" description="Judul dan isi visi-misi. Daftar misi dapat ditambah atau dihapus.">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Judul visi"><input className={inputClass} value={vision.visionTitle || ""} onChange={(e) => setVision((c) => ({ ...c, visionTitle: e.target.value }))} /></Field>
           <Field label="Judul misi"><input className={inputClass} value={vision.missionTitle || ""} onChange={(e) => setVision((c) => ({ ...c, missionTitle: e.target.value }))} /></Field>
@@ -253,7 +271,7 @@ export function WebsiteContentEditor({
         </div>
       </Section>
 
-      <Section title="6. Beranda · Struktur Organisasi" description="Pengantar bagian struktur. Data nama, jabatan, divisi, dan foto pengurus tetap dikelola melalui menu Pengurus.">
+      <Section title="7. Beranda · Struktur Organisasi" description="Pengantar bagian struktur. Data nama, jabatan, divisi, dan foto pengurus tetap dikelola melalui menu Pengurus.">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Label bagian"><input className={inputClass} value={site.home.structure.eyebrow} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, structure: { ...c.home.structure, eyebrow: e.target.value } } }))} /></Field>
           <Field label="Judul bagian"><input className={inputClass} value={site.home.structure.title} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, structure: { ...c.home.structure, title: e.target.value } } }))} /></Field>
@@ -262,7 +280,7 @@ export function WebsiteContentEditor({
         </div>
       </Section>
 
-      <Section title="7. Beranda · Program Kerja" description="Pengantar dan tiga kartu fokus program yang tampil di beranda.">
+      <Section title="8. Beranda · Program Kerja" description="Pengantar dan tiga kartu fokus program yang tampil di beranda.">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Label bagian"><input className={inputClass} value={site.home.program.eyebrow} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, program: { ...c.home.program, eyebrow: e.target.value } } }))} /></Field>
           <Field label="Judul bagian"><input className={inputClass} value={site.home.program.title} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, program: { ...c.home.program, title: e.target.value } } }))} /></Field>
@@ -280,7 +298,7 @@ export function WebsiteContentEditor({
         </div>
       </Section>
 
-      <Section title="8. Beranda · Kalender" description="Teks umum kalender. Jadwal acara dan hitung mundur dikelola melalui menu Kalender Acara.">
+      <Section title="9. Beranda · Kalender" description="Teks umum kalender. Jadwal acara dan hitung mundur dikelola melalui menu Kalender Acara.">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Judul kecil kalender"><input className={inputClass} value={site.home.calendar.eyebrow} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, calendar: { ...c.home.calendar, eyebrow: e.target.value } } }))} /></Field>
           <Field label="Label pengingat"><input className={inputClass} value={site.home.calendar.reminderLabel} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, calendar: { ...c.home.calendar, reminderLabel: e.target.value } } }))} /></Field>
@@ -289,7 +307,7 @@ export function WebsiteContentEditor({
         </div>
       </Section>
 
-      <Section title="9. Beranda · Dokumen" description="Judul dan tombol pusat dokumen. Berkas PDF/DOC dikelola melalui menu Dokumen.">
+      <Section title="10. Beranda · Dokumen" description="Judul dan tombol pusat dokumen. Berkas PDF/DOC dikelola melalui menu Dokumen.">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Judul bagian"><input className={inputClass} value={site.home.documents.title} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, documents: { ...c.home.documents, title: e.target.value } } }))} /></Field>
           <Field label="Teks tombol semua dokumen"><input className={inputClass} value={site.home.documents.buttonText} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, documents: { ...c.home.documents, buttonText: e.target.value } } }))} /></Field>
@@ -298,7 +316,7 @@ export function WebsiteContentEditor({
         </div>
       </Section>
 
-      <Section title="10. Beranda · Footer" description="Atur identitas, alamat kampus, nomor telepon, email, dan tautan media sosial yang tampil pada footer.">
+      <Section title="11. Beranda · Footer" description="Atur identitas, alamat kampus, nomor telepon, email, dan tautan media sosial yang tampil pada footer.">
         <div className="grid gap-4 sm:grid-cols-2">
           {(["brandTitle", "contactTitle", "connectTitle", "copyright", "closingText"] as const).map((key) => (
             <Field key={key} label={{ brandTitle: "Nama di footer", contactTitle: "Judul lokasi & kontak", connectTitle: "Judul media sosial", copyright: "Teks hak cipta", closingText: "Kalimat penutup" }[key]}><input className={inputClass} value={site.home.footer[key]} onChange={(e) => setSite((c) => ({ ...c, home: { ...c.home, footer: { ...c.home.footer, [key]: e.target.value } } }))} /></Field>
@@ -334,7 +352,7 @@ export function WebsiteContentEditor({
 
       <Section
         open
-        title="11. Halaman · Struktur Organisasi"
+        title="12. Halaman · Struktur Organisasi"
         description="Mengatur seluruh teks tetap pada halaman struktur. Nilai periode berlaku serentak pada header halaman, setiap divisi, kartu pengurus, dan ringkasan pengurus di beranda."
       >
         <div className="grid gap-4 sm:grid-cols-2">
