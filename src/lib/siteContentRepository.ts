@@ -10,6 +10,21 @@ const fallbackContent = seedContent as SiteContent;
 const cloneFallback = () => JSON.parse(JSON.stringify(fallbackContent)) as SiteContent;
 const hasBlobStorage = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 
+function normalizeFooterDescription(value: string | undefined, fallback: string): string {
+  const description = typeof value === "string" && value.trim() ? value.trim() : fallback;
+  if (description.includes("\n")) return description;
+
+  const name = "Sekretariat HMTKBA";
+  const building = "Gedung UKM Student Centre, Lantai 1";
+  if (!description.startsWith(name)) return description;
+
+  const afterName = description.slice(name.length).trim();
+  if (!afterName.startsWith(building)) return description;
+
+  const address = afterName.slice(building.length).trim();
+  return [name, building, address].filter(Boolean).join("\n");
+}
+
 function normalizeSiteContent(value: SiteContent): SiteContent {
   const fallback = cloneFallback();
   const footer = value?.home?.footer;
@@ -59,6 +74,10 @@ function normalizeSiteContent(value: SiteContent): SiteContent {
       footer: {
         ...fallback.home.footer,
         ...footer,
+        description: normalizeFooterDescription(
+          footer?.description,
+          fallback.home.footer.description,
+        ),
         campuses: Array.isArray(footer?.campuses) ? footer.campuses : fallback.home.footer.campuses,
         socialLinks: Array.isArray(footer?.socialLinks) ? footer.socialLinks : fallback.home.footer.socialLinks,
       },

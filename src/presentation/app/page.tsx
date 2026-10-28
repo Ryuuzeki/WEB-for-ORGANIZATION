@@ -64,6 +64,10 @@ export default async function Home() {
   const divisions = Array.from(
     new Set(members.map((member) => member.division).filter(Boolean)),
   );
+  const footerDescriptionLines = siteContent.home.footer.description
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -188,7 +192,15 @@ export default async function Home() {
             <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-cream text-primary shadow-lg shadow-black/10"><Waves size={24} /></span>
             <div>
               <p className="text-xl font-black">{siteContent.home.footer.brandTitle}</p>
-              <p className="mt-2 text-sm leading-7 text-white/60">{siteContent.home.footer.description}</p>
+              <div className="mt-2 text-sm leading-7 text-white/60">
+                {footerDescriptionLines.map((line, index) => (
+                  <p key={`${index}-${line}`} className="block">
+                    {index === 0 && line === "Sekretariat HMTKBA" ? (
+                      <strong className="font-extrabold text-white/85">{line}</strong>
+                    ) : line}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
 
