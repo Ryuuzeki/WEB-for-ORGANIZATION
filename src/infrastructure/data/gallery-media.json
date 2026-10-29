@@ -1,0 +1,58 @@
+[
+  {
+    "id": "hydrofight-2026",
+    "type": "photo",
+    "title": "Hydrofight 2026 Bangun Sportivitas Tingkat Nasional",
+    "description": "Dokumentasi HMTKBA menghadirkan ruang kompetisi dan pengembangan bakat melalui kejuaraan tinju nasional.",
+    "category": "Lomba & Prestasi",
+    "occurredAt": "2026-10-12",
+    "mediaUrl": "/prestasi/hydrofight-2026.jpg",
+    "thumbnailUrl": "/prestasi/hydrofight-2026.jpg",
+    "isPublished": true,
+    "order": 1,
+    "createdAt": "2026-10-12T00:00:00.000Z",
+    "updatedAt": "2026-10-12T00:00:00.000Z"
+  },
+  {
+    "id": "praktikum-hidrolika",
+    "type": "photo",
+    "title": "Pengujian Praktikum Hidrolika & Mekanika Fluida",
+    "description": "Momen praktikum pengukuran debit air di saluran terbuka menggunakan alat current meter.",
+    "category": "Foto Kegiatan",
+    "occurredAt": "2025-03-05",
+    "mediaUrl": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1200&auto=format&fit=crop",
+    "thumbnailUrl": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1200&auto=format&fit=crop",
+    "isPublished": true,
+    "order": 2,
+    "createdAt": "2025-03-05T00:00:00.000Z",
+    "updatedAt": "2025-03-05T00:00:00.000Z"
+  },
+  {
+    "id": "aksi-reboisasi-das",
+    "type": "photo",
+    "title": "Aksi Reboisasi & Clean Up Daerah Aliran Sungai",
+    "description": "Kegiatan pengabdian masyarakat berupa penanaman pohon di bantaran sungai untuk membantu mencegah erosi.",
+    "category": "Foto Kegiatan",
+    "occurredAt": "2025-05-22",
+    "mediaUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
+    "thumbnailUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
+    "isPublished": true,
+    "order": 3,
+    "createdAt": "2025-05-22T00:00:00.000Z",
+    "updatedAt": "2025-05-22T00:00:00.000Z"
+  },
+  {
+    "id": "field-trip-irigasi",
+    "type": "photo",
+    "title": "Field Trip Observasi Sistem Irigasi Terpadu",
+    "description": "Observasi langsung pembagian air irigasi bagi lahan pertanian masyarakat lokal.",
+    "category": "Kunjungan Lapangan",
+    "occurredAt": "2025-06-10",
+    "mediaUrl": "https://images.unsplash.com/photo-1468413253725-0d5181091126?q=80&w=1200&auto=format&fit=crop",
+    "thumbnailUrl": "https://images.unsplash.com/photo-1468413253725-0d5181091126?q=80&w=1200&auto=format&fit=crop",
+    "isPublished": true,
+    "order": 4,
+    "createdAt": "2025-06-10T00:00:00.000Z",
+    "updatedAt": "2025-06-10T00:00:00.000Z"
+  }
+]

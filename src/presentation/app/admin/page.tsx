@@ -58,8 +58,11 @@ import { NewsItem } from "@/domain/entities/NewsItem";
 import type { AdminSession } from "@/application/actions/adminActions";
 import type { SiteContent } from "@/domain/entities/SiteContent";
 import type { ManualCompetition } from "@/domain/entities/ManualCompetition";
+import type { GalleryMedia } from "@/domain/entities/GalleryMedia";
 import { WebsiteContentEditor } from "@/presentation/components/ui/WebsiteContentEditor";
 import ManualCompetitionEditor from "@/presentation/components/ui/ManualCompetitionEditor";
+import GalleryMediaEditor from "@/presentation/components/ui/GalleryMediaEditor";
+import { ORGANIZATION_DIVISIONS } from "@/lib/adminDivisions";
 
 interface AdminDashboardPageProps {
   initialHero: HeroContent;
@@ -71,11 +74,12 @@ interface AdminDashboardPageProps {
   initialNewsItems: NewsItem[];
   initialSiteContent: SiteContent;
   initialManualCompetitions: ManualCompetition[];
+  initialGalleryMedia: GalleryMedia[];
   regions: string[];
   adminSession: AdminSession;
 }
 
-type TabType = "dashboard" | "website" | "hero" | "vision" | "members" | "documents" | "news" | "competitions" | "events" | "stats";
+type TabType = "dashboard" | "website" | "hero" | "vision" | "members" | "documents" | "gallery" | "news" | "competitions" | "events" | "stats";
 
 const DIVISIONS = [
   "BPH (Badan Pengurus Harian)",
@@ -156,6 +160,7 @@ export default function AdminDashboardPage({
   initialNewsItems,
   initialSiteContent,
   initialManualCompetitions,
+  initialGalleryMedia,
   regions,
   adminSession
 }: AdminDashboardPageProps) {
@@ -813,6 +818,19 @@ export default function AdminDashboardPage({
           </button>
           {adminSession.isSuperAdmin && (
             <button
+              onClick={() => selectTab("gallery")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
+                activeTab === "gallery"
+                  ? "bg-cta text-primary shadow-md font-bold"
+                  : "text-cream/80 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <ImageIcon size={18} />
+              Galeri Foto & Video
+            </button>
+          )}
+          {adminSession.isSuperAdmin && (
+            <button
               onClick={() => selectTab("news")}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
                 activeTab === "news"
@@ -887,6 +905,7 @@ export default function AdminDashboardPage({
             {activeTab === "vision" && "Kelola Visi & Misi"}
             {activeTab === "members" && "Pengurus Struktur Organisasi"}
             {activeTab === "documents" && "Pusat Dokumen & Regulasi"}
+            {activeTab === "gallery" && "Galeri Foto & Video Kegiatan"}
             {activeTab === "news" && "Berita & Prestasi"}
             {activeTab === "competitions" && "Kelola Lomba Manual"}
             {activeTab === "events" && "Kalender Kegiatan & Pengingat"}
@@ -946,7 +965,7 @@ export default function AdminDashboardPage({
                   <div>
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Pengurus</span>
                     <span className="text-3xl font-extrabold text-primary">{members.length}</span>
-                    <span className="text-xs text-secondary/70 block mt-1">Aktif di 6 Divisi</span>
+                    <span className="text-xs text-secondary/70 block mt-1">BPH & {ORGANIZATION_DIVISIONS.length} Divisi</span>
                   </div>
                   <div className="p-4 bg-blue-50 text-blue-600 rounded-xl">
                     <Users size={26} />
@@ -1404,6 +1423,10 @@ export default function AdminDashboardPage({
                 )}
               </div>
             </div>
+          )}
+
+          {activeTab === "gallery" && adminSession.isSuperAdmin && (
+            <GalleryMediaEditor initialItems={initialGalleryMedia} />
           )}
 
           {/* TAB 6: NEWS & ACHIEVEMENTS — SUPERADMIN ONLY */}

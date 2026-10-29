@@ -1,4 +1,5 @@
 import Page from "@/presentation/app/dokumen/page";
+import { listGalleryMedia } from "@/lib/galleryMediaRepository";
 
 export const dynamic = "force-dynamic";
 
@@ -13,4 +14,7 @@ export const metadata = {
   },
 };
 
-export default Page;
+export default async function DocumentationPage() {
+  const galleryMedia = await listGalleryMedia();
+  return <Page initialMedia={galleryMedia} />;
+}

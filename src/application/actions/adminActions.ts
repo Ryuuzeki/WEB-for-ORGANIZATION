@@ -13,6 +13,7 @@ import { RegionalStat } from "@/domain/entities/RegionalStat";
 import { CalendarEvent, CalendarEventInput } from "@/domain/entities/CalendarEvent";
 import { NewsItem } from "@/domain/entities/NewsItem";
 import { ManualCompetition } from "@/domain/entities/ManualCompetition";
+import { GalleryMedia } from "@/domain/entities/GalleryMedia";
 import { SiteContent } from "@/domain/entities/SiteContent";
 import { AdminDivision, AdminDivisionSlug, getAdminDivisionBySlug } from "@/lib/adminDivisions";
 import {
@@ -33,6 +34,11 @@ import {
   saveManualCompetitions,
   uploadManualCompetitionImage,
 } from "@/lib/manualCompetitionRepository";
+import {
+  deleteGalleryMediaAssets,
+  listGalleryMedia,
+  saveGalleryMedia,
+} from "@/lib/galleryMediaRepository";
 import { validateImageFile } from "@/lib/uploadSecurity";
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 8;
@@ -789,6 +795,88 @@ export async function deleteDocumentAction(id: string): Promise<void> {
   const landingRepo = di.getLandingRepository();
   await landingRepo.deleteDocument(id);
   revalidatePath("/");
+}
+
+function normalizeGalleryDate(value: string): string {
+  const normalized = cleanEventText(value, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    throw new Error("Tanggal kegiatan tidak valid.");
+  }
+  const parsed = new Date(`${normalized}T00:00:00.000Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== normalized) {
+    throw new Error("Tanggal kegiatan tidak valid.");
+  }
+  return normalized;
+}
+
+// Gallery media actions — Superadmin only
+export async function saveGalleryMediaAction(input: GalleryMedia): Promise<GalleryMedia> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+
+  const items = await listGalleryMedia();
+  const id = input.id ? normalizeSafeId(input.id, "ID media") : crypto.randomUUID();
+  const existing = items.find((item) => item.id === id);
+  const type = input.type === "video" ? "video" : "photo";
+  const mediaUrl = normalizeStoredUrl(input.mediaUrl, "Berkas media", { allowRelative: true, required: true });
+  const thumbnailUrl = normalizeStoredUrl(input.thumbnailUrl, "Sampul media", { allowRelative: true }) || (type === "photo" ? mediaUrl : "");
+  const now = new Date().toISOString();
+  const saved: GalleryMedia = {
+    id,
+    type,
+    title: cleanEventText(input.title, 180),
+    description: cleanEventText(input.description, 700),
+    category: cleanEventText(input.category, 80),
+    occurredAt: normalizeGalleryDate(input.occurredAt),
+    mediaUrl,
+    thumbnailUrl,
+    isPublished: Boolean(input.isPublished),
+    order: Math.max(0, Math.min(999, Number.isFinite(Number(input.order)) ? Math.trunc(Number(input.order)) : items.length + 1)),
+    createdAt: existing?.createdAt || now,
+    updatedAt: now,
+  };
+
+  if (!saved.title || !saved.category) throw new Error("Judul dan kategori media wajib diisi.");
+  await saveGalleryMedia([...items.filter((item) => item.id !== id), saved]);
+
+  if (existing && (existing.mediaUrl !== saved.mediaUrl || existing.thumbnailUrl !== saved.thumbnailUrl)) {
+    const retainedUrls = new Set([saved.mediaUrl, saved.thumbnailUrl]);
+    await deleteGalleryMediaAssets({
+      mediaUrl: retainedUrls.has(existing.mediaUrl) ? "" : existing.mediaUrl,
+      thumbnailUrl: retainedUrls.has(existing.thumbnailUrl) ? "" : existing.thumbnailUrl,
+    });
+  }
+
+  revalidatePath("/dokumen");
+  revalidatePath("/admin");
+  return saved;
+}
+
+export async function setGalleryMediaPublishedAction(id: string, isPublished: boolean): Promise<GalleryMedia> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+  const safeId = normalizeSafeId(id, "ID media");
+  const items = await listGalleryMedia();
+  const existing = items.find((item) => item.id === safeId);
+  if (!existing) throw new Error("Media galeri tidak ditemukan.");
+  const updated = { ...existing, isPublished: Boolean(isPublished), updatedAt: new Date().toISOString() };
+  await saveGalleryMedia(items.map((item) => item.id === safeId ? updated : item));
+  revalidatePath("/dokumen");
+  revalidatePath("/admin");
+  return updated;
+}
+
+export async function deleteGalleryMediaAction(id: string): Promise<void> {
+  const session = await verifyAuth();
+  ensureSuperAdmin(session);
+  const safeId = normalizeSafeId(id, "ID media");
+  const items = await listGalleryMedia();
+  const existing = items.find((item) => item.id === safeId);
+  if (!existing) throw new Error("Media galeri tidak ditemukan.");
+  await saveGalleryMedia(items.filter((item) => item.id !== safeId));
+  await deleteGalleryMediaAssets(existing);
+  revalidatePath("/dokumen");
+  revalidatePath("/admin");
 }
 
 // Regional Stat actions
