@@ -142,8 +142,16 @@ export default async function TechnologyConstructionWaterBuildingPage() {
             <div className="absolute h-[440px] w-[440px] rounded-full border border-sky-200/15 sm:h-[520px] sm:w-[520px]" />
             <div className="absolute h-[320px] w-[320px] rounded-full border border-sky-200/20 sm:h-[390px] sm:w-[390px]" />
             <div className="absolute left-1/2 top-1/2 h-px w-[92%] -translate-x-1/2 bg-gradient-to-r from-transparent via-sky-200/25 to-transparent" />
-            <div className="relative grid h-64 w-64 place-items-center rounded-full border border-white/15 bg-white p-7 shadow-[0_30px_90px_rgba(0,0,0,.25)] sm:h-80 sm:w-80 sm:p-10">
-              <Image src="/LOGO HIMA.png" alt="Logo HMTKBA" width={320} height={320} className="h-full w-full object-contain" priority />
+            <div className="relative grid h-[18rem] w-[16rem] place-items-center sm:h-[22rem] sm:w-[19.6rem]">
+              <div className="absolute inset-[8%] rounded-full bg-sky-300/10 blur-3xl" aria-hidden="true" />
+              <Image
+                src="/logo-prodi-tkba.jpg"
+                alt="Logo Program Studi Teknologi Konstruksi Bangunan Air"
+                width={490}
+                height={550}
+                className="relative h-full w-full object-cover drop-shadow-[0_30px_55px_rgba(0,0,0,.28)] [clip-path:polygon(50%_1%,99%_25.5%,99%_74%,50%_99%,1%_74%,1%_25.5%)]"
+                priority
+              />
             </div>
             <div className="absolute bottom-5 left-2 rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur-xl sm:left-7">
               <p className="text-[9px] font-black uppercase tracking-[0.2em] text-sky-200">Ruang belajar</p>
