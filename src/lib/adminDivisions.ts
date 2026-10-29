@@ -75,6 +75,11 @@ export const ADMIN_DIVISIONS: AdminDivision[] = [
   },
 ];
 
+// BPH leads the organization; only the five working divisions count as divisions.
+export const ORGANIZATION_DIVISIONS = ADMIN_DIVISIONS.filter(
+  (division) => division.slug !== "superadmin" && division.slug !== "bph",
+);
+
 export function getAdminDivisionBySlug(slug: string | undefined): AdminDivision | undefined {
   return ADMIN_DIVISIONS.find((division) => division.slug === slug);
 }
