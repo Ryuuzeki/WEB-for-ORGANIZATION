@@ -84,7 +84,7 @@ export function WebsiteContentEditor({
     ...initialHero,
     stats: initialHero.stats?.length ? initialHero.stats : [
       { value: "80+", label: "Anggota aktif" },
-      { value: "7", label: "Divisi kolaboratif" },
+      { value: "5", label: "Divisi kolaboratif" },
       { value: "12+", label: "Agenda tahunan" },
     ],
   });
