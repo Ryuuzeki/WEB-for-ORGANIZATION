@@ -9,6 +9,7 @@ import { listCalendarEvents } from "@/lib/calendarEvents";
 import { listNewsItems } from "@/lib/newsRepository";
 import { getSiteContent } from "@/lib/siteContentRepository";
 import { serializeStructuredData } from "@/lib/structuredData";
+import { ORGANIZATION_DIVISIONS } from "@/lib/adminDivisions";
 import Link from "next/link";
 import {
   AtSign,
@@ -96,7 +97,7 @@ export default async function Home() {
             {siteContent.home.about.paragraphs.map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)}
             <div className="mt-2 grid grid-cols-3 gap-3 border-t border-primary/10 pt-6">
               <div><strong className="block text-2xl font-black text-primary">{members.length}+</strong><span className="text-xs font-semibold">{siteContent.home.about.memberLabel}</span></div>
-              <div><strong className="block text-2xl font-black text-primary">{divisions.length}</strong><span className="text-xs font-semibold">{siteContent.home.about.divisionLabel}</span></div>
+              <div><strong className="block text-2xl font-black text-primary">{ORGANIZATION_DIVISIONS.length}</strong><span className="text-xs font-semibold">{siteContent.home.about.divisionLabel}</span></div>
               <div><strong className="block text-2xl font-black text-primary">{siteContent.home.about.programValue}</strong><span className="text-xs font-semibold">{siteContent.home.about.programLabel}</span></div>
             </div>
           </div>

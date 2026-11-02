@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Sparkles } from "lucide-react";
 import GlareHover from "../components/ui/GlareHover";
+import { ORGANIZATION_DIVISIONS } from "@/lib/adminDivisions";
 
 interface HeroContainerProps {
   content: HeroContent;
@@ -15,7 +16,7 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
     ? content.stats
     : [
         { value: "80+", label: "Anggota aktif" },
-        { value: "7", label: "Divisi kolaboratif" },
+        { value: String(ORGANIZATION_DIVISIONS.length), label: "Divisi kolaboratif" },
         { value: "12+", label: "Agenda tahunan" },
       ];
 
@@ -57,7 +58,7 @@ export const HeroContainer: React.FC<HeroContainerProps> = ({ content }) => {
           <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3 border-t border-primary/10 pt-6">
             {stats.slice(0, 3).map((stat) => (
               <div key={`${stat.value}-${stat.label}`}>
-                <p className="text-2xl font-black text-primary sm:text-3xl">{stat.value}</p>
+                <p className="text-2xl font-black text-primary sm:text-3xl">{/^divisi\b/i.test(stat.label.trim()) ? ORGANIZATION_DIVISIONS.length : stat.value}</p>
                 <p className="mt-1 text-[11px] font-semibold leading-4 text-secondary/60 sm:text-xs">{stat.label}</p>
               </div>
             ))}

@@ -4,6 +4,7 @@ import { Member } from "@/domain/entities/Member";
 import type { OrganizationPageContent } from "@/domain/entities/SiteContent";
 import { Typography } from "../components/ui/Typography";
 import { Camera, UsersRound } from "lucide-react";
+import { ORGANIZATION_DIVISIONS } from "@/lib/adminDivisions";
 
 interface OrganizationContainerProps {
   members: Member[];
@@ -64,7 +65,7 @@ export const OrganizationContainer: React.FC<OrganizationContainerProps> = ({ me
               </div>
               <div className="rounded-2xl border border-primary/8 bg-background px-3 py-4 sm:px-5">
                 <Typography variant="span" className="text-3xl font-extrabold text-primary">
-                  {divisions.length}
+                  {ORGANIZATION_DIVISIONS.length}
                 </Typography>
                 <Typography variant="p" className="text-sm text-secondary">
                   {content.divisionStatLabel}
